@@ -79,6 +79,12 @@
 
 .nav-mob-btn{
   display:flex;
+  flex-direction:column;
+  gap:5px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  z-index:1001;
 }
 
 .nav-links{
@@ -86,6 +92,8 @@
   top:72px;
   left:0;
   right:0;
+
+  display:none; /* IMPORTANT */
 
   flex-direction:column;
   align-items:flex-start;
@@ -97,17 +105,20 @@
   padding:24px;
   box-shadow:0 8px 32px rgba(6,58,71,.12);
 
-  opacity:0;
-  transform:translateY(-10px);
-  pointer-events:none;
-  transition:.3s;
+  z-index:1000;
 }
 
 .nav-links.active{
-  opacity:1;
-  transform:translateY(0);
-  pointer-events:auto;
+  display:flex; /* IMPORTANT */
 }
+}
+
+.nav-wrap{
+  position:fixed;
+}
+
+.nav-inner{
+  position:relative;
 }
 
 .site-footer{
@@ -265,70 +276,6 @@
 </head>
 <body class="bg-[#FFF8F2] text-gray-800 font-sans antialiased">
 
-  {{-- Navigation --}}
-  <!-- <header class="sticky top-0 z-50 bg-[#FFF8F2]/95 backdrop-blur-md border-b border-primary/10">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
-        
-        {{-- Logo --}}
-        <a href="{{ url('/') }}" class="flex items-center gap-3 group">
-          <div class="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-accent2 text-white shadow-lg transition-transform group-hover:rotate-6 group-hover:scale-110">
-            <span class="font-bold text-xl">C</span>
-          </div>
-          <div class="hidden sm:block">
-            <span class="text-2xl font-heading font-bold text-primary">CavalCare</span>
-            <p class="text-xs text-gray-600 -mt-1">Compassionate Care</p>
-          </div>
-        </a>
-
-        {{-- Desktop Nav --}}
-        <div class="hidden lg:flex items-center space-x-8">
-          <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Home</a>
-          <a href="#care-types" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Services</a>
-          <a href="#care-plans" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Pricing</a>
-          <a href="#how-it-works" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">How It Works</a>
-          <a href="#contact" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Contact</a>
-        </div>
-
-        {{-- Buttons --}}
-        <div class="flex items-center gap-4">
-        <a href="#" class="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-primary border-2 border-primary rounded-xl hover:bg-primary hover:text-white transition-all">
-            <i class="bi bi-person"></i> Login
-          </a>
-          <a href="#" class="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all">
-            <i class="bi bi-calendar-check"></i> Book Now
-          </a>
-          
-          {{-- Mobile Toggle --}}
-          <button id="mobileToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
-            <svg id="menuOpen" class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-            <svg id="menuClose" class="w-6 h-6 text-primary hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {{-- Mobile Menu --}}
-      <div id="mobileMenu" class="lg:hidden max-h-0 overflow-hidden transition-all duration-300">
-        <div class="flex flex-col space-y-2 py-4">
-          <a href="{{ url('/') }}" class="block px-4 py-3 rounded-lg text-base font-medium hover:bg-primary/5 transition-all">Home</a>
-          <a href="#care-types" class="block px-4 py-3 rounded-lg text-base font-medium hover:bg-primary/5 transition-all">Services</a>
-          <a href="#care-plans" class="block px-4 py-3 rounded-lg text-base font-medium hover:bg-primary/5 transition-all">Pricing</a>
-          <a href="#how-it-works" class="block px-4 py-3 rounded-lg text-base font-medium hover:bg-primary/5 transition-all">How It Works</a>
-          <a href="#contact" class="block px-4 py-3 rounded-lg text-base font-medium hover:bg-primary/5 transition-all">Contact</a>
-          
-          <div class="pt-4 space-y-2">
-          
-            <a href="#" class="block text-center px-4 py-3 rounded-lg bg-primary text-white font-semibold">Book Now</a>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </header> -->
-
   {{-- ── NAV ─────────────────────────────────── --}}
   <nav class="nav-wrap" id="mainNav">
   <div class="nav-inner">
@@ -338,8 +285,8 @@
     </a>
 
     <ul class="nav-links" id="navLinks">
+      <li><a href="{{ route('about') }}">About</a></li>
       <li><a href="{{ route('services') }}">Services</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
       <li><a href="#care-plans">Plans</a></li>
       <li><a href="#contact">Contact</a></li>
       <li><a href="#care-plans" class="nav-cta">Get Started</a></li>
@@ -369,7 +316,6 @@
       <div class="footer-brand">
         <div class="footer-logo">
           <img src="/images/caval-care-logo.png" alt="CavalCare">
-          <span>CavalCare</span>
         </div>
 
         <p>
@@ -377,9 +323,9 @@
         </p>
 
         <div class="footer-socials">
-          <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-twitter"></i></a>
-          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="https://www.facebook.com/usecavalcare"><i class="bi bi-facebook"></i></a>
+          <a href="https://x.com/usecavalcare"><i class="bi bi-twitter"></i></a>
+          <a href="https://www.instagram.com/usecavalcare"><i class="bi bi-instagram"></i></a>
         </div>
       </div>
 
@@ -419,7 +365,7 @@
           <li>
             <i class="bi bi-telephone-fill"></i>
             <div>
-              <a href="tel:+2348000000000">+234 800 000 0000</a>
+              <a href="https://wa.me/message/4PNWSMS5KTZUB1">+234 706 311 2134</a>
               <span>24/7 Support</span>
             </div>
           </li>
@@ -443,7 +389,7 @@
 
   {{-- Floating Contact --}}
   <a 
-  href="https://wa.me/2348000000000?text=Hello%20I%20would%20like%20to%20book%20a%20care%20service"
+  href="https://wa.me/message/4PNWSMS5KTZUB1"
   target="_blank"
   class="fixed bottom-8 right-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary shadow-2xl flex items-center justify-center text-white text-xl md:text-2xl hover:scale-110 transition-transform z-50 animate-float"
 >

@@ -1,9 +1,42 @@
 {{-- resources/views/about.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'About Us — CavalCare')
+@section('title', 'About CavalCare — Our Story, Mission & Values')
 
 @push('head')
+<meta name="description" content="Learn how CavalCare was founded to give Nigerian families access to professional, licensed in-home nursing care. Our mission: healing at home, with intention.">
+<meta name="keywords" content="CavalCare about, in-home nursing Nigeria story, home nurse Nigeria mission, CavalCare values, Nigerian healthcare startup">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="{{ url('/about') }}">
+
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="{{ url('/about') }}">
+<meta property="og:title"       content="About CavalCare — Our Story, Mission & Values">
+<meta property="og:description" content="CavalCare was founded because too many Nigerian families were navigating post-hospital care alone. We provide verified nurses so healing happens at home, with intention.">
+<meta property="og:image"       content="{{ asset('images/og-about.jpg') }}">
+<meta property="og:site_name"   content="CavalCare">
+
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="About CavalCare — Our Story, Mission & Values">
+<meta name="twitter:description" content="Founded to ensure no Nigerian family navigates post-hospital care alone. Licensed nurses, real-time reports, 24/7 support.">
+<meta name="twitter:image"       content="{{ asset('images/og-about.jpg') }}">
+
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "AboutPage",
+  "url": "{{ url('/about') }}",
+  "name": "About CavalCare",
+  "description": "CavalCare was founded to ensure Nigerian families have access to professional licensed nursing care at home after hospital discharge.",
+  "publisher": {
+    "@@type": "Organization",
+    "name": "CavalCare",
+    "url": "{{ url('/') }}",
+    "logo": "{{ asset('images/logo.png') }}"
+  }
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -700,44 +733,387 @@ a    { color:inherit; }
   transition:background .2s,color .2s,border-color .2s,transform .22s var(--spring);
 }
 .btn-outline-dark:hover { background:var(--ocean); color:#fff; border-color:var(--ocean); transform:translateY(-2px); }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE-FIRST POLISH  ·  Pure additive — no colour changes
+══════════════════════════════════════════════════════════════ */
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ── Safe area insets (notch / home bar) ────── */
+.nav-wrap    { padding-left: max(20px, env(safe-area-inset-left));
+               padding-right: max(20px, env(safe-area-inset-right)); }
+.cta-sec,
+.about-cta,
+.what-sec    { padding-bottom: max(80px, calc(64px + env(safe-area-inset-bottom))); }
+
+/* ── Typography scale (fluid) ───────────────── */
+@media (max-width: 767px) {
+  html   { font-size: 15px; }
+  .wrap  { padding: 0 18px; }
+  .sec-title { font-size: clamp(1.7rem, 7.2vw, 2.5rem); letter-spacing: -.025em; }
+  .sec-sub   { font-size: .95rem; margin-top: 10px; }
+}
+
+/* ── Nav ────────────────────────────────────── */
+@media (max-width: 767px) {
+  .nav-inner      { height: 60px; }
+  .nav-logo-img   { height: 52px; }
+  .nav-drawer     { top: 60px; padding: 16px 18px 24px; }
+  .nav-drawer a   { font-size: .95rem; padding: 14px 0; }
+  .nav-wrap.scrolled { box-shadow: 0 2px 16px rgba(26,58,47,.12); }
+}
+
+/* ── Hero mobile ────────────────────────────── */
+@media (max-width: 899px) {
+  .hero-inner { padding: 44px 0 52px; }
+  .hero-h1 {
+    font-size: clamp(2rem, 10.5vw, 3.4rem);
+    letter-spacing: -.032em;
+    margin: 12px 0 16px;
+  }
+  .hero-p  { font-size: .98rem; max-width: 100%; line-height: 1.75; }
+  .hero-actions {
+    margin-top: 24px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 20px;
+    font-size: 1rem;
+    min-height: 52px;      /* comfortable touch target */
+  }
+  .hero-stats {
+    margin-top: 28px;
+    padding-top: 22px;
+    gap: 14px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .stat-num { font-size: 1.65rem; }
+  .stat-lbl { font-size: .65rem; }
+}
+
+/* ── Mobile hero snapshot card ──────────────── */
+.hero-snap {
+  display: none;
+  margin-top: 24px;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  box-shadow: 0 8px 28px rgba(26,58,47,.1);
+}
+@media (max-width: 899px) { .hero-snap { display: block; } }
+.hs-head  { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.hs-label { font-size: .62rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+.hs-badge { font-size: .66rem; font-weight: 700; padding: 3px 9px; border-radius: 100px; background: #d1fae5; color: #065f46; }
+.hs-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.hs-metric  { background: var(--cream); border-radius: 8px; padding: 10px 6px; text-align: center; }
+.hs-val { font-family: 'Nanum Myeongjo', serif; font-size: 1.1rem; font-weight: 700; color: var(--ocean); line-height: 1; }
+.hs-lbl { font-size: .57rem; color: var(--muted); margin-top: 3px; }
+
+/* ── Pill shimmer ───────────────────────────── */
+.pill { position: relative; overflow: hidden; }
+.pill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3) 50%, transparent);
+  background-size: 300px 100%;
+  animation: shimmerPill 3.5s ease-in-out infinite;
+  pointer-events: none; border-radius: inherit;
+}
+@keyframes shimmerPill {
+  0%   { background-position: -300px 0; }
+  100% { background-position:  300px 0; }
+}
+
+/* ── Button icon nudge ──────────────────────── */
+.btn i, .btn-ghost i, .btn-yellow i {
+  display: inline-block;
+  transition: transform .22s var(--spring);
+}
+.btn:hover i, .btn-ghost:hover i, .btn-yellow:hover i { transform: translateX(4px); }
+.btn-outline i { display: inline-block; transition: transform .22s var(--spring); }
+.btn-outline:hover i { transform: scale(1.2); }
+
+/* ── Touch feedback ─────────────────────────── */
+@media (hover: none) {
+  .btn:active, .btn-ghost:active, .btn-yellow:active {
+    transform: scale(.95) !important; filter: brightness(.92);
+  }
+  .svc-card:active, .trust-card:active, .testi-card:active,
+  .hiw-card:active, .plan-card:active, .value-card:active,
+  .mv-card:active  { transform: scale(.98) !important; }
+  .qn-pill:active  { transform: scale(.96) !important; }
+  .gallery-item:active { transform: scale(.97) !important; }
+  .faq-btn:active  { opacity: .8; }
+  .svc-entry:active { transform: scale(.99) !important; }
+}
+
+/* ── Focus upgrade ──────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+  border-radius: 5px;
+  box-shadow: 0 0 0 4px rgba(4,169,167,.18);
+}
+
+/* ── Minimum touch target sizes ─────────────── */
+@media (max-width: 767px) {
+  .faq-btn   { min-height: 52px; }
+  .nav-mob   { min-height: 44px; min-width: 44px; }
+  .btn, .btn-ghost, .btn-yellow,
+  .btn-outline, .btn-outline-dark { min-height: 48px; }
+  .plan-cta, .svc-entry-book { min-height: 48px; }
+  .nav-drawer a { min-height: 48px; }
+}
+
+/* ── Trust cards mobile ─────────────────────── */
+@media (max-width: 639px) {
+  .trust-sec  { padding: 44px 0; }
+  .trust-grid { gap: 10px; }
+  .trust-card {
+    padding: 20px 18px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .trust-ico  { flex-shrink: 0; margin-top: 2px; }
+}
+/* Tilt on hover */
+.trust-ico { transition: background .22s var(--spring), transform .3s var(--spring); }
+.trust-card:hover .trust-ico { transform: scale(1.14) rotate(-7deg); }
+
+/* ── Services scroll ────────────────────────── */
+@media (max-width: 767px) {
+  .svc-sec    { padding: 60px 0; }
+  .svc-header { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 24px; }
+  .svc-header .sec-sub { max-width: 100%; }
+  .svc-scroll {
+    margin: 0 -18px;
+    padding-left: 18px; padding-right: 18px; padding-bottom: 20px;
+  }
+  .svc-card  { flex: 0 0 74vw; min-width: 220px; max-width: 270px; }
+  .svc-dots  { margin-top: 14px; }
+}
+/* Scroll dot pill */
+.svc-dot {
+  border-radius: 4px;
+  transition: background .25s var(--spring), width .3s var(--spring);
+}
+.svc-dot.active { width: 18px; border-radius: 4px; }
+
+/* ── How it works ───────────────────────────── */
+@media (max-width: 767px) {
+  .hiw-sec     { padding: 60px 0; }
+  .hiw-header  { margin-bottom: 32px; }
+  .hiw-card    { padding: 24px 20px; }
+  .hiw-step-num { font-size: 2.4rem; margin-bottom: 12px; }
+}
+.hiw-ico { transition: transform .28s var(--spring); }
+.hiw-card:hover .hiw-ico { transform: scale(1.14) rotate(8deg); }
+
+/* ── Plans ──────────────────────────────────── */
+@media (max-width: 767px) {
+  .plans-sec { padding: 60px 0; }
+  .plans-scroll {
+    margin: 28px -18px 0;
+    padding-left: 18px; padding-right: 18px; padding-bottom: 20px;
+  }
+  .plan-card { flex: 0 0 76vw; min-width: 230px; max-width: 280px; }
+}
+/* Featured breathe pulse */
+.plan-featured { animation: breathePlan 4.5s ease-in-out infinite; }
+.plan-featured:hover { animation: none; }
+@keyframes breathePlan { 0%,100%{transform:scale(1)} 50%{transform:scale(1.025)} }
+
+/* ── App snapshot ───────────────────────────── */
+@media (max-width: 767px) {
+  .snapshot-sec  { padding: 60px 0; }
+  .snapshot-grid { gap: 32px; }
+  .mockup-card   { max-width: 100%; padding: 18px; }
+}
+/* Mockup float */
+.mockup-card {
+  animation: floatY 5s ease-in-out infinite;
+  transition: box-shadow .3s, transform .3s var(--spring);
+}
+.mockup-card:hover { animation: none; transform: translateY(-6px); box-shadow: 0 32px 80px rgba(26,58,47,.18); }
+.mockup-metric { transition: background .2s, transform .22s var(--spring); cursor: default; }
+.mockup-metric:hover { background: var(--ocean); transform: scale(1.04); }
+.mockup-metric:hover .m-val, .mockup-metric:hover .m-lbl { color: #fff !important; }
+
+/* ── Checklist items ────────────────────────── */
+.sc-item { transition: transform .22s var(--spring); }
+.sc-item:hover { transform: translateX(5px); }
+.sc-check { transition: background .22s var(--spring), transform .3s var(--spring), box-shadow .22s; }
+.sc-item:hover .sc-check { transform: scale(1.18) rotate(12deg); box-shadow: 0 3px 10px rgba(26,58,47,.18); }
+
+/* ── FAQ ────────────────────────────────────── */
+@media (max-width: 767px) {
+  .faq-sec    { padding: 60px 0; }
+  .faq-header { flex-direction: column; align-items: flex-start; margin-bottom: 28px; }
+  .faq-btn    { padding: 18px 0; font-size: .97rem; }
+  .faq-answer-body { font-size: .93rem; }
+}
+
+/* ── Testimonial dots ───────────────────────── */
+.testi-dots {
+  display: none;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 16px;
+}
+@media (max-width: 767px) { .testi-dots { display: flex; } }
+.testi-dot {
+  width: 6px; height: 6px; border-radius: 4px;
+  background: rgba(26,58,47,.2);
+  transition: background .25s var(--spring), width .3s var(--spring);
+}
+.testi-dot.active { width: 18px; background: var(--ocean); }
+
+/* ── CTA mobile ─────────────────────────────── */
+@media (max-width: 767px) {
+  .cta-sec    { padding: 64px 0 max(64px, calc(48px + env(safe-area-inset-bottom))); }
+  .cta-h2     { font-size: clamp(1.85rem, 8vw, 3rem); }
+  .cta-actions {
+    flex-direction: column; align-items: stretch;
+  }
+  .cta-actions .btn, .cta-actions .btn-ghost {
+    width: 100%; justify-content: center; padding: 16px 20px;
+  }
+  .cta-trust  { gap: 14px; flex-direction: column; align-items: center; }
+}
+
+/* ── Scroll snap momentum ───────────────────── */
+.svc-scroll, .testi-scroll, .plans-scroll {
+  scroll-padding-left: 18px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Marquee mobile ─────────────────────────── */
+@media (max-width: 767px) {
+  .marquee-item { padding: 0 22px; font-size: .75rem; }
+}
+.marquee-item i { display: inline-block; transition: transform .2s var(--spring); }
+.marquee-item:hover i { transform: scale(1.3) rotate(10deg); }
+
+/* ── Lazy image shimmer ─────────────────────── */
+img[loading="lazy"] {
+  background: linear-gradient(90deg,rgba(240,255,219,.5) 25%,rgba(255,255,255,.3) 50%,rgba(240,255,219,.5) 75%);
+  background-size: 400px 100%;
+  animation: shimmerPill 1.8s ease-in-out infinite;
+}
+img[loading="lazy"].img-loaded { animation: none; background: none; }
+
+/* ── Page-hero (services & about) ───────────── */
+@media (max-width: 767px) {
+  .page-hero, .about-hero { padding-bottom: 0; }
+  .ph-inner, .ah-inner    { padding-top: 48px; }
+  .ph-title, .ah-h1 {
+    font-size: clamp(2rem, 9.5vw, 3rem); letter-spacing: -.032em;
+  }
+  .ph-sub, .ah-lead { font-size: .96rem; max-width: 100%; }
+  .ph-actions .btn, .ah-actions .btn { width: 100%; justify-content: center; }
+  .ph-wave svg { height: 36px; }
+  .ph-inner {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+}
+
+/* ── Quick-nav (services) ───────────────────── */
+@media (max-width: 767px) {
+  .quick-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 -18px;
+    padding: 18px 18px 6px;
+    gap: 8px;
+  }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qn-pill {
+    flex: 0 0 auto; scroll-snap-align: start;
+    font-size: .74rem; padding: 6px 12px; white-space: nowrap;
+  }
+}
+
+/* ── Service rows (services page) ───────────── */
+@media (max-width: 899px) {
+  .services-list { padding: 52px 0 72px; }
+  .svc-row       { padding: 40px 0; gap: 26px; }
+  .svc-row:first-child { padding-top: 0; }
+  .svc-name      { font-size: clamp(1.5rem, 5.5vw, 2.2rem); }
+  .svc-desc      { font-size: .94rem; }
+  .svc-more      { font-size: .87rem; padding: 12px 15px; }
+}
+@media (max-width: 640px) {
+  .svc-cards-grid { grid-template-columns: 1fr; }
+  .svc-entry-img  { height: clamp(160px, 42vw, 220px); }
+}
+
+/* ── Service card tasks hover ───────────────── */
+.svc-task { transition: background .2s, border-color .2s, transform .25s var(--spring), box-shadow .22s; }
+.svc-task:hover { transform: translateX(5px); box-shadow: 3px 0 0 0 var(--yellow) inset; }
+.svc-task-check { transition: background .22s var(--spring), transform .3s var(--spring); }
+.svc-task:hover .svc-task-check { transform: scale(1.2) rotate(10deg); }
+
+/* ── Gallery (services) ─────────────────────── */
+@media (max-width: 767px) {
+  .care-gallery  { padding-bottom: 52px; }
+  .gallery-grid  { gap: 8px; }
+  .gallery-item  { height: clamp(88px, 20vw, 140px); }
+  .gallery-item:nth-child(1) { height: clamp(130px, 26vw, 200px); }
+}
+.gallery-item { transition: transform .28s var(--spring), box-shadow .28s; }
+.gallery-item:hover { transform: scale(1.025); box-shadow: 0 10px 32px rgba(26,58,47,.13); }
+
+/* ── About page mobile ──────────────────────── */
+@media (max-width: 767px) {
+  .origin-sec  { padding: 64px 0; }
+  .what-sec    { padding: 64px 0; }
+  .values-sec  { padding: 64px 0; }
+  .mv-sec      { padding: 64px 0; }
+  .about-cta   { padding: 64px 0; }
+  .origin-grid { grid-template-columns: 1fr !important; gap: 36px; }
+  .what-grid   { grid-template-columns: 1fr !important; gap: 28px; }
+  .values-grid { grid-template-columns: 1fr; }
+  .mv-grid     { grid-template-columns: 1fr !important; gap: 16px; }
+  .mv-card     { padding: 28px 22px; }
+  .ac-actions  { flex-direction: column; align-items: stretch; }
+  .ac-actions .btn, .ac-actions .btn-outline-dark { width: 100%; justify-content: center; }
+}
+@media (max-width: 639px) {
+  .ah-h1       { font-size: clamp(2rem, 9vw, 2.8rem); }
+}
+.origin-stat-card { transition: transform .28s var(--spring), box-shadow .28s; }
+.origin-stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(26,58,47,.08); }
+.value-card:hover .value-ico { transform: scale(1.12) rotate(-6deg); }
+
+/* ── About CTA mobile ───────────────────────── */
+@media (max-width: 767px) {
+  .about-cta .ac-actions { flex-direction: column; align-items: stretch; }
+}
+
 </style>
 @endpush
 
 @section('content')
-
-{{-- ═══════════════════════════════════════════════
-     NAV
-═══════════════════════════════════════════════ --}}
-<nav class="nav-wrap" id="mainNav" role="navigation" aria-label="Main navigation">
-  <div class="nav-inner">
-    <a href="{{ url('/') }}" class="nav-logo" aria-label="CavalCare home">
-      <img src="{{ asset('images/logo.png') }}" alt="CavalCare" class="nav-logo-img">
-    </a>
-
-    <ul class="nav-links" id="navLinks" role="list">
-      <li><a href="{{ url('/services') }}">Services</a></li>
-      <li><a href="{{ url('/about') }}" class="active">About</a></li>
-      <li><a href="{{ url('/') }}#how-it-works">How It Works</a></li>
-      <li><a href="{{ url('/') }}#care-plans">Plans</a></li>
-      <li><a href="{{ url('/') }}#contact">Contact</a></li>
-      <li><a href="{{ url('/') }}#care-plans" class="nav-cta">Get Started</a></li>
-    </ul>
-
-    <button class="nav-mob" id="mobBtn" aria-label="Toggle menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-
-  <div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Mobile navigation">
-    <a href="{{ url('/services') }}">Services <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
-    <a href="{{ url('/about') }}">About <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
-    <a href="{{ url('/') }}#how-it-works">How It Works <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
-    <a href="{{ url('/') }}#care-plans">Care Plans <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
-    <a href="{{ url('/') }}#contact">Contact <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
-    <a href="{{ url('/') }}#care-plans" class="nav-drawer-cta">Get Started Here →</a>
-  </div>
-</nav>
-
 
 {{-- ═══════════════════════════════════════════════
      PAGE HERO
@@ -779,11 +1155,6 @@ a    { color:inherit; }
             <div class="ah-photo-overlay"></div>
           </div>
 
-          <div class="ah-quote-card">
-            <p class="ah-quote-text">
-              "Healing should happen at home, with intention — not by chance."
-            </p>
-            <p class="ah-quote-attr">— The CavalCare Promise</p>
           </div>
         </div>
 
@@ -835,10 +1206,7 @@ a    { color:inherit; }
 
       {{-- Body text --}}
       <div class="origin-body">
-        <div class="reveal">
-          <span class="pill pill-ocean sec-eyebrow">Our Story</span>
-        </div>
-
+        
         <div class="reveal" style="transition-delay:.08s;">
           <h2 id="story-heading">
             In Nigeria, when someone leaves the hospital, the expectation is that the family takes over
@@ -1115,34 +1483,6 @@ const onScroll = () => nav.classList.toggle('scrolled', scrollY > 16);
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-/* ── MOBILE NAV DRAWER ────────────────────── */
-const mobBtn = document.getElementById('mobBtn');
-const drawer = document.getElementById('navDrawer');
-let open = false;
-
-const toggleDrawer = (force) => {
-  open = force !== undefined ? force : !open;
-  mobBtn.classList.toggle('active', open);
-  mobBtn.setAttribute('aria-expanded', open);
-  if (open) {
-    drawer.style.display = 'flex';
-    requestAnimationFrame(() => {
-      drawer.style.opacity  = '1';
-      drawer.style.transform = 'none';
-    });
-    drawer.classList.add('open');
-  } else {
-    drawer.style.opacity  = '0';
-    drawer.style.transform = 'translateY(-8px)';
-    setTimeout(() => {
-      if (!open) { drawer.style.display = 'none'; drawer.classList.remove('open'); }
-    }, 260);
-  }
-};
-
-mobBtn?.addEventListener('click', () => toggleDrawer());
-drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleDrawer(false)));
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) toggleDrawer(false); });
 
 /* ── SMOOTH ANCHOR SCROLL ─────────────────── */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -1227,6 +1567,49 @@ if (window.matchMedia('(min-width:900px) and (hover:hover)').matches) {
 document.querySelectorAll('img[loading="lazy"]').forEach(img => {
   if (img.complete) img.classList.add('img-loaded');
   else img.addEventListener('load', () => img.classList.add('img-loaded'));
+});
+
+
+/* ── Extra reveal directions ─────────────────── */
+const ioExtra = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('is-visible'); ioExtra.unobserve(e.target); }
+  });
+}, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal-left, .reveal-right, .reveal-scale')
+  .forEach(el => ioExtra.observe(el));
+
+/* ── Lazy image loaded state ─────────────────── */
+document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+  if (img.complete) img.classList.add('img-loaded');
+  else img.addEventListener('load', () => img.classList.add('img-loaded'));
+});
+
+/* ── Haptic on button tap (Android) ─────────── */
+if ('vibrate' in navigator) {
+  document.querySelectorAll('.btn, .btn-yellow, .btn-ghost, .nav-cta, .plan-cta, .btn-outline-dark')
+    .forEach(b => b.addEventListener('pointerdown', () => navigator.vibrate(6)));
+}
+
+/* ── Testimonial / testi scroll dots ─────────── */
+const testiScroll2 = document.querySelector('.testi-scroll');
+const testiDots2   = document.querySelectorAll('.testi-dot');
+if (testiScroll2 && testiDots2.length) {
+  const syncDots = () => {
+    const cards = testiScroll2.querySelectorAll('.testi-card');
+    const cardW = (cards[0]?.offsetWidth ?? 0) + 14;
+    const idx   = Math.round(testiScroll2.scrollLeft / cardW);
+    testiDots2.forEach((d, i) => d.classList.toggle('active', i === idx));
+  };
+  testiScroll2.addEventListener('scroll', syncDots, { passive: true });
+  syncDots();
+}
+
+/* ── Services card task stagger ──────────────── */
+document.querySelectorAll('.svc-expect-list, .svc-tasks').forEach(ul => {
+  ul.querySelectorAll('li').forEach((li, i) => {
+    li.style.transitionDelay = (i * 0.045) + 's';
+  });
 });
 
 });
