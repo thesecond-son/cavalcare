@@ -4,12 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ServiceController;
 
 // Route::get('/', function () {
 //     return view('home');
 // });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/services', [ServiceController::class, 'index'])->name('services');
+
 
 Route::get('/book/{carePlan}', [BookingController::class, 'create']);
 Route::post('/book', [BookingController::class, 'store'])->name('booking.store');

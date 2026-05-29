@@ -19,15 +19,16 @@
   {{-- Bootstrap Icons --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   
+
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#28527A',
-            secondary: '#F4C983',
-            accent1: '#E98A7D',
-            accent2: '#A9C7A2',
+            primary: '#04A9A7',   // main action color (WhatsApp vibe)
+            secondary: '#FFCDAD', // soft accent
+            dark: '#1A3A2F',      // text / strong contrast
+            light: '#F0FFDB',     // background
           },
           fontFamily: {
             sans: ['Nunito Sans', 'sans-serif'],
@@ -42,6 +43,222 @@
   <style>
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     .animate-float { animation: float 3s ease-in-out infinite; }
+
+    
+/* ─── NAV ─────────────────────────────────────────── */
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;transition:background .4s var(--ease-smooth),box-shadow .4s var(--ease-smooth);}
+.nav-wrap.scrolled{background:rgba(255,252,207,.88);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 1px 0 rgba(6,58,71,.08);}
+.nav-inner{max-width:1200px;margin:0 auto;height:72px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+/* Logo image */
+.nav-logo-img {
+  height: 98px;   /* adjust to fit navbar */
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.nav-logo:hover{opacity:.72;}
+.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--indigo);display:inline-block;animation:pulse 2.8s ease-in-out infinite;}
+.nav-links{display:flex;align-items:center;gap:34px;list-style:none;}
+.nav-links a{font-size:.875rem;font-weight:500;color:var(--muted);text-decoration:none;position:relative;padding:4px 0;transition:color .2s;}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1.5px;background:var(--ocean);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease-spring);}
+.nav-links a:hover{color:var(--ocean);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-cta{background:var(--ocean)!important;color:#fff!important;padding:10px 22px!important;border-radius:var(--r-sm)!important;transition:background .2s,transform .2s var(--ease-spring)!important;}
+.nav-cta::after{display:none!important;}
+.nav-cta:hover{background:var(--ocean-hover)!important;transform:translateY(-1px)!important;}
+.nav-mob-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--ocean);flex-direction:column;gap:5px;}
+.nav-mob-btn span{display:block;width:24px;height:2px;background:currentColor;border-radius:2px;transition:all .3s;}
+
+/* ─── MOBILE STYLES ─────────────────────────── */
+@media (max-width: 900px){
+
+.nav-mob-btn{
+  display:flex;
+}
+
+.nav-links{
+  position:absolute;
+  top:72px;
+  left:0;
+  right:0;
+
+  flex-direction:column;
+  align-items:flex-start;
+  gap:20px;
+
+  background:rgba(255,252,207,.96);
+  backdrop-filter:blur(22px);
+
+  padding:24px;
+  box-shadow:0 8px 32px rgba(6,58,71,.12);
+
+  opacity:0;
+  transform:translateY(-10px);
+  pointer-events:none;
+  transition:.3s;
+}
+
+.nav-links.active{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+}
+
+.site-footer{
+  background: var(--cream); /* 🔥 match your sections */
+  border-top: 1px solid rgba(6,58,71,.08);
+  padding: clamp(56px, 6vw, 80px) 0 clamp(20px, 3vw, 32px);
+  position: relative;
+}
+
+.site-footer .container{
+  max-width: 1200px; 
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.site-footer::before{
+  content:'';
+  position:absolute;
+  top:24px;
+  left:0;
+  right:0;
+  height:24px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--cream)
+  );
+}
+
+/* Grid */
+.footer-grid{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: clamp(20px, 2.5vw, 32px);
+  margin-bottom: 36px;
+}
+
+/* Brand */
+.footer-brand p{
+  font-size: 0.9rem;
+  color: rgba(6,58,71,0.65);
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+/* Logo */
+.footer-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  color: var(--navy);
+}
+
+.footer-logo img{
+  height: 36px;
+}
+
+/* Headings */
+.footer-grid h4{
+  font-family: 'Fraunces', serif; /* 🔥 match headings */
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+/* Links */
+.footer-grid ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+.footer-grid li{
+  margin-bottom:10px;
+}
+
+.footer-grid a{
+  font-size: 0.9rem;
+  color: rgba(6,58,71,0.65);
+}
+
+.footer-grid a:hover{
+  color: var(--ink);
+}
+
+/* Socials */
+.footer-socials{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+}
+
+.footer-socials a{
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid rgba(6,58,71,.08);
+  color: var(--ink);
+  transition: all .25s ease;
+}
+
+.footer-socials a:hover{
+  background: var(--ocean);
+  color:#fff;
+  transform: translateY(-3px);
+}
+
+/* Contact */
+.footer-contact li{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.footer-contact i{
+  color: var(--gold);
+  margin-top: 3px;
+}
+
+.footer-contact span{
+  display:block;
+  font-size: 0.8rem;
+  color: rgba(6,58,71,0.65);
+}
+
+/* Bottom */
+.footer-bottom{
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding-top: 20px;
+  text-align:center;
+  font-size: 0.85rem;
+  color: rgba(6,58,71,0.65);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .footer-grid{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px){
+  .footer-grid{
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 
   @stack('head')
@@ -49,7 +266,7 @@
 <body class="bg-[#FFF8F2] text-gray-800 font-sans antialiased">
 
   {{-- Navigation --}}
-  <header class="sticky top-0 z-50 bg-[#FFF8F2]/95 backdrop-blur-md border-b border-primary/10">
+  <!-- <header class="sticky top-0 z-50 bg-[#FFF8F2]/95 backdrop-blur-md border-b border-primary/10">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         
@@ -75,9 +292,9 @@
 
         {{-- Buttons --}}
         <div class="flex items-center gap-4">
-          <!-- <a href="#" class="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-primary border-2 border-primary rounded-xl hover:bg-primary hover:text-white transition-all">
+        <a href="#" class="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-primary border-2 border-primary rounded-xl hover:bg-primary hover:text-white transition-all">
             <i class="bi bi-person"></i> Login
-          </a> -->
+          </a>
           <a href="#" class="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all">
             <i class="bi bi-calendar-check"></i> Book Now
           </a>
@@ -104,13 +321,38 @@
           <a href="#contact" class="block px-4 py-3 rounded-lg text-base font-medium hover:bg-primary/5 transition-all">Contact</a>
           
           <div class="pt-4 space-y-2">
-            <!-- <a href="#" class="block text-center px-4 py-3 rounded-lg border-2 border-primary text-primary font-semibold">Login</a> -->
+          
             <a href="#" class="block text-center px-4 py-3 rounded-lg bg-primary text-white font-semibold">Book Now</a>
           </div>
         </div>
       </div>
     </nav>
-  </header>
+  </header> -->
+
+  {{-- ── NAV ─────────────────────────────────── --}}
+  <nav class="nav-wrap" id="mainNav">
+  <div class="nav-inner">
+
+  <a href="/" class="nav-logo" aria-label="CavalCare home">
+      <img src="/images/caval-care-logo.png" alt="CavalCare logo" class="nav-logo-img h-10">
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="{{ route('services') }}">Services</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#care-plans">Plans</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#care-plans" class="nav-cta">Get Started</a></li>
+    </ul>
+
+    <button class="nav-mob-btn" id="mobBtn" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+</nav>
 
   {{-- Main Content --}}
   <main class="min-h-screen">
@@ -118,112 +360,95 @@
   </main>
 
   {{-- Footer --}}
-  <footer class="bg-gradient-to-b from-white to-gray-50 border-t border-primary/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-        
-        {{-- Company --}}
-        <div class="space-y-4">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-accent2 text-white shadow-lg">
-              <span class="font-bold text-xl">C</span>
+  <footer class="site-footer">
+  <div class="container">
+
+    <div class="footer-grid">
+
+      {{-- Brand --}}
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="/images/caval-care-logo.png" alt="CavalCare">
+          <span>CavalCare</span>
+        </div>
+
+        <p>
+          Compassionate in-home caregiving for families in Nigeria.
+        </p>
+
+        <div class="footer-socials">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+
+      {{-- Services --}}
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#">Elderly Care</a></li>
+          <li><a href="#">Child Disability Care</a></li>
+          <li><a href="#">Post-Surgery Care</a></li>
+          <li><a href="#">Terminal Illness Support</a></li>
+        </ul>
+      </div>
+
+      {{-- Links --}}
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#">How It Works</a></li>
+          <li><a href="#">Care Plans</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      {{-- Contact --}}
+      <div>
+        <h4>Contact</h4>
+        <ul class="footer-contact">
+          <li>
+            <i class="bi bi-geo-alt-fill"></i>
+            <div>
+              <strong>Lagos, Nigeria</strong>
+              <span>Headquarters</span>
             </div>
-            <h3 class="text-xl font-heading font-bold text-primary">CavalCare</h3>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">
-            Compassionate in-home caregiving for families in Nigeria.
-          </p>
-          
-          <div class="flex items-center gap-3 pt-4">
-            <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg hover:-translate-y-1 transition-all">
-              <i class="bi bi-facebook text-primary"></i>
-            </a>
-            <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg hover:-translate-y-1 transition-all">
-              <i class="bi bi-twitter text-primary"></i>
-            </a>
-            <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg hover:-translate-y-1 transition-all">
-              <i class="bi bi-instagram text-primary"></i>
-            </a>
-          </div>
-        </div>
-
-        {{-- Services --}}
-        <div>
-          <h4 class="text-lg font-heading font-bold text-primary mb-4">Services</h4>
-          <ul class="space-y-3 text-sm text-gray-600">
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> Elderly Care
-            </a></li>
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> Child Disability Care
-            </a></li>
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> Post-Surgery Care
-            </a></li>
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> Terminal Illness Support
-            </a></li>
-          </ul>
-        </div>
-
-        {{-- Links --}}
-        <div>
-          <h4 class="text-lg font-heading font-bold text-primary mb-4">Quick Links</h4>
-          <ul class="space-y-3 text-sm text-gray-600">
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> How It Works
-            </a></li>
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> Care Plans
-            </a></li>
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> About Us
-            </a></li>
-            <li><a href="#" class="flex items-center gap-2 hover:text-primary hover:translate-x-1 transition-all">
-              <i class="bi bi-chevron-right text-secondary"></i> Privacy Policy
-            </a></li>
-          </ul>
-        </div>
-
-        {{-- Contact --}}
-        <div>
-          <h4 class="text-lg font-heading font-bold text-primary mb-4">Contact</h4>
-          <ul class="space-y-4 text-sm">
-            <li class="flex items-start gap-3">
-              <i class="bi bi-geo-alt-fill text-secondary text-lg mt-1"></i>
-              <div>
-                <p class="font-semibold text-gray-700">Lagos, Nigeria</p>
-                <p class="text-gray-600">Headquarters</p>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <i class="bi bi-telephone-fill text-secondary text-lg mt-1"></i>
-              <div>
-                <a href="tel:+2348000000000" class="font-semibold text-gray-700 hover:text-primary">+234 800 000 0000</a>
-                <p class="text-gray-600">24/7 Support</p>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <i class="bi bi-envelope-fill text-secondary text-lg mt-1"></i>
-              <div>
-                <a href="mailto:hello@cavalcare.ng" class="font-semibold text-gray-700 hover:text-primary">hello@cavalcare.ng</a>
-              </div>
-            </li>
-          </ul>
-        </div>
+          </li>
+          <li>
+            <i class="bi bi-telephone-fill"></i>
+            <div>
+              <a href="tel:+2348000000000">+234 800 000 0000</a>
+              <span>24/7 Support</span>
+            </div>
+          </li>
+          <li>
+            <i class="bi bi-envelope-fill"></i>
+            <div>
+              <a href="mailto:hello@cavalcare.org">hello@cavalcare.org</a>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <div class="border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
-        © {{ date('Y') }} CavalCare. All rights reserved.
-      </div>
     </div>
-  </footer>
+
+    <div class="footer-bottom">
+      © {{ date('Y') }} CavalCare. All rights reserved.
+    </div>
+
+  </div>
+</footer>
 
   {{-- Floating Contact --}}
-  <a href="tel:+2348000000000" class="fixed bottom-8 right-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-primary to-accent2 shadow-2xl flex items-center justify-center text-white text-xl md:text-2xl hover:scale-110 transition-transform z-50 animate-float">
-    <i class="bi bi-telephone-fill"></i>
-  </a>
+  <a 
+  href="https://wa.me/2348000000000?text=Hello%20I%20would%20like%20to%20book%20a%20care%20service"
+  target="_blank"
+  class="fixed bottom-8 right-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary shadow-2xl flex items-center justify-center text-white text-xl md:text-2xl hover:scale-110 transition-transform z-50 animate-float"
+>
+  <i class="bi bi-whatsapp"></i>
+</a>
 
   {{-- Scroll Top --}}
   <button id="scrollTop" class="fixed bottom-8 left-8 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-primary opacity-0 invisible transition-all hover:shadow-xl hover:-translate-y-1 z-50">
@@ -231,18 +456,6 @@
   </button>
 
   <script>
-    // Mobile menu
-    const toggle = document.getElementById('mobileToggle');
-    const menu = document.getElementById('mobileMenu');
-    const open = document.getElementById('menuOpen');
-    const close = document.getElementById('menuClose');
-    
-    toggle.addEventListener('click', () => {
-      menu.style.maxHeight = menu.style.maxHeight ? '' : menu.scrollHeight + 'px';
-      open.classList.toggle('hidden');
-      close.classList.toggle('hidden');
-    });
-
     // Scroll to top
     const scrollBtn = document.getElementById('scrollTop');
     window.addEventListener('scroll', () => {
@@ -266,6 +479,21 @@
           window.scrollTo({ top: offset, behavior: 'smooth' });
         }
       });
+    });
+
+    const nav = document.getElementById('mainNav');
+    const mobBtn = document.getElementById('mobBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    /* scroll effect */
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    /* mobile toggle */
+    mobBtn.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('active');
+      mobBtn.setAttribute('aria-expanded', isOpen);
     });
   </script>
 

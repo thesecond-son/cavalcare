@@ -1,542 +1,1711 @@
-{{-- resources/views/home.blade.php - TAILWIND VERSION --}}
+{{-- resources/views/home.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'CavalCare — Trusted In-Home Care for Your Loved Ones')
 
 @push('head')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-.animate-fade-in { animation: fadeInUp 0.8s ease-out forwards; }
-.gradient-text { background: linear-gradient(135deg, #28527A 0%, #A9C7A2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
-.reveal.active { opacity: 1; transform: translateY(0); }
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --cream:        #F0FFDB;
+  --yellow:       #04A9A7;
+  --ocean:        #1A3A2F;
+  --indigo:       #04A9A7;
+  --peach:        #FFCDAD;
+  --cream-d:      #d4f5b8;
+  --ocean-h:      #0f5c3d;
+  --ocean-soft:   #e6f9f9;
+  --text:         #1A3A2F;
+  --muted:        #3d6b57;
+  --white:        #ffffff;
+  --r-xs:  6px;
+  --r-sm:  10px;
+  --r-md:  16px;
+  --r-lg:  24px;
+  --r-xl:  36px;
+  --r-2xl: 48px;
+  --spring: cubic-bezier(0.34,1.56,0.64,1);
+  --out:    cubic-bezier(0,0,0.2,1);
+  --smooth: cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ═══════════════════════════════════════════════
+   BASE — mobile first
+═══════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body {
+  font-family:'Cabin',system-ui,sans-serif;
+  font-size:16px; line-height:1.65;
+  color:var(--text); background:#fff;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img { display:block; max-width:100%; }
+a { color:inherit; }
+:focus-visible { outline:2px solid var(--yellow); outline-offset:3px; border-radius:4px; }
+
+/* ═══════════════════════════════════════════════
+   KEYFRAMES
+═══════════════════════════════════════════════ */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:scale(1)} }
+@keyframes floatY   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes drawLine { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes pulse    { 0%,100%{box-shadow:0 0 0 0 rgba(26,58,47,.22)} 60%{box-shadow:0 0 0 9px rgba(26,58,47,0)} }
+@keyframes slideR   { from{opacity:0;transform:translateX(-26px)} to{opacity:1;transform:none} }
+@keyframes slideL   { from{opacity:0;transform:translateX(26px)} to{opacity:1;transform:none} }
+@keyframes marquee  { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+@keyframes ripple   { to{transform:scale(2.2);opacity:0} }
+@keyframes spin     { to{transform:rotate(360deg)} }
+@keyframes blink    { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* ═══════════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════════ */
+.reveal {
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .7s var(--out), transform .7s var(--out);
+}
+.reveal.is-visible { opacity:1; transform:none; }
+
+/* ═══════════════════════════════════════════════
+   LAYOUT HELPERS
+═══════════════════════════════════════════════ */
+.wrap { max-width:1160px; margin:0 auto; padding:0 20px; }
+@media(min-width:768px){ .wrap { padding:0 32px; } }
+
+.pill {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:.7rem; font-weight:600;
+  letter-spacing:.07em; text-transform:uppercase;
+  padding:5px 13px; border-radius:100px;
+}
+.pill-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.pill-ocean  { background:rgba(26,58,47,.1);   color:var(--ocean); }
+.pill-yellow { background:var(--yellow);       color:var(--ocean); }
+.pill-indigo { background:rgba(4,169,167,.13);color:var(--indigo); }
+.pill-peach  { background:rgba(255,205,173,.35);color:#7a4016; }
+.pill-white  { background:rgba(255,255,255,.15);color:#fff; }
+
+.sec-eyebrow { display:block; margin-bottom:14px; }
+.sec-title {
+  font-family:'Nanum Myeongjo',serif;
+  font-size:clamp(1.9rem,6vw,3.2rem);
+  font-weight:400; line-height:1.1;
+  letter-spacing:-.03em; color:var(--ocean);
+}
+.sec-sub {
+  font-size:1rem; color:var(--muted);
+  max-width:480px; margin-top:12px; line-height:1.75;
+}
+
+/* ═══════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════ */
+.btn {
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:'Cabin',sans-serif;
+  font-size:.93rem; font-weight:600;
+  text-decoration:none; border:none; cursor:pointer;
+  position:relative; overflow:hidden;
+  transition:transform .22s var(--spring), box-shadow .22s, background .18s, color .18s, border-color .18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active { transform:scale(.96)!important; }
+.btn-ripple {
+  position:absolute; border-radius:50%; pointer-events:none;
+  background:rgba(255,255,255,.25);
+  transform:scale(0); animation:ripple .6s ease-out forwards;
+}
+.btn-primary {
+  background:var(--ocean); color:#fff;
+  padding:14px 26px; border-radius:var(--r-sm);
+  box-shadow:0 4px 16px rgba(26,58,47,.22);
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(26,58,47,.32); }
+.btn-outline {
+  background:transparent; color:var(--ocean);
+  padding:13px 26px; border-radius:var(--r-sm);
+  border:1.5px solid rgba(26,58,47,.24);
+}
+.btn-outline:hover { background:var(--ocean); color:#fff; border-color:var(--ocean); transform:translateY(-2px); }
+.btn-yellow {
+  background:var(--yellow); color:var(--ocean);
+  padding:14px 26px; border-radius:var(--r-sm);
+  box-shadow:0 4px 16px rgba(4,169,167,.22);
+}
+.btn-yellow:hover { background:var(--cream-d); transform:translateY(-3px); box-shadow:0 8px 28px rgba(4,169,167,.35); }
+.btn-ghost {
+  background:rgba(255,255,255,.1); color:#fff;
+  padding:14px 26px; border-radius:var(--r-sm);
+  border:1.5px solid rgba(255,255,255,.22);
+  display:inline-flex; align-items:center; gap:9px;
+  font-weight:600; font-size:.93rem; text-decoration:none;
+  transition:background .2s,transform .22s var(--spring);
+}
+.btn-ghost:hover { background:rgba(255,255,255,.18); transform:translateY(-2px); }
+
+/* ═══════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════ */
+.nav-wrap {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  padding:0 20px;
+  transition:background .38s var(--smooth), box-shadow .38s var(--smooth);
+}
+@media(min-width:768px){ .nav-wrap{ padding:0 32px; } }
+.nav-wrap.scrolled {
+  background:rgba(240,255,219,.92);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 1px 0 rgba(26,58,47,.08);
+}
+.nav-inner {
+  max-width:1160px; margin:0 auto;
+  height:64px; display:flex; align-items:center; justify-content:space-between;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Logo image */
+.nav-logo-img {
+  height: 96px;   /* adjust to fit navbar */
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.nav-logo:hover { opacity:.72; }
+
+
+/* Desktop links */
+.nav-links {
+  display:none; align-items:center; gap:30px; list-style:none;
+}
+@media(min-width:768px){ .nav-links { display:flex; } }
+.nav-links a {
+  font-size:.85rem; font-weight:500; color:var(--muted);
+  text-decoration:none; position:relative; padding:4px 0;
+  transition:color .2s;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-2px; left:0; right:0;
+  height:1.5px; background:var(--ocean);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .28s var(--spring);
+}
+.nav-links a:hover { color:var(--ocean); }
+.nav-links a:hover::after { transform:scaleX(1); }
+.nav-cta {
+  background:var(--ocean)!important; color:#fff!important;
+  padding:9px 20px!important; border-radius:var(--r-sm)!important;
+  transition:background .2s,transform .2s var(--spring)!important;
+}
+.nav-cta::after { display:none!important; }
+.nav-cta:hover { background:var(--ocean-h)!important; transform:translateY(-1px)!important; }
+
+/* Mobile hamburger */
+.nav-mob {
+  display:flex; flex-direction:column; gap:5px;
+  background:none; border:none; cursor:pointer; padding:8px;
+  color:var(--ocean); -webkit-tap-highlight-color:transparent;
+}
+@media(min-width:768px){ .nav-mob { display:none; } }
+.nav-mob span { display:block; width:22px; height:2px; background:currentColor; border-radius:2px; transition:all .28s var(--smooth); }
+.nav-mob.active span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+.nav-mob.active span:nth-child(2) { opacity:0; transform:scaleX(0); }
+.nav-mob.active span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+/* Mobile drawer */
+.nav-drawer {
+  display:none; flex-direction:column;
+  position:absolute; top:64px; left:0; right:0;
+  background:rgba(240,255,219,.97);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  padding:20px 24px 28px;
+  gap:4px;
+  box-shadow:0 12px 40px rgba(26,58,47,.1);
+  border-top:1px solid rgba(26,58,47,.07);
+  transform:translateY(-8px); opacity:0;
+  transition:opacity .25s var(--out),transform .25s var(--out);
+}
+.nav-drawer.open {
+  display:flex; opacity:1; transform:none;
+}
+.nav-drawer a {
+  font-size:1rem; font-weight:500; color:var(--ocean);
+  text-decoration:none; padding:12px 0;
+  border-bottom:1px solid rgba(26,58,47,.07);
+  display:flex; align-items:center; justify-content:space-between;
+  transition:opacity .2s;
+}
+.nav-drawer a:last-child { border-bottom:none; }
+.nav-drawer a:hover { opacity:.65; }
+.nav-drawer-cta {
+  margin-top:12px; display:block;
+  background:var(--ocean); color:#fff!important;
+  padding:14px 20px; border-radius:var(--r-sm);
+  text-align:center; font-weight:600; border:none!important;
+}
+
+/* ═══════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════ */
+.hero {
+  min-height:100svh;
+  background:var(--cream);
+  padding-top:64px;
+  display:flex; align-items:center;
+  position:relative; overflow:hidden;
+}
+/* ambient glows */
+.glow {
+  position:absolute; border-radius:50%; pointer-events:none;
+  will-change:transform;
+}
+.glow-1 {
+  width:min(680px,120vw); height:min(680px,120vw);
+  background:radial-gradient(circle,rgba(4,169,167,.22) 0%,transparent 65%);
+  top:-20%; right:-15%;
+}
+.glow-2 {
+  width:min(480px,90vw); height:min(480px,90vw);
+  background:radial-gradient(circle,rgba(255,205,173,.3) 0%,transparent 65%);
+  bottom:-15%; left:-10%;
+}
+.glow-3 {
+  width:min(320px,70vw); height:min(320px,70vw);
+  background:radial-gradient(circle,rgba(4,169,167,.12) 0%,transparent 65%);
+  top:38%; left:28%;
+}
+
+.hero-inner {
+  width:100%; padding:52px 0 60px;
+}
+@media(min-width:768px){ .hero-inner{ padding:72px 0 80px; } }
+
+.hero-grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:40px; align-items:center;
+}
+@media(min-width:900px){
+  .hero-grid { grid-template-columns:1fr 1fr; gap:56px; }
+}
+
+/* text column */
+.hero-eyebrow { animation:fadeUp .7s .05s var(--out) both; }
+.hero-h1 {
+  font-family:'Nanum Myeongjo',serif;
+  font-size:clamp(2.4rem,8vw,4.4rem);
+  font-weight:400; line-height:1.06;
+  letter-spacing:-.04em; color:var(--ocean);
+  margin:16px 0 20px;
+  animation:fadeUp .7s .14s var(--out) both;
+}
+.hero-h1 em {
+  font-style:italic; color:var(--indigo); position:relative;
+}
+.hero-h1 em::after {
+  content:''; position:absolute;
+  left:0; right:0; bottom:2px;
+  height:2.5px; background:var(--peach); border-radius:2px;
+  transform-origin:left;
+  animation:drawLine .75s 1.1s var(--spring) both;
+}
+.hero-p {
+  font-size:1.05rem; color:var(--muted);
+  max-width:440px; line-height:1.78;
+  animation:fadeUp .7s .22s var(--out) both;
+}
+.hero-actions {
+  display:flex; flex-wrap:wrap; gap:12px;
+  margin-top:28px;
+  animation:fadeUp .7s .3s var(--out) both;
+}
+.hero-stats {
+  display:flex; align-items:center; gap:20px;
+  margin-top:36px; padding-top:28px;
+  border-top:1px solid rgba(26,58,47,.1);
+  animation:fadeUp .7s .42s var(--out) both;
+}
+.stat-num {
+  font-family:'Nanum Myeongjo',serif;
+  font-size:2rem; font-weight:400;
+  color:var(--ocean); line-height:1; letter-spacing:-.03em;
+}
+.stat-lbl {
+  font-size:.72rem; color:var(--muted);
+  margin-top:3px; font-weight:500;
+  text-transform:uppercase; letter-spacing:.05em;
+}
+.stat-div { width:1px; height:34px; background:rgba(26,58,47,.12); }
+
+/* visual column */
+.hero-visual {
+  position:relative;
+  animation:scaleIn .85s .22s var(--spring) both;
+}
+@media(max-width:899px){ .hero-visual{ display:none; } }
+
+/* Dual-photo collage */
+.hero-collage {
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  grid-template-rows:auto auto;
+  gap:12px;
+}
+.hero-photo {
+  border-radius:var(--r-xl);
+  overflow:hidden; position:relative;
+}
+.hero-photo img {
+  width:100%; height:100%; object-fit:cover;
+  transition:transform 5.5s ease;
+}
+.hero-photo:hover img { transform:scale(1.04); }
+.hp-main { grid-row:1/3; height:440px; }
+.hp-top  { height:200px; }
+.hp-bot  { height:228px; }
+.hero-photo-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(160deg,transparent 50%,rgba(26,58,47,.32) 100%);
+}
+
+/* floating UI cards on the visual */
+.fc {
+  position:absolute;
+  background:rgba(255,255,255,.93);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:var(--r-md);
+  padding:14px 18px;
+  box-shadow:0 8px 32px rgba(26,58,47,.12);
+  transition:transform .3s var(--spring);
+  z-index:10;
+}
+.fc:hover { transform:translateY(-4px) scale(1.015); }
+.fc-tl {
+  top:-20px; left:-22px; min-width:180px;
+  animation:slideR .75s .9s both;
+}
+.fc-br {
+  bottom:24px; right:-22px; min-width:200px;
+  animation:slideL .75s 1s both;
+}
+.fc-lbl {
+  font-size:.65rem; font-weight:600; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px;
+}
+.fc-val {
+  font-family:'Nanum Myeongjo',serif; font-size:1.5rem;
+  color:var(--ocean); line-height:1; letter-spacing:-.02em;
+}
+.fc-hint { font-size:.7rem; color:var(--muted); margin-top:3px; }
+.fc-dots { display:flex; gap:4px; margin-top:8px; }
+.fc-dots span { width:7px; height:7px; border-radius:50%; }
+.fc-row { display:flex; align-items:center; gap:9px; margin-top:7px; }
+.fc-av {
+  width:32px; height:32px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Nanum Myeongjo',serif; font-size:.85rem; flex-shrink:0;
+}
+.fc-rtext p { font-size:.76rem; font-weight:600; color:var(--ocean); line-height:1.2; }
+.fc-rtext span { font-size:.68rem; color:var(--muted); }
+.fc-btns { display:flex; gap:6px; margin-top:9px; }
+.fc-btn {
+  font-size:.72rem; font-weight:600;
+  padding:7px 11px; border-radius:6px;
+  text-decoration:none; transition:all .18s; cursor:pointer;
+}
+.fc-btn.dk { background:var(--ocean); color:#fff; }
+.fc-btn.dk:hover { background:var(--ocean-h); }
+.fc-btn.lt { background:rgba(26,58,47,.07); color:var(--ocean); }
+.fc-btn.lt:hover { background:rgba(26,58,47,.13); }
+
+.badge-247 {
+  position:absolute; top:-16px; right:48px;
+  width:58px; height:58px; border-radius:50%;
+  background:var(--ocean); color:#fff;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'Nanum Myeongjo',serif; font-size:1.05rem; line-height:1;
+  box-shadow:0 6px 18px rgba(26,58,47,.28);
+  animation:fadeIn .6s 1.1s both, floatY 4.5s 1.5s ease-in-out infinite;
+  z-index:11;
+}
+.badge-247 small {
+  font-family:'Cabin',sans-serif; font-size:.55rem;
+  font-weight:500; opacity:.8; margin-top:2px;
+}
+
+/* ═══════════════════════════════════════════════
+   MARQUEE TRUST STRIP
+═══════════════════════════════════════════════ */
+.marquee-sec {
+  background:var(--ocean);
+  padding:18px 0;
+  overflow:hidden;
+  position:relative;
+}
+.marquee-track {
+  display:flex; align-items:center;
+  width:max-content;
+  animation:marquee 28s linear infinite;
+  gap:0;
+}
+.marquee-track:hover { animation-play-state:paused; }
+.marquee-item {
+  display:flex; align-items:center; gap:10px;
+  padding:0 36px; white-space:nowrap;
+  font-size:.82rem; font-weight:500;
+  color:rgba(255,255,255,.65);
+  border-right:1px solid rgba(255,255,255,.12);
+}
+.marquee-item strong { color:#fff; }
+.marquee-item svg { width:16px; height:16px; color:var(--yellow); flex-shrink:0; }
+
+/* ═══════════════════════════════════════════════
+   TRUST PILLARS
+═══════════════════════════════════════════════ */
+.trust-sec { background:var(--cream); padding:64px 0; }
+.trust-grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+@media(min-width:640px){ .trust-grid { grid-template-columns:repeat(3,1fr); } }
+
+.trust-card {
+  background:#fff;
+  border-radius:var(--r-lg);
+  padding:28px 24px;
+  display:flex; flex-direction:column; gap:14px;
+  border:1px solid rgba(26,58,47,.07);
+  transition:transform .28s var(--spring), box-shadow .28s;
+}
+.trust-card:hover { transform:translateY(-4px); box-shadow:0 14px 40px rgba(26,58,47,.1); }
+.trust-ico {
+  width:44px; height:44px; border-radius:12px;
+  background:rgba(26,58,47,.06);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s, transform .2s var(--spring);
+}
+.trust-ico i { font-size:20px; color:var(--ocean); }
+.trust-card:hover .trust-ico { background:var(--ocean); transform:scale(1.06); }
+.trust-card:hover .trust-ico i { color:#fff; }
+.trust-t { font-family:'Nanum Myeongjo',serif; font-size:1.15rem; font-weight:400; color:var(--ocean); }
+.trust-d { font-size:.85rem; color:var(--muted); line-height:1.6; }
+
+/* ═══════════════════════════════════════════════
+   SERVICES
+═══════════════════════════════════════════════ */
+.svc-sec { padding:80px 0; background:#fff; }
+@media(min-width:768px){ .svc-sec{ padding:100px 0; } }
+
+.svc-header {
+  display:flex; justify-content:space-between;
+  align-items:flex-end; flex-wrap:wrap; gap:20px;
+  margin-bottom:40px;
+}
+@media(min-width:768px){ .svc-header{ margin-bottom:52px; } }
+
+/* Scrollable cards on mobile, grid on desktop */
+.svc-scroll {
+  display:flex; gap:14px;
+  overflow-x:auto; overflow-y:visible;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:16px;
+  margin:0 -20px; padding-left:20px; padding-right:20px;
+}
+.svc-scroll::-webkit-scrollbar { display:none; }
+@media(min-width:768px){
+  .svc-scroll {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    overflow:visible; margin:0; padding:0;
+  }
+}
+
+.svc-card {
+  flex:0 0 78vw; max-width:300px;
+  scroll-snap-align:start;
+  border-radius:var(--r-lg);
+  padding:30px 24px;
+  display:flex; flex-direction:column; gap:14px;
+  text-decoration:none;
+  position:relative; overflow:hidden;
+  transition:transform .28s var(--spring), box-shadow .28s;
+}
+@media(min-width:768px){
+  .svc-card { flex:none; max-width:none; }
+}
+.svc-card::before {
+  content:''; position:absolute; inset:0; opacity:0;
+  transition:opacity .28s;
+}
+.svc-card:hover { transform:translateY(-5px); box-shadow:0 18px 52px rgba(26,58,47,.1); }
+.svc-card:hover::before { opacity:1; }
+
+/* color variants */
+.c-ocean { background:var(--ocean); color:#fff; }
+.c-ocean::before { background:radial-gradient(circle at 80% 80%,rgba(4,169,167,.12) 0%,transparent 55%); }
+.c-cream  { background:var(--cream); color:var(--ocean); }
+.c-peach  { background:rgba(255,205,173,.22); color:var(--ocean); }
+.c-indigo { background:rgba(4,169,167,.1); color:var(--ocean); }
+.c-yellow { background:var(--yellow); color:var(--ocean); }
+.c-soft   { background:var(--ocean-soft); color:var(--ocean); }
+
+.svc-icon-wrap {
+  width:48px; height:48px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .28s var(--spring);
+}
+.c-ocean .svc-icon-wrap  { background:rgba(255,255,255,.14); }
+.c-cream .svc-icon-wrap  { background:rgba(26,58,47,.07); }
+.c-peach .svc-icon-wrap  { background:rgba(255,205,173,.3); }
+.c-indigo .svc-icon-wrap { background:rgba(4,169,167,.15); }
+.c-yellow .svc-icon-wrap { background:rgba(26,58,47,.07); }
+.c-soft .svc-icon-wrap   { background:rgba(26,58,47,.06); }
+.svc-icon-wrap i { font-size:22px; }
+.c-ocean .svc-icon-wrap i { color:var(--yellow); }
+.svc-card:hover .svc-icon-wrap { transform:scale(1.1) rotate(6deg); }
+
+.svc-name {
+  font-family:'Nanum Myeongjo',serif; font-size:1.25rem;
+  font-weight:400; line-height:1.22;
+}
+.svc-desc { font-size:.85rem; line-height:1.65; opacity:.75; flex-grow:1; }
+.svc-link {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.78rem; font-weight:600;
+  text-transform:uppercase; letter-spacing:.04em;
+  margin-top:4px; opacity:.6;
+  transition:gap .22s var(--spring), opacity .2s;
+}
+.svc-link i { font-size:14px; }
+.svc-card:hover .svc-link { gap:12px; opacity:1; }
+
+/* scroll indicator dots */
+.svc-dots {
+  display:flex; justify-content:center; gap:7px;
+  margin-top:18px;
+}
+@media(min-width:768px){ .svc-dots{ display:none; } }
+.svc-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(26,58,47,.2);
+  transition:background .2s, transform .2s;
+}
+.svc-dot.active { background:var(--ocean); transform:scale(1.3); }
+
+/* ═══════════════════════════════════════════════
+   HOW IT WORKS — timeline style
+═══════════════════════════════════════════════ */
+.hiw-sec { padding:80px 0; background:var(--cream); }
+@media(min-width:768px){ .hiw-sec{ padding:100px 0; } }
+
+.hiw-header { text-align:center; margin-bottom:52px; }
+
+.hiw-grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+@media(min-width:640px){ .hiw-grid { grid-template-columns:repeat(2,1fr); } }
+@media(min-width:900px){ .hiw-grid { grid-template-columns:repeat(4,1fr); } }
+
+.hiw-card {
+  border-radius:var(--r-lg);
+  padding:30px 24px;
+  position:relative; overflow:hidden;
+  transition:transform .26s var(--spring), box-shadow .26s;
+}
+.hiw-card:hover { transform:translateY(-5px); box-shadow:0 16px 40px rgba(0,0,0,.09); }
+.h-white  { background:#fff; border:1px solid rgba(26,58,47,.08); }
+.h-ocean  { background:var(--ocean); }
+.h-yellow { background:var(--yellow); }
+.h-peach  { background:var(--peach); }
+
+.hiw-step-num {
+  font-family:'Nanum Myeongjo',serif;
+  font-size:3rem; font-weight:400;
+  line-height:1; letter-spacing:-.05em;
+  opacity:.12; margin-bottom:18px;
+}
+.hiw-ico {
+  width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:12px; margin-bottom:14px;
+  transition:transform .26s var(--spring);
+}
+.hiw-card:hover .hiw-ico { transform:scale(1.08) rotate(5deg); }
+.h-white  .hiw-ico { background:rgba(26,58,47,.06); }
+.h-ocean  .hiw-ico { background:rgba(255,255,255,.16); }
+.h-yellow .hiw-ico { background:rgba(26,58,47,.07); }
+.h-peach  .hiw-ico { background:rgba(255,255,255,.35); }
+.hiw-ico i { font-size:20px; }
+.h-white  .hiw-ico i,.h-yellow .hiw-ico i,.h-peach .hiw-ico i { color:var(--ocean); }
+.h-ocean  .hiw-ico i { color:#fff; }
+
+.hiw-title {
+  font-family:'Nanum Myeongjo',serif; font-size:1.12rem; font-weight:400;
+  line-height:1.28; margin-bottom:8px;
+}
+.hiw-desc { font-size:.83rem; line-height:1.65; opacity:.7; }
+.h-ocean .hiw-step-num,.h-ocean .hiw-title,.h-ocean .hiw-desc { color:#fff; }
+
+/* connector line between steps (desktop only) */
+@media(min-width:900px){
+  .hiw-grid { position:relative; }
+  .hiw-grid::before {
+    content:''; position:absolute;
+    top:38px; left:calc(25% - 10px); right:calc(25% - 10px);
+    height:1.5px;
+    background:linear-gradient(90deg, transparent, rgba(26,58,47,.12) 20%, rgba(26,58,47,.12) 80%, transparent);
+    pointer-events:none; z-index:0;
+  }
+  .hiw-card { z-index:1; }
+}
+
+/* ═══════════════════════════════════════════════
+   PLANS
+═══════════════════════════════════════════════ */
+.plans-sec { padding:80px 0; background:#fff; }
+@media(min-width:768px){ .plans-sec{ padding:100px 0; } }
+
+/* horizontal scroll on mobile */
+.plans-scroll {
+  display:flex; gap:14px;
+  overflow-x:auto; scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:16px;
+  margin:40px -20px 0; padding-left:20px; padding-right:20px;
+}
+.plans-scroll::-webkit-scrollbar { display:none; }
+@media(min-width:768px){
+  .plans-scroll {
+    display:grid; grid-template-columns:repeat(2,1fr);
+    overflow:visible; margin:40px 0 0; padding:0;
+  }
+}
+@media(min-width:1024px){ .plans-scroll { grid-template-columns:repeat(4,1fr); } }
+
+.plan-card {
+  flex:0 0 80vw; max-width:300px;
+  scroll-snap-align:start;
+  border-radius:var(--r-lg); padding:28px 22px;
+  display:flex; flex-direction:column; gap:20px;
+  border:1.5px solid rgba(26,58,47,.08); background:#fff;
+  position:relative; overflow:hidden;
+  transition:transform .28s var(--spring), border-color .28s, box-shadow .28s;
+}
+@media(min-width:768px){ .plan-card{ flex:none; max-width:none; } }
+.plan-card:hover { transform:translateY(-5px); border-color:rgba(26,58,47,.2); box-shadow:0 14px 44px rgba(26,58,47,.1); }
+.plan-featured { background:var(--ocean); border-color:var(--ocean); }
+.plan-featured:hover { border-color:var(--ocean); }
+
+.plan-badge {
+  position:absolute; top:-1px; right:16px;
+  background:var(--yellow); color:var(--ocean);
+  font-size:.65rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.07em;
+  padding:4px 10px; border-radius:0 0 7px 7px;
+}
+.plan-name {
+  font-family:'Nanum Myeongjo',serif; font-size:1.28rem;
+  font-weight:400; color:var(--ocean);
+}
+.plan-featured .plan-name { color:var(--yellow); }
+.plan-meta { font-size:.76rem; color:var(--muted); margin-top:2px; }
+.plan-featured .plan-meta { color:rgba(255,255,255,.55); }
+.plan-feats { list-style:none; flex-grow:1; display:flex; flex-direction:column; gap:9px; }
+.plan-feat { display:flex; align-items:flex-start; gap:9px; font-size:.82rem; color:var(--muted); }
+.plan-featured .plan-feat { color:rgba(255,255,255,.72); }
+.plan-check {
+  width:17px; height:17px; flex-shrink:0; margin-top:1px;
+  border-radius:50%; background:rgba(26,58,47,.08);
+  display:flex; align-items:center; justify-content:center;
+}
+.plan-featured .plan-check { background:rgba(255,255,255,.14); }
+.plan-check i { font-size:9px; color:var(--ocean); }
+.plan-featured .plan-check i { color:var(--yellow); }
+.plan-cta {
+  display:block; text-align:center;
+  padding:12px 18px; border-radius:var(--r-sm);
+  font-size:.86rem; font-weight:600; text-decoration:none;
+  transition:all .22s var(--spring);
+}
+.plan-cta-default {
+  background:rgba(26,58,47,.06); color:var(--ocean);
+  border:1.5px solid rgba(26,58,47,.1);
+}
+.plan-cta-default:hover { background:var(--ocean); color:#fff; border-color:var(--ocean); transform:translateY(-1px); }
+.plan-cta-featured { background:var(--yellow); color:var(--ocean); }
+.plan-cta-featured:hover { background:var(--cream-d); transform:translateY(-2px); box-shadow:0 5px 16px rgba(4,169,167,.3); }
+
+/* ═══════════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════════ */
+.faq-sec { padding:80px 0; background:var(--cream); }
+@media(min-width:768px){ .faq-sec{ padding:100px 0; } }
+
+.faq-header {
+  display:flex; justify-content:space-between;
+  align-items:flex-end; flex-wrap:wrap; gap:16px;
+  margin-bottom:48px;
+}
+
+.faq-list {
+  display:flex; flex-direction:column; gap:0;
+  max-width:760px; margin:0 auto;
+}
+
+.faq-item {
+  border-bottom:1px solid rgba(26,58,47,.1);
+}
+.faq-item:first-child { border-top:1px solid rgba(26,58,47,.1); }
+
+.faq-btn {
+  width:100%; display:flex; align-items:center;
+  justify-content:space-between; gap:16px;
+  background:none; border:none; cursor:pointer;
+  padding:22px 0; text-align:left;
+  font-family:'Cabin',sans-serif; font-size:1rem;
+  font-weight:600; color:var(--ocean);
+  transition:color .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.faq-btn:hover { color:var(--indigo); }
+
+.faq-btn-icon {
+  flex-shrink:0;
+  width:32px; height:32px; border-radius:50%;
+  background:rgba(26,58,47,.07);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s var(--spring), transform .3s var(--spring);
+}
+.faq-btn-icon i { font-size:14px; color:var(--ocean); transition:transform .3s var(--spring); }
+.faq-item.open .faq-btn-icon { background:var(--ocean); }
+.faq-item.open .faq-btn-icon i { color:#fff; transform:rotate(45deg); }
+
+.faq-answer {
+  display:grid; grid-template-rows:0fr;
+  transition:grid-template-rows .32s var(--out);
+}
+.faq-item.open .faq-answer { grid-template-rows:1fr; }
+.faq-answer-inner {
+  overflow:hidden;
+}
+.faq-answer-body {
+  padding:0 0 22px;
+  font-size:.97rem; color:var(--muted); line-height:1.78;
+  max-width:640px;
+}
+
+/* ═══════════════════════════════════════════════
+   SOCIAL PROOF SNAPSHOT — Huru-inspired app card
+═══════════════════════════════════════════════ */
+.snapshot-sec { padding:80px 0; background:#fff; }
+@media(min-width:768px){ .snapshot-sec{ padding:100px 0; } }
+
+.snapshot-grid {
+  display:grid; grid-template-columns:1fr;
+  gap:40px; align-items:center;
+}
+@media(min-width:768px){ .snapshot-grid{ grid-template-columns:1fr 1fr; gap:60px; } }
+
+.snapshot-text .sec-sub { max-width:400px; }
+
+.snapshot-checklist { list-style:none; margin-top:28px; display:flex; flex-direction:column; gap:14px; }
+.sc-item {
+  display:flex; align-items:flex-start; gap:13px;
+  font-size:.95rem; color:var(--muted); line-height:1.55;
+}
+.sc-check {
+  width:24px; height:24px; flex-shrink:0; margin-top:1px;
+  border-radius:50%; background:rgba(26,58,47,.08);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s var(--spring), transform .2s var(--spring);
+}
+.sc-check i { font-size:11px; color:var(--ocean); }
+.sc-item:hover .sc-check { background:var(--ocean); transform:scale(1.1); }
+.sc-item:hover .sc-check i { color:#fff; }
+
+/* app mockup card */
+.mockup-card {
+  background:#fff;
+  border-radius:var(--r-xl);
+  box-shadow:0 24px 64px rgba(26,58,47,.13);
+  padding:24px;
+  max-width:340px; margin:0 auto;
+  border:1px solid rgba(26,58,47,.06);
+}
+.mockup-top {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px;
+}
+.mockup-logo {
+  font-family:'Nanum Myeongjo',serif; font-size:1rem;
+  color:var(--ocean); display:flex; align-items:center; gap:5px;
+}
+.mockup-logo span { color:var(--indigo); }
+.mockup-badge {
+  font-size:.68rem; font-weight:600; padding:4px 10px;
+  border-radius:100px; background:#d1fae5; color:#065f46;
+}
+.mockup-metrics {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:8px; margin-bottom:16px;
+}
+.mockup-metric {
+  background:var(--cream);
+  border-radius:var(--r-sm);
+  padding:10px 8px; text-align:center;
+}
+.mockup-metric .m-val {
+  font-family:'Nanum Myeongjo',serif; font-size:1.25rem;
+  color:var(--ocean); line-height:1;
+}
+.mockup-metric .m-lbl { font-size:.62rem; color:var(--muted); margin-top:3px; }
+
+.mockup-next {
+  background:var(--ocean); border-radius:var(--r-sm);
+  padding:12px 14px; margin-bottom:12px;
+}
+.mockup-next .mn-label { font-size:.65rem; font-weight:600; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.mockup-next .mn-time  { font-size:.9rem; font-weight:600; color:#fff; }
+.mockup-next .mn-nurse { font-size:.72rem; color:rgba(255,255,255,.65); margin-top:2px; }
+
+.mockup-services { display:flex; flex-direction:column; gap:7px; }
+.mockup-svc {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 12px; border-radius:var(--r-sm);
+  font-size:.78rem; font-weight:500;
+  cursor:pointer; transition:filter .2s;
+  text-decoration:none;
+}
+.mockup-svc:hover { filter:brightness(.95); }
+.ms-ocean  { background:var(--ocean); color:#fff; }
+.ms-yellow { background:var(--yellow); color:var(--ocean); }
+.ms-peach  { background:var(--peach); color:var(--ocean); }
+.mockup-svc-price { font-size:.7rem; opacity:.7; }
+
+/* ═══════════════════════════════════════════════
+   FINAL CTA
+═══════════════════════════════════════════════ */
+.cta-sec {
+  padding:80px 0;
+  background:var(--ocean);
+  position:relative; overflow:hidden;
+}
+@media(min-width:768px){ .cta-sec{ padding:100px 0; } }
+.cta-orb {
+  position:absolute; border-radius:50%; pointer-events:none;
+}
+.co1 {
+  width:min(580px,140vw); height:min(580px,140vw);
+  background:radial-gradient(circle,rgba(4,169,167,.12) 0%,transparent 65%);
+  top:-25%; right:-15%;
+}
+.co2 {
+  width:min(380px,90vw); height:min(380px,90vw);
+  background:radial-gradient(circle,rgba(255,205,173,.1) 0%,transparent 65%);
+  bottom:-15%; left:-10%;
+}
+.cta-inner { text-align:center; position:relative; z-index:2; }
+.cta-h2 {
+  font-family:'Nanum Myeongjo',serif;
+  font-size:clamp(2.1rem,7vw,3.7rem);
+  font-weight:400; line-height:1.1;
+  letter-spacing:-.03em; color:#fff;
+  margin:18px 0 14px;
+}
+.cta-h2 em { color:var(--yellow); font-style:italic; }
+.cta-p {
+  font-size:1rem; color:rgba(255,255,255,.68);
+  max-width:460px; margin:0 auto 36px; line-height:1.75;
+}
+.cta-actions {
+  display:flex; align-items:center; justify-content:center;
+  flex-wrap:wrap; gap:12px; margin-bottom:44px;
+}
+.cta-trust { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:24px; }
+.ct-item { display:flex; align-items:center; gap:7px; font-size:.82rem; color:rgba(255,255,255,.58); }
+.ct-item i { font-size:15px; color:var(--yellow); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE CLEANUP
+═══════════════════════════════════════════════ */
+@media(max-width:767px){
+  .plans-scroll::-webkit-scrollbar,
+  .svc-scroll::-webkit-scrollbar { display:none; }
+}
 </style>
 @endpush
 
 @section('content')
 
-{{-- HERO SECTION --}}
-<section class="relative overflow-hidden bg-gradient-to-br from-white via-[#FFF8F2] to-[#F0F4F8] pt-10 pb-24 lg:pt-26 lg:pb-40">
-  <!-- Decorative circles -->
-  <div class="absolute w-96 h-96 bg-secondary/10 rounded-full top-0 right-0 translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-  <div class="absolute w-80 h-80 bg-accent2/10 rounded-full bottom-0 left-0 -translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
-  
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-      
-      {{-- Text Content --}}
-      <div class="lg:w-1/2 space-y-8 animate-fade-in">
-        <!-- Trust badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-primary/10">
-          <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-          </svg>
-          <span class="text-sm font-semibold text-primary">Trusted by 500+ Nigerian Families</span>
-        </div>
+{{-- ── NAV ─────────────────────────────────────────── --}}
+<!-- <nav class="nav-wrap" id="mainNav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="CavalCare home">
+      <img src="/images/caval-care-logo.png" alt="CavalCare logo" class="nav-logo-img">
+    </a>
 
-        <!-- Heading -->
-        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-heading font-bold leading-tight">
-          <span class="gradient-text block mb-2">Compassionate Care,</span>
-          <span class="text-primary block">Dignified Living</span>
-        </h1>
+    <ul class="nav-links" id="navLinks" role="list">
+      <li><a href="{{ route('services') }}">Services</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#care-plans">Plans</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#care-plans" class="nav-cta">Get Started</a></li>
+    </ul>
 
-        <p class="text-xl sm:text-2xl text-gray-600 leading-relaxed max-w-xl">
-          Professional in-home care that brings warmth, dignity, and peace of mind to Nigerian families. From elderly care to post-surgery support.
-        </p>
+    <button class="nav-mob" id="mobBtn" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 
-        <!-- Benefits -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-          <div class="flex items-start gap-3">
-            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-accent2/20 flex items-center justify-center mt-1">
-              <svg class="w-4 h-4 text-accent2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-            </div>
+  <div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Mobile navigation">
+    <a href="{{ route('services') }}">Services <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
+    <a href="#how-it-works">How It Works <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
+    <a href="#care-plans">Care Plans <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
+    <a href="#contact">Contact <i class="bi bi-arrow-right" style="font-size:.8rem;opacity:.5;"></i></a>
+    <a href="#care-plans" class="nav-drawer-cta">Get Started Here →</a>
+  </div>
+</nav> -->
+
+
+{{-- ── HERO ─────────────────────────────────────────── --}}
+<section class="hero" aria-label="Hero">
+  <div class="glow glow-1" aria-hidden="true"></div>
+  <div class="glow glow-2" aria-hidden="true"></div>
+  <div class="glow glow-3" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-grid">
+
+        {{-- TEXT COLUMN --}}
+        <div>
+          <div class="hero-eyebrow">
+            <span class="pill pill-ocean">
+              <span class="pill-dot"></span>
+              Trusted by Nigerian Families
+            </span>
+          </div>
+
+          <h1 class="hero-h1">
+          For the family member who can’t
+            <em>always</em>
+            be there for their loved one
+          </h1>
+
+          <p class="hero-p">
+          Caval Care sends Verified licensed nurses to your loved one's home 
+          for elderly care, post-surgery recovery, post-natal support, 
+          and we would keep you updated.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#care-plans" class="btn btn-primary">
+              Get Started Here
+              <i class="bi bi-arrow-right"></i>
+            </a>
+            <a href="#how-it-works" class="btn btn-outline">
+              <i class="bi bi-play-circle"></i>
+              How It Works
+            </a>
+          </div>
+
+          <div class="hero-stats">
             <div>
-              <p class="font-medium text-gray-800">Verified Caregivers</p>
-              <p class="text-sm text-gray-600">Background-checked professionals</p>
+              <div class="stat-num" data-count="15" data-suffix="+">15+</div>
+              <div class="stat-lbl">Years Experience</div>
             </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-accent2/20 flex items-center justify-center mt-1">
-              <svg class="w-4 h-4 text-accent2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-            </div>
+            <div class="stat-div" aria-hidden="true"></div>
             <div>
-              <p class="font-medium text-gray-800">Flexible Plans</p>
-              <p class="text-sm text-gray-600">Hourly to full-time care</p>
+              <div class="stat-num" data-count="500" data-suffix="+">500+</div>
+              <div class="stat-lbl">Families Served</div>
+            </div>
+            <div class="stat-div" aria-hidden="true"></div>
+            <div>
+              <div class="stat-num" data-count="98" data-suffix="%">98%</div>
+              <div class="stat-lbl">Satisfaction</div>
             </div>
           </div>
         </div>
 
-        <!-- CTA Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 pt-6">
-          <a href="#care-plans" class="group inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold rounded-2xl text-white bg-primary shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <span>Schedule Care</span>
-            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-            </svg>
-          </a>
-          <a href="#care-types" class="inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold rounded-2xl text-primary bg-white border-2 border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span>Watch How It Works</span>
-          </a>
-        </div>
-
-        <!-- Stats -->
-        <div class="flex items-center gap-8 pt-8 border-t border-gray-200">
-          <div class="text-center">
-            <div class="text-3xl font-bold text-primary">15+</div>
-            <div class="text-sm text-gray-600 mt-1">Years Experience</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold text-primary">500+</div>
-            <div class="text-sm text-gray-600 mt-1">Families Served</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold text-primary">98%</div>
-            <div class="text-sm text-gray-600 mt-1">Satisfaction</div>
-          </div>
-        </div>
-      </div>
-
-      {{-- Hero Image --}}
-      <div class="lg:w-1/2 relative animate-fade-in" style="animation-delay: 0.2s;">
-        <div class="relative rounded-3xl overflow-hidden shadow-2xl animate-float">
-          <img src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=800&h=900&fit=crop" 
-               alt="Handholding care" 
-               class="w-full h-[500px] lg:h-[600px] object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
-          
-          <!-- Floating testimonial -->
-          <div class="absolute bottom-8 left-8 right-8 bg-white/70 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/30">
-            <div class="flex items-center gap-4">
-              <div class="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-white font-bold text-xl flex-shrink-0">A</div>
-              <div class="flex-1">
-                <div class="flex items-center gap-1 mb-2">
-                  @for($i = 0; $i < 5; $i++)
-                  <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                  @endfor
-                </div>
-                <p class="text-sm text-gray-700 italic">"Exceptional care. True peace of mind."</p>
-                <p class="text-xs text-gray-600 mt-2 font-medium">— Amina T., Lagos</p>
+        {{-- VISUAL COLUMN --}}
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-collage">
+            <div class="hero-photo hp-main">
+              <img src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=600&h=880&fit=crop"
+                   alt="Nurse with elderly patient" loading="eager">
+              <div class="hero-photo-overlay"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="hero-photo hp-top">
+                <img src="https://images.unsplash.com/photo-1576765607924-3f7b8410a787?w=400&h=400&fit=crop&crop=face"
+                     alt="Happy family" loading="eager">
+              </div>
+              <div class="hero-photo hp-bot">
+                <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=460&fit=crop"
+                     alt="Caregiver at home" loading="eager">
+                <div class="hero-photo-overlay"></div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- 24/7 Badge -->
-        <div class="absolute -top-6 -right-6 w-32 h-32 bg-accent1 rounded-full flex items-center justify-center text-white shadow-2xl animate-float" style="animation-delay: 0.5s;">
-          <div class="text-center">
-            <div class="text-2xl font-bold">24/7</div>
-            <div class="text-xs">Support</div>
+          {{-- floating cards --}}
+          <div class="fc fc-tl">
+            <div class="fc-lbl">Last Visit Report</div>
+            <div class="fc-val">Stable ✓</div>
+            <div class="fc-hint">All vitals normal · Meds taken</div>
+            <div class="fc-dots">
+              <span style="background:var(--yellow)"></span>
+              <span style="background:var(--peach)"></span>
+              <span style="background:var(--indigo);opacity:.4"></span>
+            </div>
+          </div>
+
+          <div class="fc fc-br">
+            <div class="fc-lbl">Next Scheduled Visit</div>
+            <div class="fc-row">
+              <div class="fc-av" style="background:var(--cream);color:var(--ocean);">NA</div>
+              <div class="fc-rtext">
+                <p>Thursday · 10:00 AM</p>
+                <span>Nurse Adaeze · Post-surgery</span>
+              </div>
+            </div>
+            <div class="fc-btns">
+              <a href="#" class="fc-btn dk">View report</a>
+              <a href="#" class="fc-btn lt">Contact nurse</a>
+            </div>
+          </div>
+
+          <div class="badge-247" aria-hidden="true">
+            24/7
+            <small>Support</small>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </section>
 
-{{-- CARE SERVICES --}}
-<section id="care-types" class="py-20 lg:py-32 bg-white relative overflow-hidden">
-  <div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-gray-50 to-transparent"></div>
-  
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 lg:mb-24 reveal">
-      <span class="inline-block px-4 py-2 rounded-full bg-accent2/10 text-primary font-semibold text-sm mb-4">OUR SERVICES</span>
-      <h2 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-primary mb-6">
-        Care Services Tailored<br/>to Your Loved Ones
-      </h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-        Professional expertise with genuine compassion, creating care that feels like family.
-      </p>
+
+{{-- ── MARQUEE TRUST STRIP ─────────────────────────── --}}
+<div class="marquee-sec" role="marquee" aria-label="Trust signals">
+  <div class="marquee-track">
+    @php
+    $marqueeItems = [
+      ['icon'=>'bi-patch-check','text'=>'Licensed & Insured Nurses'],
+      ['icon'=>'bi-shield-check','text'=>'Background Verified'],
+      ['icon'=>'bi-bell','text'=>'Real-Time Visit Reports'],
+      ['icon'=>'bi-clock','text'=>'24/7 Care Coordinators'],
+      ['icon'=>'bi-heart','text'=>'500+ Families Served'],
+      ['icon'=>'bi-star','text'=>'98% Satisfaction Rate'],
+      ['icon'=>'bi-telephone','text'=>'Always Reachable'],
+      ['icon'=>'bi-patch-check','text'=>'Licensed & Insured Nurses'],
+      ['icon'=>'bi-shield-check','text'=>'Background Verified'],
+      ['icon'=>'bi-bell','text'=>'Real-Time Visit Reports'],
+      ['icon'=>'bi-clock','text'=>'24/7 Care Coordinators'],
+      ['icon'=>'bi-heart','text'=>'500+ Families Served'],
+      ['icon'=>'bi-star','text'=>'98% Satisfaction Rate'],
+      ['icon'=>'bi-telephone','text'=>'Always Reachable'],
+    ];
+    @endphp
+    @foreach($marqueeItems as $item)
+    <div class="marquee-item">
+      <i class="bi {{ $item['icon'] }}"></i>
+      <strong>{{ $item['text'] }}</strong>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-    @foreach ($careTypes as $index => $careType)
-        @php
-            $meta = $careType->meta ?? [];
-
-            $icon = $meta['icon'] ?? '💙';
-            $description = $meta['description'] ?? 'No description available';
-
-            // Optional: rotating gradients
-            $gradients = [
-                'from-blue-50 to-blue-100/50',
-                'from-purple-50 to-purple-100/50',
-                'from-green-50 to-green-100/50',
-                'from-pink-50 to-pink-100/50',
-                'from-yellow-50 to-yellow-100/50',
-                'from-orange-50 to-orange-100/50',
-            ];
-
-            $gradient = $gradients[$index % count($gradients)];
-        @endphp
-
-        <div
-            class="reveal group bg-gradient-to-br {{ $gradient }} rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-3"
-            style="animation-delay: {{ $index * 0.1 }}s;"
-        >
-            <div class="w-20 h-20 rounded-2xl bg-white shadow-lg flex items-center justify-center text-4xl mb-6">
-                {{ $icon }}
-            </div>
-
-            <h3 class="text-2xl font-heading font-bold text-primary mb-4 group-hover:text-accent2 transition-colors">
-                {{ $careType->name }}
-            </h3>
-
-            <p class="text-gray-700 leading-relaxed mb-6">
-                {{ $description }}
-            </p>
-
-            <a href="#"
-               class="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
-                <span>Learn More</span>
-                <svg class="w-5 h-5 transition-transform group-hover:translate-x-1"
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                </svg>
-            </a>
-        </div>
     @endforeach
-
+  </div>
 </div>
 
-  </div>
-</section>
 
-{{-- HOW IT WORKS --}}
-<section id="how-it-works" class="py-20 lg:py-32 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center mb-16 lg:mb-24 reveal">
-      <span class="inline-block px-4 py-2 rounded-full bg-secondary/10 text-primary font-semibold text-sm mb-4">SIMPLE PROCESS</span>
-      <h2 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-primary mb-6">
-        Getting Started is Simple
-      </h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        From consultation to consistent care, we're with you every step.
-      </p>
-    </div>
-
-    <div class="relative">
-      <div class="hidden lg:block absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-secondary via-accent1 to-accent2 transform -translate-x-1/2"></div>
-
-      @php
-      $steps = [
-        ['num'=>1, 'title'=>'Schedule Consultation', 'desc'=>'Book a free consultation to discuss your specific care needs and preferences.', 'icon'=>'📞'],
-        ['num'=>2, 'title'=>'Create Care Plan', 'desc'=>'We develop a personalized care plan tailored to your loved one\'s needs.', 'icon'=>'📋'],
-        ['num'=>3, 'title'=>'Meet Your Caregiver', 'desc'=>'Connect with your verified, background-checked caregiver.', 'icon'=>'🤝'],
-        ['num'=>4, 'title'=>'Begin Quality Care', 'desc'=>'Enjoy peace of mind with consistent, professional care and 24/7 support.', 'icon'=>'💝'],
-      ];
-      @endphp
-
-      <div class="space-y-12 lg:space-y-24">
-        @foreach($steps as $index => $step)
-        <div class="reveal relative" style="animation-delay: {{ $index * 0.15 }}s;">
-          <div class="flex flex-col lg:flex-row items-center gap-8 {{ $index % 2 == 0 ? 'lg:flex-row' : 'lg:flex-row-reverse' }}">
-            <div class="lg:w-5/12 {{ $index % 2 == 0 ? 'lg:text-right' : 'lg:text-left' }}">
-              <div class="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold text-sm mb-3">
-                Step {{ $step['num'] }}
-              </div>
-              <h3 class="text-3xl font-heading font-bold text-primary mb-4">{{ $step['title'] }}</h3>
-              <p class="text-lg text-gray-600 leading-relaxed">{{ $step['desc'] }}</p>
-            </div>
-
-            <div class="lg:w-2/12 flex justify-center">
-              <div class="w-24 h-24 rounded-full bg-gradient-to-br from-secondary to-accent1 shadow-2xl flex items-center justify-center text-4xl relative z-10 hover:shadow-3xl transition-shadow">
-                {{ $step['icon'] }}
-              </div>
-            </div>
-
-            <div class="lg:w-5/12">
-              <div class="rounded-2xl overflow-hidden shadow-xl bg-gradient-to-br from-white to-gray-50 p-8 h-48 flex items-center justify-center">
-                <p class="text-6xl opacity-20">{{ $step['icon'] }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        @endforeach
+{{-- ── TRUST PILLARS ───────────────────────────────── --}}
+<section class="trust-sec" aria-label="Why CavalCare">
+  <div class="wrap">
+    <div class="trust-grid">
+      <div class="trust-card reveal">
+        <div class="trust-ico"><i class="bi bi-patch-check"></i></div>
+        <div class="trust-t">Verified Credentials</div>
+        <div class="trust-d">All nurses are licenses and verified to ensure you and your loved one feels secure.</div>
+      </div>
+      <div class="trust-card reveal" style="transition-delay:.1s">
+        <div class="trust-ico"><i class="bi bi-bell"></i></div>
+        <div class="trust-t">Real-Time Updates</div>
+        <div class="trust-d">A detailed care report would be sent to you at every visit.</div>
+      </div>
+      <div class="trust-card reveal" style="transition-delay:.2s">
+        <div class="trust-ico"><i class="bi bi-heart"></i></div>
+        <div class="trust-t">24/7 Support</div>
+        <div class="trust-d">No matter your concern, there is someone that would there to talk to you.</div>
       </div>
     </div>
   </div>
 </section>
 
-{{-- CARE PLANS --}}
-<section id="care-plans" class="py-20 lg:py-32 bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    {{-- Section Header --}}
-    <div class="text-center mb-16 lg:mb-24 reveal">
-      <span class="inline-block px-4 py-2 rounded-full bg-accent1/10 text-primary font-semibold text-sm mb-4">
-        FLEXIBLE PRICING
-      </span>
-      <h2 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-primary mb-6">
-        Care Plans That Fit<br/>Your Needs
-      </h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        From occasional check-ins to continuous care, each plan is structured to meet
-        your loved one’s needs — without uncertainty or compromise.
+{{-- ── SERVICES ─────────────────────────────────────── --}}
+<section id="care-types" class="svc-sec" aria-label="Care services">
+  <div class="wrap">
+
+    <div class="svc-header reveal">
+      <div>
+        <span class="pill pill-indigo sec-eyebrow">Our Services</span>
+        <h2 class="sec-title">
+          Care services <em style="font-style:italic;color:var(--indigo)">tailored</em><br>
+          to your loved ones
+        </h2>
+      </div>
+      <p class="sec-sub" style="margin-top:0;max-width:320px;">
+      We send trained, licensed and thoroughly verified nurses that is specific to what your loved one needs.
       </p>
     </div>
 
-    {{-- Plans --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    @php $svcColors = ['c-ocean','c-cream','c-peach','c-indigo','c-yellow','c-soft'];
+    $svcIcons = ['bi-heart-pulse','bi-people','bi-hospital','bi-activity','bi-stars','bi-house-heart'];
+    @endphp
 
+    <div class="svc-scroll" id="svcScroll">
+      @foreach ($careTypes as $index => $careType)
+        @php
+          $meta = $careType->meta ?? [];
+          $icon = $meta['bi_icon'] ?? ($svcIcons[$index % count($svcIcons)]);
+          $description = $meta['description'] ?? 'Professional care tailored to your family\'s needs.';
+          $col = $svcColors[$index % count($svcColors)];
+        @endphp
+        <a href="#" class="svc-card {{ $col }} reveal" style="transition-delay:{{ $index * 0.07 }}s;" aria-label="{{ $careType->name }}">
+          <div class="svc-icon-wrap">
+            <i class="bi {{ $icon }}"></i>
+          </div>
+          <h3 class="svc-name">{{ $careType->name }}</h3>
+          <p class="svc-desc">{{ $description }}</p>
+          <span class="svc-link">
+            Learn More
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </a>
+      @endforeach
+    </div>
+
+    <div class="svc-dots" id="svcDots" aria-hidden="true">
+      @foreach ($careTypes as $index => $careType)
+        <div class="svc-dot{{ $index === 0 ? ' active' : '' }}" data-index="{{ $index }}"></div>
+      @endforeach
+    </div>
+
+  </div>
+</section>
+
+
+{{-- ── HOW IT WORKS ─────────────────────────────────── --}}
+<section id="how-it-works" class="hiw-sec" aria-label="How it works">
+  <div class="wrap">
+    <div class="hiw-header reveal">
+      <span class="pill pill-yellow sec-eyebrow">Simple Process</span>
+      <h2 class="sec-title">Getting started is simple</h2>
+      <p class="sec-sub" style="margin-left:auto;margin-right:auto;text-align:center;max-width:420px;">
+      You can book a Care plan in 4 simple steps
+      </p>
+    </div>
+
+    @php
+    $steps = [
+      ['n'=>'01','t'=>'Choose a Care plan','d'=>'We have different service plans, you can read through them and pick the one that matches what your loved one is going through right now.','i'=>'bi-telephone','bg'=>'h-white'],
+      ['n'=>'02','t'=>'Fill the form','d'=>'This is where you give us the details we need to match the right nurse. It would take just a few minutes.','i'=>'bi-clipboard-check','bg'=>'h-ocean'],
+      ['n'=>'03','t'=>'Meet Your Caregiver','d'=>'Once your form is submitted, you will receive a summary of your selected care plan and the cost. Review it, then proceed to payment.','i'=>'bi-people','bg'=>'h-yellow'],
+      ['n'=>'04','t'=>'Begin Quality Care','d'=>'Once your payment is confirmed, our team gets to work. We review your loved one\'s details and match them with a licensed, verified nurse who fits their specific needs within 48 hours.','i'=>'bi-heart','bg'=>'h-peach'],
+    ];
+    @endphp
+
+    <div class="hiw-grid">
+      @foreach($steps as $idx => $s)
+      <div class="hiw-card {{ $s['bg'] }} reveal" style="transition-delay:{{ $idx * 0.09 }}s;">
+        <div class="hiw-step-num" aria-hidden="true">{{ $s['n'] }}</div>
+        <div class="hiw-ico" aria-hidden="true">
+          <i class="bi {{ $s['i'] }}"></i>
+        </div>
+        <h3 class="hiw-title">{{ $s['t'] }}</h3>
+        <p class="hiw-desc">{{ $s['d'] }}</p>
+      </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+
+
+{{-- ── CARE PLANS ───────────────────────────────────── --}}
+<section id="care-plans" class="plans-sec" aria-label="Care plans">
+  <div class="wrap">
+
+    <div class="reveal">
+      <span class="pill pill-peach sec-eyebrow">Flexible Pricing</span>
+      <h2 class="sec-title">
+      There is specific Care plan that works for<br>
+        <em style="font-style:italic;color:var(--indigo)">you</em>
+      </h2>
+      <p class="sec-sub">
+      We have daily plans, weekend plans, flexible and monthly plans depending on you think your loved one needs, 
+      so you can feel at peace
+      </p>
+    </div>
+
+    <div class="plans-scroll">
       @foreach($carePlans as $index => $plan)
         @php
           $meta = $plan->meta ?? [];
           $recommended = $meta['recommended_for'] ?? [];
-          $isPopular = ($index === 1);
+          $pop = ($index === 1);
         @endphp
-
-        <div
-          class="relative reveal"
-          style="animation-delay: {{ $index * 0.1 }}s;"
-        >
-          {{-- Popular badge --}}
-          @if($isPopular)
-            <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-              <span class="px-4 py-1 rounded-full bg-primary text-white text-xs font-semibold tracking-wide shadow-lg">
-                MOST POPULAR
-              </span>
-            </div>
+        <div class="plan-card {{ $pop ? 'plan-featured' : '' }} reveal"
+             style="transition-delay:{{ $index * 0.08 }}s;" role="article">
+          @if($pop)
+            <div class="plan-badge" aria-label="Most popular plan">Most Popular</div>
           @endif
-
-          {{-- Card --}}
-          <div
-            class="
-              group h-full rounded-3xl bg-white p-8
-              border border-primary/10
-              shadow-[0_20px_40px_rgba(0,0,0,0.06)]
-              transition-all duration-500 ease-out
-              hover:-translate-y-2
-              hover:shadow-[0_30px_70px_rgba(0,0,0,0.12)]
-              {{ $isPopular ? 'ring-2 ring-primary/80' : '' }}
-              overflow-hidden
-              flex flex-col
-            "
-          >
-
-            {{-- Name --}}
-            <h3 class="text-2xl font-heading font-bold text-primary mb-2">
-              {{ $plan->name }}
-            </h3>
-
-            {{-- Duration --}}
-            <p class="text-sm text-gray-600 mb-6">
-              {{ $meta['daily_hours'] ?? 'Flexible hours' }} hrs/day ·
+          <div>
+            <div class="plan-name">{{ $plan->name }}</div>
+            <div class="plan-meta">
+              {{ $meta['daily_hours'] ?? 'Flexible' }} hrs/day ·
               {{ $meta['duration_days'] ?? 'Ongoing' }} days
-            </p>
-
-            {{-- Price --}}
-            <!-- <div class="mb-8">
-              <div class="flex items-baseline gap-1">
-                <span class="text-lg text-gray-500 font-medium">₦</span>
-                <span class="text-3xl lg:text-4xl font-semibold text-primary tracking-tight">
-                  {{ number_format($plan->price) }}
-                </span>
-              </div>
-              <p class="text-sm text-gray-500 mt-2">
-                {{ data_get($meta, 'daily_hours')
-                    ? data_get($meta, 'daily_hours').' hrs/day'
-                    : data_get($meta, 'duration_days').' day plan' }}
-              </p>
-            </div> -->
-
-            {{-- Features --}}
-            <ul class="space-y-4 mb-10 flex-grow">
-              <li class="flex gap-3">
-                <svg class="w-5 h-5 text-accent2 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16z" clip-rule="evenodd"/>
-                </svg>
-                <span class="text-gray-700">
-                  Up to {{ $meta['max_caregivers'] ?? 1 }} dedicated caregiver(s)
-                </span>
-              </li>
-
-              @foreach($recommended as $careTypeId)
-                <li class="flex gap-3">
-                  <svg class="w-5 h-5 text-accent2 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16z" clip-rule="evenodd"/>
-                  </svg>
-                  <span class="text-gray-700">
-                    {{ \App\Models\CareType::find($careTypeId)?->name }}
-                  </span>
-                </li>
-              @endforeach
-            </ul>
-
-            {{-- CTA --}}
-            <a
-              href="{{ url('/book/' . $plan->id) }}"
-              class="
-                mt-auto block text-center px-6 py-4 rounded-2xl font-semibold
-                transition-all duration-300
-                {{ $isPopular
-                  ? 'bg-primary text-white hover:shadow-xl'
-                  : 'bg-white text-primary border border-primary/30 hover:border-primary'
-                }}
-                group-hover:scale-[1.02]
-              "
-            >
-              {{ $isPopular ? 'Get Started' : 'Choose Plan' }}
-            </a>
+            </div>
           </div>
+          <ul class="plan-feats" aria-label="Plan features">
+            <li class="plan-feat">
+              <span class="plan-check" aria-hidden="true">
+                <i class="bi bi-check"></i>
+              </span>
+              Up to {{ $meta['max_caregivers'] ?? 1 }} dedicated caregiver(s)
+            </li>
+            @foreach($recommended as $ctId)
+            <li class="plan-feat">
+              <span class="plan-check" aria-hidden="true">
+                <i class="bi bi-check"></i>
+              </span>
+              {{ \App\Models\CareType::find($ctId)?->name }}
+            </li>
+            @endforeach
+          </ul>
+          <a href="{{ url('/book/' . $plan->id) }}"
+             class="plan-cta {{ $pop ? 'plan-cta-featured' : 'plan-cta-default' }}">
+            {{ $pop ? 'Get Started' : 'Choose Plan' }}
+          </a>
         </div>
       @endforeach
-
     </div>
 
-    {{-- Footer note --}}
-    <div class="mt-16 text-center reveal">
-      <p class="text-gray-600">
+    <div class="reveal" style="text-align:center;margin-top:36px;transition-delay:.3s;">
+      <p style="color:var(--muted);font-size:.92rem;">
         Need something more tailored?
-        <a href="#contact" class="text-primary font-semibold hover:underline">
+        <a href="#contact"
+           style="color:var(--ocean);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--yellow);padding-bottom:1px;transition:border-color .2s;"
+           onmouseover="this.style.borderColor='var(--indigo)'"
+           onmouseout="this.style.borderColor='var(--yellow)'">
           Speak with our care team →
         </a>
       </p>
     </div>
-
   </div>
 </section>
 
 
-{{-- TESTIMONIALS --}}
-<section class="py-20 lg:py-32 bg-gradient-to-br from-gray-50 via-white to-gray-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16 reveal">
-      <span class="inline-block px-4 py-2 rounded-full bg-secondary/10 text-primary font-semibold text-sm mb-4">TESTIMONIALS</span>
-      <h2 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-primary mb-6">
-        Trusted by Families<br/>Across Nigeria
-      </h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        Real stories from families who found peace of mind.
+{{-- ── APP SNAPSHOT (Huru-inspired mockup) ─────────── --}}
+<section class="snapshot-sec" aria-label="Platform overview">
+  <div class="wrap">
+    <div class="snapshot-grid">
+
+      <div class="snapshot-text reveal">
+        <span class="pill pill-ocean sec-eyebrow">The CavalCare Experience</span>
+        <h2 class="sec-title">
+        We don’t compromise —<br>
+          <em style="font-style:italic;color:var(--indigo)">on the safety of your loved ones.</em>
+        </h2>
+        <p class="sec-sub">
+        We have licensed verified nurses and you will be updated within the care hours.
+        </p>
+
+        <ul class="snapshot-checklist">
+          <li class="sc-item">
+            <span class="sc-check"><i class="bi bi-check"></i></span>
+            You would be sent updates about your loved one directly to your phone
+          </li>
+          <li class="sc-item">
+            <span class="sc-check"><i class="bi bi-check"></i></span>
+            You can message your nurse directly during the visit hours
+          </li>
+          <li class="sc-item">
+            <span class="sc-check"><i class="bi bi-check"></i></span>
+            You can adjust your care plans when necessary
+          </li>
+        </ul>
+
+        <div style="margin-top:28px;">
+          <a href="#care-plans" class="btn btn-primary">
+            Get Started Here
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="reveal" style="transition-delay:.15s;">
+        <div class="mockup-card">
+          <div class="mockup-top">
+            <div class="mockup-logo">
+              Caval<span>Care</span>
+            </div>
+            <span class="mockup-badge">Visit Completed ✓</span>
+          </div>
+
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px;">Post-Visit Care Report</div>
+
+          <div class="mockup-metrics">
+            <div class="mockup-metric">
+              <div class="m-val">2.5hrs</div>
+              <div class="m-lbl">Visit Duration</div>
+            </div>
+            <div class="mockup-metric">
+              <div class="m-val">Stable</div>
+              <div class="m-lbl">Vitals</div>
+            </div>
+            <div class="mockup-metric">
+              <div class="m-val">100%</div>
+              <div class="m-lbl">Meds Taken</div>
+            </div>
+          </div>
+
+          <div class="mockup-next">
+            <div class="mn-label">Next Scheduled Visit</div>
+            <div class="mn-time">Thursday · 10:00 AM</div>
+            <div class="mn-nurse">Nurse Adaeze · Post-surgery care</div>
+          </div>
+
+          <div style="font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Our Services</div>
+          <div class="mockup-services">
+            <a href="#care-types" class="mockup-svc ms-ocean">
+              <span>Elderly Care</span>
+              <!-- <span class="mockup-svc-price">From ₦65,000</span> -->
+            </a>
+            <a href="#care-types" class="mockup-svc ms-yellow">
+              <span>Post-Natal Care</span>
+              <!-- <span class="mockup-svc-price">From ₦60,000</span> -->
+            </a>
+            <a href="#care-types" class="mockup-svc ms-peach">
+              <span>Post-Surgery Care</span>
+              <!-- <span class="mockup-svc-price">From ₦65,000</span> -->
+            </a>
+          </div>
+
+          <a href="#care-plans" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;font-size:.86rem;padding:12px;">
+            Book a Nurse →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+{{-- ── FAQ ──────────────────────────────────────────── --}}
+<section class="faq-sec" aria-label="Frequently Asked Questions" id="faq">
+  <div class="wrap">
+
+    <div class="faq-header reveal">
+      <div>
+        <span class="pill pill-ocean sec-eyebrow">FAQ</span>
+        <h2 class="sec-title">Questions families<br>ask us most</h2>
+      </div>
+      <p style="color:var(--muted);max-width:280px;font-size:.92rem;line-height:1.7;">
+        Everything you need to know before getting started with CavalCare.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      @php
-      $testimonials = [
-        ['name' => 'Amina Taiwo', 'role' => 'Daughter', 'text' => 'The caregiver assigned to my mother has been absolutely wonderful. She treats her with such dignity and warmth.', 'rating' => 5, 'image' => 'A'],
-        ['name' => 'Chidi Okonkwo', 'role' => 'Son', 'text' => 'After my father\'s surgery, CavalCare\'s team was responsive, professional, and genuinely caring. Dad is recovering beautifully.', 'rating' => 5, 'image' => 'C'],
-        ['name' => 'Folake Adebayo', 'role' => 'Wife', 'text' => 'My husband has special needs. CavalCare matched us with an amazing caregiver who understands his condition perfectly.', 'rating' => 5, 'image' => 'F'],
-      ];
-      @endphp
+    @php
+    $faqs = [
+      [
+        'q' => 'How are your nurses verified?',
+        'a' => 'Every nurse on the CavalCare platform goes through a rigorous vetting process that includes verification of their nursing licence with the Nursing and Midwifery Council of Nigeria (NMCN), a criminal background check, reference checks from previous employers, and an in-person interview with our care team. Only nurses who pass all stages are approved to take assignments.',
+      ],
+      [
+        'q' => 'How quickly can you assign a nurse to my loved one?',
+        'a' => 'Once your booking form is submitted and payment is confirmed, our team begins matching immediately. In most cases we assign a qualified nurse within 48 hours. For urgent situations, please call us directly and we will do our best to expedite the process.',
+      ],
+      [
+        'q' => 'How will I know what happens during each visit?',
+        'a' => 'After every visit you will receive a detailed care report sent directly to your phone. The report covers vitals, medications administered, any observations the nurse has noted, and the scheduled time of the next visit. You can also message your assigned nurse directly during active visit hours.',
+      ],
+      [
+        'q' => 'Can I change or cancel my care plan?',
+        'a' => 'Yes. You can upgrade, downgrade, or pause your care plan at any time by contacting our care coordinators. Cancellations made at least 24 hours before the next scheduled visit are fully refunded for unused days. We understand that care needs change, and we are here to be flexible with you.',
+      ],
+      [
+        'q' => 'What types of care do your nurses provide?',
+        'a' => 'Our nurses are trained to handle a range of in-home care needs including elderly care, post-surgery recovery, post-natal support, and chronic illness management. Each nurse is matched to your loved one based on their specific clinical background and your family\'s particular requirements.',
+      ],
+      [
+        'q' => 'What happens if I am not happy with my assigned nurse?',
+        'a' => 'Your satisfaction matters deeply to us. If for any reason the assigned nurse is not the right fit, simply contact our support team and we will arrange a replacement as quickly as possible — no questions asked. Our goal is to give both you and your loved one full peace of mind.',
+      ],
+      [
+        'q' => 'Are your services available outside Lagos?',
+        'a' => 'We currently operate primarily in Lagos but are actively expanding to Abuja, Port Harcourt, and other major cities. If you are outside our current coverage area, reach out to us and we will let you know our timeline for your location.',
+      ],
+    ];
+    @endphp
 
-      @foreach($testimonials as $index => $testimonial)
-      <div class="reveal bg-gradient-to-br from-white to-[#FFF8F2] border-l-4 border-secondary rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300" style="animation-delay: {{ $index * 0.15 }}s;">
-        <div class="flex items-center gap-1 mb-6">
-          @for($i = 0; $i < $testimonial['rating']; $i++)
-          <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-          </svg>
-          @endfor
-        </div>
-
-        <p class="text-gray-700 leading-relaxed mb-6 italic text-lg">
-          "{{ $testimonial['text'] }}"
-        </p>
-
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent2 flex items-center justify-center text-white font-bold text-xl shadow-lg">
-            {{ $testimonial['image'] }}
-          </div>
-          <div>
-            <p class="font-semibold text-primary text-lg">{{ $testimonial['name'] }}</p>
-            <p class="text-sm text-gray-600">{{ $testimonial['role'] }}</p>
+    <div class="faq-list reveal" style="transition-delay:.1s;" role="list">
+      @foreach($faqs as $i => $faq)
+      <div class="faq-item" role="listitem">
+        <button class="faq-btn"
+                id="faq-btn-{{ $i }}"
+                aria-expanded="false"
+                aria-controls="faq-answer-{{ $i }}">
+          {{ $faq['q'] }}
+          <span class="faq-btn-icon" aria-hidden="true">
+            <i class="bi bi-plus"></i>
+          </span>
+        </button>
+        <div class="faq-answer" id="faq-answer-{{ $i }}" role="region" aria-labelledby="faq-btn-{{ $i }}">
+          <div class="faq-answer-inner">
+            <div class="faq-answer-body">{{ $faq['a'] }}</div>
           </div>
         </div>
       </div>
       @endforeach
     </div>
+
   </div>
 </section>
 
-{{-- FINAL CTA --}}
-<section id="contact" class="py-20 lg:py-32 bg-gradient-to-br from-primary to-accent2 relative overflow-hidden">
-  <!-- Decorative elements -->
-  <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-  <div class="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center reveal">
-    <h2 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-white mb-6">
-      Ready to Experience<br/>Compassionate Care?
-    </h2>
-    <p class="text-xl sm:text-2xl text-white/90 mb-12 max-w-3xl mx-auto">
-      Join the families who trust CavalCare for professional, dignified in-home care.
-    </p>
-<div class="flex flex-col sm:flex-row gap-6 justify-center">
-  <a href="#" class="inline-flex items-center justify-center gap-3 px-10 py-5 text-lg font-bold rounded-2xl text-primary bg-white shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
-    <span>Schedule Free Consultation</span>
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-    </svg>
-  </a>
-  <a href="tel:+2348000000000" class="inline-flex items-center justify-center gap-3 px-10 py-5 text-lg font-bold rounded-2xl text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20 transition-all duration-300">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-    </svg>
-    <span>Call: +234 800 000 0000</span>
-  </a>
-</div>
 
-<div class="mt-16 flex flex-wrap items-center justify-center gap-8 text-white/80">
-  <div class="flex items-center gap-2">
-    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-    </svg>
-    <span>Licensed & Insured</span>
-  </div>
-  <div class="flex items-center gap-2">
-    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-    </svg>
-    <span>Verified Caregivers</span>
-  </div>
-  <div class="flex items-center gap-2">
-    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-    </svg>
-    <span>24/7 Support</span>
-  </div>
-</div>
+{{-- ── FINAL CTA ────────────────────────────────────── --}}
+<section id="contact" class="cta-sec" aria-label="Get started with CavalCare">
+  <div class="cta-orb co1" aria-hidden="true"></div>
+  <div class="cta-orb co2" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="cta-inner reveal">
+      <span class="pill pill-white">
+        <span class="pill-dot"></span>
+        Get Care Today
+      </span>
+
+      <h2 class="cta-h2">
+      Your loved one deserves proper care<br>
+        <em>and we have the right nurse fit for them</em>
+      </h2>
+
+      <p class="cta-p">
+        Join the families who trust CavalCare for professional, dignified in-home care across Nigeria.
+      </p>
+
+      <div class="cta-actions">
+        <a href="#" class="btn btn-yellow">
+          <i class="bi bi-calendar-check"></i>
+          Schedule Free Consultation
+        </a>
+        <a href="tel:+2348000000000" class="btn-ghost">
+          <i class="bi bi-telephone"></i>
+          Call: +234 800 000 0000
+        </a>
+      </div>
+
+      <div class="cta-trust">
+        <div class="ct-item">
+          <i class="bi bi-patch-check"></i>
+          Licensed & Insured
+        </div>
+        <div class="ct-item">
+          <i class="bi bi-people"></i>
+          Verified Caregivers
+        </div>
+        <div class="ct-item">
+          <i class="bi bi-clock"></i>
+          24/7 Support
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
 @endsection
 
 @push('scripts')
 <script>
-// Scroll reveal animation
-const reveals = document.querySelectorAll('.reveal');
-const revealOnScroll = () => {
-  reveals.forEach(element => {
-    const elementTop = element.getBoundingClientRect().top;
-    const windowHeight = window.innerHeight;
-    if (elementTop < windowHeight - 100) {
-      element.classList.add('active');
-    }
-  });
+document.addEventListener('DOMContentLoaded', () => {
+
+/* ── NAV SCROLL ──────────────────────────────── */
+const nav = document.getElementById('mainNav');
+const onScroll = () => nav.classList.toggle('scrolled', scrollY > 16);
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+/* ── MOBILE NAV DRAWER ───────────────────────── */
+const mobBtn  = document.getElementById('mobBtn');
+const drawer  = document.getElementById('navDrawer');
+let drawerOpen = false;
+
+const toggleDrawer = (force) => {
+  drawerOpen = force !== undefined ? force : !drawerOpen;
+  mobBtn.classList.toggle('active', drawerOpen);
+  mobBtn.setAttribute('aria-expanded', drawerOpen);
+  if (drawerOpen) {
+    drawer.classList.add('open');
+    drawer.style.display = 'flex';
+    requestAnimationFrame(() => {
+      drawer.style.opacity  = '1';
+      drawer.style.transform = 'none';
+    });
+  } else {
+    drawer.style.opacity  = '0';
+    drawer.style.transform = 'translateY(-8px)';
+    setTimeout(() => { if(!drawerOpen) drawer.style.display = 'none'; drawer.classList.remove('open'); }, 260);
+  }
 };
+mobBtn?.addEventListener('click', () => toggleDrawer());
+drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleDrawer(false)));
+document.addEventListener('keydown', e => { if(e.key==='Escape' && drawerOpen) toggleDrawer(false); });
 
-window.addEventListener('scroll', revealOnScroll);
-revealOnScroll(); // Initial check
-
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+/* ── SCROLL REVEAL ───────────────────────────── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('is-visible');
+      io.unobserve(e.target);
     }
   });
+}, { threshold:.1, rootMargin:'0px 0px -50px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ── SMOOTH ANCHOR SCROLL ────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      const offset = 70;
+      const top = target.getBoundingClientRect().top + scrollY - offset;
+      window.scrollTo({ top, behavior:'smooth' });
+    }
+  });
+});
+
+/* ── BUTTON RIPPLE ───────────────────────────── */
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = '@keyframes ripple{to{transform:scale(2.5);opacity:0}}';
+document.head.appendChild(rippleStyle);
+
+document.querySelectorAll('.btn, .btn-ghost, .btn-yellow, .plan-cta, .fc-btn, .nav-cta').forEach(btn => {
+  btn.style.position = 'relative';
+  btn.style.overflow = 'hidden';
+  btn.addEventListener('pointerdown', e => {
+    const r   = document.createElement('span');
+    const rect = btn.getBoundingClientRect();
+    const sz   = Math.max(rect.width, rect.height) * 1.4;
+    r.className = 'btn-ripple';
+    r.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${e.clientX - rect.left - sz/2}px;
+      top:${e.clientY - rect.top  - sz/2}px;
+    `;
+    btn.appendChild(r);
+    r.addEventListener('animationend', () => r.remove());
+  });
+});
+
+/* ── STAT COUNT-UP ───────────────────────────── */
+const statsIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('[data-count]').forEach(el => {
+      const target = +el.dataset.count;
+      const suffix = el.dataset.suffix || '';
+      let cur = 0, start = null;
+      const duration = 1400;
+      const step = ts => {
+        if (!start) start = ts;
+        const progress = Math.min((ts - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(ease * target) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+    statsIO.unobserve(e.target);
+  });
+}, { threshold:.6 });
+const hs = document.querySelector('.hero-stats');
+if (hs) statsIO.observe(hs);
+
+/* ── SERVICES SCROLL DOTS ────────────────────── */
+const svcScroll = document.getElementById('svcScroll');
+const svcDots   = document.querySelectorAll('.svc-dot');
+if (svcScroll && svcDots.length) {
+  const updateDots = () => {
+    const { scrollLeft, scrollWidth, clientWidth } = svcScroll;
+    const cards = svcScroll.querySelectorAll('.svc-card');
+    const cardW = cards[0]?.offsetWidth + 14 || 1;
+    const active = Math.round(scrollLeft / cardW);
+    svcDots.forEach((d, i) => d.classList.toggle('active', i === active));
+  };
+  svcScroll.addEventListener('scroll', updateDots, {passive:true});
+  updateDots();
+}
+
+/* ── PARALLAX GLOWS ON MOUSE (desktop only) ── */
+if (window.matchMedia('(min-width:900px) and (hover:hover)').matches) {
+  const glows = document.querySelectorAll('.glow');
+  document.addEventListener('mousemove', e => {
+    const cx = e.clientX / window.innerWidth - .5;
+    const cy = e.clientY / window.innerHeight - .5;
+    glows.forEach((g, i) => {
+      const factor = (i + 1) * 18;
+      g.style.transform = `translate(${cx * factor}px, ${cy * factor}px)`;
+    });
+  }, {passive:true});
+}
+
+/* ── STAGGERED CARD ENTRY ────────────────────── */
+document.querySelectorAll('.trust-card').forEach((card, i) => {
+  card.style.transitionDelay = `${i * 0.08}s`;
+});
+
+/* ── FAQ ACCORDION ───────────────────────────── */
+document.querySelectorAll('.faq-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+      el.classList.remove('open');
+      el.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
+    });
+    // Open clicked (unless it was already open)
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+});
+
 });
 </script>
 @endpush
