@@ -879,8 +879,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         that makes you feel relieved about your <em>loved one</em>
         </h1>
         <p class="ph-sub">
-        Our nurses are trained with clinical certifications to handle any health situations 
-        that your loved one might be facing
+        Our nurses are trained with clinical certifications to handle any health situations that your loved one might be facing
         </p>
       </div>
 

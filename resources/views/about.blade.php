@@ -1142,8 +1142,8 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
           <p class="ah-lead">
             Someone gets discharged from the hospital. The doctors say "rest at home."
-            But at home, there's no nurse. No one monitoring the condition closely as a professional —
-            until there is an emergency.
+            
+            But at home, there's no nurse. No one monitoring the condition closely as a professional, until there is an emergency...
           </p>
         </div>
 
@@ -1222,8 +1222,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
           <div class="pull-quote">
             <p>
-              Meanwhile, the person who just had surgery, or the parent who's getting older,
-              or the mother four weeks postpartum — they need real medical support.
+            Meanwhile, the person who just had surgery, or the parent who's getting older, or the mother four weeks postpartum need real medical support. 
             </p>
           </div>
 
@@ -1280,9 +1279,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
         <div class="what-text reveal" style="transition-delay:.1s;">
           <p>
-            Whether your loved one needs support after surgery, help through a terminal illness,
-            post-natal recovery care, or consistent elderly support — we will make sure a qualified
-            nurse is there.
+          Whether your loved one needs support after surgery, help through a terminal illness, post-natal recovery care, or consistent elderly support, we will make sure a qualified nurse is there.
           </p>
           <p>
             Not an informal helper. Not a trained caregiver.
@@ -1342,8 +1339,8 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         <div class="value-title">Clinical Integrity</div>
         <div class="value-body">
           We are not replacing doctors or hospitals. Every nurse we place works within the
-          clinical plan set by your loved one's medical team. We respect medical boundaries —
-          and we escalate to the hospital when a situation needs immediate attention before
+          clinical plan set by your loved one's medical team. We respect medical boundaries.
+          And we escalate to the hospital when a situation needs immediate attention before
           it becomes an emergency.
         </div>
       </div>
@@ -1365,10 +1362,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         <div class="value-ico"><i class="bi bi-shield-check"></i></div>
         <div class="value-title">Security</div>
         <div class="value-body">
-          Every family that books with us is letting a stranger into their home, often to
-          care for someone vulnerable. We don't take that lightly. Background checks and
-          licence verification are a crucial part of our recruitment process — before any
-          nurse is ever placed with a family.
+        Every family that books with us is letting a stranger into their home, often to care for someone vulnerable. We don't take that lightly. Background checks, license verification are a crucial part of our recruitment process.
         </div>
       </div>
 
@@ -1404,9 +1398,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             Bringing professional nursing care into the homes of every Nigerian who needs it
           </h3>
           <p class="mv-body">
-            We are bringing professional nursing care into the homes of every Nigerian who needs
-            professional support after hospital discharge — so that healing happens at home,
-            with intention.
+          We are bringing professional nursing care in the homes of every Nigerian who needs professional support after hospital discharge, so that healing happens at home, with intention.
           </p>
         </div>
       </div>
@@ -1423,9 +1415,8 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             No one leaves the hospital without a care plan waiting at home
           </h3>
           <p class="mv-body">
-            We see a future where no one leaves the hospital without a clear, professional,
-            and compassionate care plan waiting for them at home — regardless of location
-            or circumstance.
+           
+            We see a future where, no one leaves the hospital without a clear, professional, and compassionate care plan waiting for them at home, regardless of location.
           </p>
         </div>
       </div>

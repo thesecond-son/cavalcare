@@ -1466,7 +1466,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             </a>
           </div>
 
-          <div class="hero-stats">
+          <!-- <div class="hero-stats">
             <div>
               <div class="stat-num" data-count="15" data-suffix="+">15+</div>
               <div class="stat-lbl">Years Experience</div>
@@ -1481,7 +1481,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
               <div class="stat-num" data-count="98" data-suffix="%">98%</div>
               <div class="stat-lbl">Satisfaction</div>
             </div>
-          </div>
+          </div> -->
 
           {{-- Mobile visit snapshot (hidden ≥ 900px) --}}
           <div class="hero-snap" aria-hidden="true">
@@ -1708,11 +1708,11 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
     <div class="reveal">
       <span class="pill pill-peach sec-eyebrow">Flexible Pricing</span>
       <h2 class="sec-title">
-      There is specific Care plan that works for<br>
-        <em style="font-style:italic;color:var(--indigo)">you</em>
+      There is specific Care plan that works<br>
+        <em style="font-style:italic;color:var(--indigo)">for you</em>
       </h2>
       <p class="sec-sub">
-      We have daily plans, weekend plans, flexible and monthly plans depending on you think your loved one needs, 
+      We have daily plans, weekend plans, flexible and monthly plans depending on what you think your loved ones need, 
       so you can feel at peace
       </p>
     </div>
@@ -1783,7 +1783,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       <div class="snapshot-text reveal">
         <span class="pill pill-ocean sec-eyebrow">The CavalCare Experience</span>
         <h2 class="sec-title">
-        We don’t compromise —<br>
+        We don’t compromise<br>
           <em style="font-style:italic;color:var(--indigo)">on the safety of your loved ones.</em>
         </h2>
         <p class="sec-sub">
@@ -1857,6 +1857,10 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             </a>
             <a href="#care-types" class="mockup-svc ms-peach">
               <span>Post-Surgery Care</span>
+              <!-- <span class="mockup-svc-price">From ₦65,000</span> -->
+            </a>
+            <a href="#care-types" class="mockup-svc ms-peach">
+              <span>Terminal Illness Support</span>
               <!-- <span class="mockup-svc-price">From ₦65,000</span> -->
             </a>
           </div>
