@@ -20,13 +20,13 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 Route::get('/book/{carePlan}', [BookingController::class, 'create'])->name('booking.create');
 
+Route::post('/book/initiate', [BookingController::class, 'initiate'])->name('booking.initiate');
+
 // Step 1 (POST): Paystack callback — creates booking + sends intake email
 Route::post('/book/store', [BookingController::class, 'store'])
      ->name('booking.store');
 
-// Step 1 (confirmation): "Check your email" page shown after payment
-Route::get('/book/confirmation/{booking}', [BookingController::class, 'confirmation'])
-     ->name('booking.confirmation');
+Route::get('/book/received/{reference}', [BookingController::class, 'received'])->name('booking.received');
 
 // Private intake form (link is sent inside BookingReceivedMail)
 // {preBooking} resolves by the token column via PreBooking::getRouteKeyName()

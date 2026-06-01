@@ -812,6 +812,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const brkTotalVal   = document.getElementById('brkTotalVal');
   const selectedType  = document.getElementById('selectedCareType');
 
+  const csrfToken =
+    document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
   const stepNodes = [
     document.getElementById('stepNode1'),
     document.getElementById('stepNode2'),
@@ -959,7 +962,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          'X-CSRF-TOKEN': csrfToken,
           'Accept': 'application/json',
         },
         body: JSON.stringify({
@@ -989,6 +992,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setStep(3);
 
+    console.log(typeof PaystackPop);
+    console.log(typeof PaystackPop.setup);
+
     // ── STEP 2: Open Paystack popup ─────────────────────────────────
     const handler = PaystackPop.setup({
       key:      PAYSTACK_KEY,
@@ -996,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
       amount:   price * 100,   // Paystack expects kobo
       currency: 'NGN',
       ref:      'CC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase(),
+      
       metadata: {
         custom_fields: [
           { display_name: 'Customer Name', variable_name: 'name',       value: name },
@@ -1004,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
       },
 
-      onClose() {
+      onClose: typeof function() {
         // User closed the popup without paying — revert UI
         setStep(2);
         payBtn.disabled = false;
@@ -1012,44 +1019,46 @@ document.addEventListener('DOMContentLoaded', () => {
         // Note: the PreBooking sits as 'pending' in the DB, which is fine
       },
 
-      async callback(response) {
+      callbackType: typeof function(response) {
         // ── STEP 3: Verify server-side, then redirect ───────────────
-        payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Verifying payment…';
+        payBtn.innerHTML = 'Verifying payment...';
 
+        (async () => {
         try {
-          const storeRes = await fetch('{{ route("booking.store") }}', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-              'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-              paystack_reference:    response.reference,
-              pre_booking_reference: pbReference,
-            }),
-          });
 
-          const storeData = await storeRes.json();
+            const storeRes = await fetch('{{ route("booking.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    paystack_reference: response.reference,
+                    pre_booking_reference: pbReference,
+                }),
+            });
 
-          if (storeRes.ok && storeData.success) {
-            // Paid — redirect to the "check your email" confirmation page
-            window.location.href = storeData.redirect;
-          } else {
-            // Payment failed verification
-            setStep(2);
-            payBtn.disabled = false;
-            payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Try Again';
-            alert(storeData.message ?? 'Payment could not be verified. Please contact support.');
-          }
+            const storeData = await storeRes.json();
+
+            if (storeRes.ok && storeData.success) {
+                window.location.href = storeData.redirect;
+            } else {
+                alert(storeData.message ?? 'Payment verification failed.');
+            }
 
         } catch (err) {
-          setStep(2);
-          payBtn.disabled = false;
-          payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Try Again';
-          alert('Something went wrong while confirming your payment. Please contact us on WhatsApp.');
+            console.error(err);
+            alert('Verification failed.');
         }
+        })();
       },
+
+      onClose: function() {
+        setStep(2);
+        payBtn.disabled = false;
+        payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
+      }
     });
 
     handler.openIframe();
