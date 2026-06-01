@@ -16,15 +16,21 @@ return new class extends Migration
 
             $table->string('reference')->unique();
 
+            $table->string('token', 64)->unique()->nullable();
+
             $table->foreignId('care_plan_id')->constrained();
             $table->foreignId('care_type_id')->constrained();
 
             $table->json('booker_details');
 
-            $table->string('status')->default('pending_payment');
-            // pending_payment | paid | converted | cancelled
+            $table->string('status')->default('pending');
+            // pending | paid | failed
 
             $table->json('payment_meta')->nullable(); // receipt, channel, notes
+
+            $table->string('paystack_reference')->nullable();
+                
+            $table->unsignedBigInteger('amount_paid')->nullable(); 
 
             $table->timestamps();
         });

@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'whatsapp_number' => env('WHATSAPP_NUMBER', '2347063112134'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

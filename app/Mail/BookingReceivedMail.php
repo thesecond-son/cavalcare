@@ -22,10 +22,25 @@ class BookingReceivedMail extends Mailable
        
     }
 
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: 'Your CavalCare booking is confirmed — complete your care details',
+        );
+    }
+
     public function build()
     {
-        return $this
-            ->subject('We’ve received your care booking')
-            ->view('emails.booking-received');
+        return new Content(
+            view: 'emails.booking-received',  // your existing template
+            with: [
+                'preBooking' => $this->preBooking,
+                'firstName'  => explode(' ', $this->preBooking->booker_details['name'])[0],
+                'planName'   => $this->preBooking->carePlan->name,
+                'careType'   => $this->preBooking->careType->name,
+                // ── NEW: pass the intake URL into your template ──
+                'intakeUrl'  => route('booking.intake', $this->preBooking->token),
+            ],
+        );
     }
 }

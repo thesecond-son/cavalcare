@@ -780,20 +780,7 @@ a { color:inherit; text-decoration:none; }
   </div>
 </div>
 
-{{-- ── Hidden form that POSTs to the server after Paystack ── --}}
-<form id="finalForm" method="POST" action="{{ route('booking.store') }}" style="display:none;">
-  @csrf
-  <input type="hidden" name="care_plan_id"   value="{{ $carePlan->id }}">
-  <input type="hidden" name="care_type_id"   id="hCareTypeId">
-  <input type="hidden" name="name"           id="hName">
-  <input type="hidden" name="email"          id="hEmail">
-  <input type="hidden" name="phone"          id="hPhone">
-  <input type="hidden" name="patient_name"   id="hPatientName">
-  <input type="hidden" name="patient_age"    id="hPatientAge">
-  <input type="hidden" name="notes"          id="hNotes">
-  <input type="hidden" name="paystack_ref"   id="hPaystackRef">
-  <input type="hidden" name="amount_paid"    id="hAmountPaid">
-</form>
+{{-- No hidden form needed — submission is handled via fetch() --}}
 
 @endsection
 
@@ -951,47 +938,118 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── Paystack payment ───────────────────────────── */
-  payBtn.addEventListener('click', () => {
+
+  // Track the pre-booking reference returned by /book/initiate
+  let pbReference = null;
+
+  payBtn.addEventListener('click', async () => {
     const price = getPrice();
     const email = getVal('email');
     const name  = getVal('name');
 
+    // Disable the button immediately to prevent double-clicks
+    payBtn.disabled = true;
+    payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Please wait…';
+
+    // ── STEP 1: Call initiate to create the PreBooking ──────────────
+    // We do this here (not on page load) so we only create a record
+    // when the user actually intends to pay.
+    try {
+      const initiateRes = await fetch('{{ route("booking.initiate") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name:         getVal('name'),
+          email:        getVal('email'),
+          phone:        getVal('phone'),
+          care_plan_id: getVal('care_plan_id') || '{{ $carePlan->id }}',
+          care_type_id: getVal('care_type_id'),
+        }),
+      });
+
+      if (!initiateRes.ok) {
+        const err = await initiateRes.json().catch(() => ({}));
+        throw new Error(err.message ?? 'Could not initiate booking. Please try again.');
+      }
+
+      const initiateData = await initiateRes.json();
+      pbReference = initiateData.reference;
+
+    } catch (err) {
+      // Re-enable the button so the user can try again
+      payBtn.disabled = false;
+      payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
+      alert(err.message);
+      return;
+    }
+
     setStep(3);
 
+    // ── STEP 2: Open Paystack popup ─────────────────────────────────
     const handler = PaystackPop.setup({
-      key:       PAYSTACK_KEY,
-      email:     email,
-      amount:    getCargeInKobo(price),
-      currency:  'NGN',
-      ref:       'CC-' + Date.now() + '-' + Math.random().toString(36).slice(2,7).toUpperCase(),
+      key:      PAYSTACK_KEY,
+      email:    email,
+      amount:   price * 100,   // Paystack expects kobo
+      currency: 'NGN',
+      ref:      'CC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase(),
       metadata: {
         custom_fields: [
-          { display_name: 'Customer Name', variable_name: 'name', value: name },
-          { display_name: 'Care Plan',     variable_name: 'care_plan', value: '{{ $carePlan->name }}' },
-        ]
+          { display_name: 'Customer Name', variable_name: 'name',       value: name },
+          { display_name: 'Care Plan',     variable_name: 'care_plan',  value: '{{ $carePlan->name }}' },
+          { display_name: 'PB Reference',  variable_name: 'pb_reference', value: pbReference },
+        ],
       },
+
       onClose() {
-        // User closed modal — revert step
+        // User closed the popup without paying — revert UI
         setStep(2);
+        payBtn.disabled = false;
+        payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
+        // Note: the PreBooking sits as 'pending' in the DB, which is fine
       },
-      callback(response) {
-        // Payment successful — fill hidden form and submit
-        document.getElementById('hCareTypeId').value  = getVal('care_type_id');
-        document.getElementById('hName').value        = getVal('name');
-        document.getElementById('hEmail').value       = getVal('email');
-        document.getElementById('hPhone').value       = getVal('phone');
-        document.getElementById('hPatientName').value = getVal('patient_name');
-        document.getElementById('hPatientAge').value  = getVal('patient_age');
-        document.getElementById('hNotes').value       = getVal('notes');
-        document.getElementById('hPaystackRef').value = response.reference;
-        document.getElementById('hAmountPaid').value  = price;
 
-        // Disable pay button to prevent double submission
-        payBtn.disabled = true;
-        payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;"></i> Processing…';
+      async callback(response) {
+        // ── STEP 3: Verify server-side, then redirect ───────────────
+        payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Verifying payment…';
 
-        finalForm.submit();
-      }
+        try {
+          const storeRes = await fetch('{{ route("booking.store") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              paystack_reference:    response.reference,
+              pre_booking_reference: pbReference,
+            }),
+          });
+
+          const storeData = await storeRes.json();
+
+          if (storeRes.ok && storeData.success) {
+            // Paid — redirect to the "check your email" confirmation page
+            window.location.href = storeData.redirect;
+          } else {
+            // Payment failed verification
+            setStep(2);
+            payBtn.disabled = false;
+            payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Try Again';
+            alert(storeData.message ?? 'Payment could not be verified. Please contact support.');
+          }
+
+        } catch (err) {
+          setStep(2);
+          payBtn.disabled = false;
+          payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Try Again';
+          alert('Something went wrong while confirming your payment. Please contact us on WhatsApp.');
+        }
+      },
     });
 
     handler.openIframe();
