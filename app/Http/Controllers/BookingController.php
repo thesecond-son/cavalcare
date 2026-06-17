@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\CarePlan;
 use App\Models\CareType;
 use App\Models\PreBooking;
+use App\Models\AddOn;
 use App\Mail\BookingReceivedMail;
 
 class BookingController extends Controller
@@ -18,6 +19,7 @@ class BookingController extends Controller
         return view('bookings.create', [
             'carePlan'  => $carePlan,
             'careTypes' => CareType::orderBy('name')->get(),
+            'addOns'    => AddOn::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -37,6 +39,8 @@ class BookingController extends Controller
             'phone'        => 'required|string|max:30',
             'care_plan_id' => 'required|exists:care_plans,id',
             'care_type_id' => 'required|exists:care_types,id',
+            'add_on_ids'   => 'nullable|array',
+            'add_on_ids.*' => 'integer|exists:add_ons,id',
         ]);
  
         $preBooking = PreBooking::create([
@@ -50,6 +54,17 @@ class BookingController extends Controller
                 'phone' => $data['phone'],
             ],
         ]);
+
+        // Attach selected add-ons, snapshotting their price right now
+        if (!empty($data['add_on_ids'])) {
+            $addOns = AddOn::whereIn('id', $data['add_on_ids'])->get();
+ 
+            $pivotData = $addOns->mapWithKeys(fn($addOn) => [
+                $addOn->id => ['price_at_booking' => $addOn->price]
+            ])->all();
+ 
+            $preBooking->addOns()->attach($pivotData);
+        }
  
         // Return the reference to the frontend — the JS passes this to
         // Paystack as `metadata.pre_booking_reference` so we can look it

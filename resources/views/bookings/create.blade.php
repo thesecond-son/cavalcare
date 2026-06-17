@@ -434,6 +434,49 @@ a { color:inherit; text-decoration:none; }
 .tb i { font-size:20px; color:var(--ocean); }
 .tb span { font-size:.68rem; font-weight:600; color:var(--muted); line-height:1.3; text-align:center; }
 
+/* ── add-ons section ── */
+.addons-section { margin-bottom:28px; }
+.addons-intro {
+  font-size:.85rem; color:var(--muted);
+  line-height:1.65; margin-bottom:14px;
+}
+.addons-intro strong { color:var(--ocean); }
+.addon-list { display:flex; flex-direction:column; gap:10px; }
+.addon-item {
+  display:flex; align-items:center; gap:12px;
+  padding:13px 16px;
+  border:1.5px solid rgba(26,58,47,.1);
+  border-radius:var(--r-md);
+  cursor:pointer;
+  transition:border-color .2s, background .2s, transform .18s var(--spring);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.addon-item:hover { border-color:rgba(26,58,47,.25); background:rgba(26,58,47,.03); }
+.addon-item.selected {
+  border-color:var(--ocean);
+  background:rgba(26,58,47,.05);
+}
+.addon-cb {
+  width:20px; height:20px; flex-shrink:0;
+  border:2px solid rgba(26,58,47,.22);
+  border-radius:5px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s var(--spring);
+  background:#fff;
+}
+.addon-item.selected .addon-cb {
+  background:var(--ocean); border-color:var(--ocean);
+  animation:checkPop .3s var(--spring);
+}
+.addon-cb i { font-size:11px; color:#fff; opacity:0; transition:opacity .15s; }
+.addon-item.selected .addon-cb i { opacity:1; }
+.addon-name {
+  font-size:.88rem; font-weight:500; color:var(--ocean); flex:1;
+}
+/* hidden checkbox — real input for form submission */
+.addon-hidden { display:none; }
+
 /* ── pay button ── */
 .pay-btn-wrap { margin-top:4px; }
 .pay-btn {
@@ -651,7 +694,41 @@ a { color:inherit; text-decoration:none; }
                 style="resize:vertical; min-height:80px;"
               ></textarea>
             </div>
+
           </div>
+
+          {{-- SECTION 3: Add-Ons --}}
+          @if($addOns->isNotEmpty())
+          <div class="form-section addons-section">
+            <div class="form-section-label">
+              <div class="fsl-ico"><i class="bi bi-plus-circle"></i></div>
+              Additional Services
+            </div>
+
+            <p class="addons-intro">
+              Our nurses handle all of your loved one's core care needs.
+              <strong>Is there anything more you'd like them to take care of?</strong>
+            </p>
+
+            <div class="addon-list" id="addonList">
+              @foreach($addOns as $addOn)
+              <label class="addon-item" id="addon-label-{{ $addOn->id }}" data-price="{{ $addOn->price }}">
+                <div class="addon-cb">
+                  <i class="bi bi-check"></i>
+                </div>
+                <span class="addon-name">{{ $addOn->name }}</span>
+                <input
+                  type="checkbox"
+                  class="addon-hidden"
+                  name="add_on_ids[]"
+                  value="{{ $addOn->id }}"
+                  data-price="{{ $addOn->price }}"
+                >
+              </label>
+              @endforeach
+            </div>
+          </div>
+          @endif
 
           {{-- ── SUBMIT BUTTON (mobile: shows below form, above summary) ── --}}
           <div class="form-submit-area" id="formSubmitArea">
@@ -725,6 +802,10 @@ a { color:inherit; text-decoration:none; }
                 <div class="pr-row" id="brkCareType">
                   <span>Care Type</span>
                   <span id="brkCareTypeVal">—</span>
+                </div>
+                <div class="pr-row" id="brkAddOns" style="display:none;">
+                  <span>Add-ons</span>
+                  <span id="brkAddOnsVal">—</span>
                 </div>
                 <div class="pr-row total" id="brkTotal">
                   <span>Total</span>
@@ -810,6 +891,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const priceCycle    = document.getElementById('priceCycle');
   const brkCareTypeVal= document.getElementById('brkCareTypeVal');
   const brkTotalVal   = document.getElementById('brkTotalVal');
+  const brkAddOns     = document.getElementById('brkAddOns');
+  const brkAddOnsVal  = document.getElementById('brkAddOnsVal');
   const selectedType  = document.getElementById('selectedCareType');
 
   const csrfToken =
@@ -839,12 +922,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const sel = document.getElementById('care_type_id');
     const opt = sel?.options[sel.selectedIndex];
     const typePrice = parseInt(opt?.dataset.price ?? 0);
-    // If your care_plan already has a flat price, use that; otherwise combine
     return PLAN_BASE_PRICE > 0 ? PLAN_BASE_PRICE : typePrice;
   }
 
-  function getCargeInKobo(naira) {
-    return naira * 100; // Paystack expects kobo
+  function getAddOnsTotal() {
+    return Array.from(document.querySelectorAll('.addon-hidden:checked'))
+      .reduce((sum, cb) => sum + parseInt(cb.dataset.price ?? 0), 0);
+  }
+
+  function getSelectedAddOnIds() {
+    return Array.from(document.querySelectorAll('.addon-hidden:checked'))
+      .map(cb => parseInt(cb.value));
   }
 
   /* ── Validate a single field ────────────────────── */
@@ -867,7 +955,14 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('blur',   () => validateField(id));
   });
 
-  function updateTypeLabel() {
+  /* ── Add-on checkbox toggle ─────────────────────── */
+  document.querySelectorAll('.addon-item').forEach(label => {
+    label.addEventListener('click', () => {
+      const cb = label.querySelector('.addon-hidden');
+      cb.checked = !cb.checked;
+      label.classList.toggle('selected', cb.checked);
+    });
+  });
     const sel = document.getElementById('care_type_id');
     const opt = sel?.options[sel.selectedIndex];
     if (opt?.value) {
@@ -912,14 +1007,24 @@ document.addEventListener('DOMContentLoaded', () => {
     priceShimmer.style.display = 'block';
 
     setTimeout(() => {
-      const price = getPrice();
-      const sel = document.getElementById('care_type_id');
+      const price      = getPrice();
+      const addOnsTotal = getAddOnsTotal();
+      const total      = price + addOnsTotal;
+      const sel        = document.getElementById('care_type_id');
       const careTypeName = sel?.options[sel.selectedIndex]?.text ?? '—';
 
-      priceAmount.textContent    = fmt(price);
+      priceAmount.textContent    = fmt(total);
       brkCareTypeVal.textContent = careTypeName;
-      brkTotalVal.textContent    = fmt(price);
+      brkTotalVal.textContent    = fmt(total);
       priceCycle.textContent     = 'per month · billed monthly';
+
+      // Show add-ons row in breakdown only if something was selected
+      if (addOnsTotal > 0) {
+        brkAddOnsVal.textContent = fmt(addOnsTotal);
+        brkAddOns.style.display  = 'flex';
+      } else {
+        brkAddOns.style.display  = 'none';
+      }
 
       priceShimmer.style.display = 'none';
       priceRevealed.classList.add('show');
@@ -941,22 +1046,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── Paystack payment ───────────────────────────── */
-
-  // Track the pre-booking reference returned by /book/initiate
   let pbReference = null;
 
   payBtn.addEventListener('click', async () => {
-    const price = getPrice();
-    const email = getVal('email');
-    const name  = getVal('name');
+    const price       = getPrice();
+    const addOnsTotal = getAddOnsTotal();
+    const total       = price + addOnsTotal;
+    const email       = getVal('email');
+    const name        = getVal('name');
 
-    // Disable the button immediately to prevent double-clicks
     payBtn.disabled = true;
     payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Please wait…';
 
-    // ── STEP 1: Call initiate to create the PreBooking ──────────────
-    // We do this here (not on page load) so we only create a record
-    // when the user actually intends to pay.
     try {
       const initiateRes = await fetch('{{ route("booking.initiate") }}', {
         method: 'POST',
@@ -971,6 +1072,7 @@ document.addEventListener('DOMContentLoaded', () => {
           phone:        getVal('phone'),
           care_plan_id: getVal('care_plan_id') || '{{ $carePlan->id }}',
           care_type_id: getVal('care_type_id'),
+          add_on_ids:   getSelectedAddOnIds(),
         }),
       });
 
@@ -983,7 +1085,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pbReference = initiateData.reference;
 
     } catch (err) {
-      // Re-enable the button so the user can try again
       payBtn.disabled = false;
       payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
       alert(err.message);
@@ -992,73 +1093,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setStep(3);
 
-    console.log(typeof PaystackPop);
-    console.log(typeof PaystackPop.setup);
-
-    // ── STEP 2: Open Paystack popup ─────────────────────────────────
     const handler = PaystackPop.setup({
       key:      PAYSTACK_KEY,
       email:    email,
-      amount:   price * 100,   // Paystack expects kobo
+      amount:   total * 100,   // total includes add-ons, in kobo
       currency: 'NGN',
       ref:      'CC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase(),
-      
       metadata: {
         custom_fields: [
-          { display_name: 'Customer Name', variable_name: 'name',       value: name },
-          { display_name: 'Care Plan',     variable_name: 'care_plan',  value: '{{ $carePlan->name }}' },
+          { display_name: 'Customer Name', variable_name: 'name',         value: name },
+          { display_name: 'Care Plan',     variable_name: 'care_plan',    value: '{{ $carePlan->name }}' },
           { display_name: 'PB Reference',  variable_name: 'pb_reference', value: pbReference },
         ],
       },
 
-      onClose: typeof function() {
-        // User closed the popup without paying — revert UI
+      onClose() {
         setStep(2);
         payBtn.disabled = false;
         payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
-        // Note: the PreBooking sits as 'pending' in the DB, which is fine
       },
 
-      callbackType: typeof function(response) {
-        // ── STEP 3: Verify server-side, then redirect ───────────────
-        payBtn.innerHTML = 'Verifying payment...';
+      callback(response) {
+        payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Verifying payment…';
 
         (async () => {
-        try {
-
+          try {
             const storeRes = await fetch('{{ route("booking.store") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    paystack_reference: response.reference,
-                    pre_booking_reference: pbReference,
-                }),
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+              },
+              body: JSON.stringify({
+                paystack_reference:    response.reference,
+                pre_booking_reference: pbReference,
+              }),
             });
 
             const storeData = await storeRes.json();
 
             if (storeRes.ok && storeData.success) {
-                window.location.href = storeData.redirect;
+              window.location.href = storeData.redirect;
             } else {
-                alert(storeData.message ?? 'Payment verification failed.');
+              setStep(2);
+              payBtn.disabled = false;
+              payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Try Again';
+              alert(storeData.message ?? 'Payment could not be verified. Please contact support.');
             }
-
-        } catch (err) {
-            console.error(err);
-            alert('Verification failed.');
-        }
+          } catch (err) {
+            setStep(2);
+            payBtn.disabled = false;
+            payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Try Again';
+            alert('Something went wrong confirming your payment. Please contact us on WhatsApp.');
+          }
         })();
       },
-
-      onClose: function() {
-        setStep(2);
-        payBtn.disabled = false;
-        payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
-      }
     });
 
     handler.openIframe();

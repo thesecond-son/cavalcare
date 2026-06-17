@@ -32,4 +32,10 @@ class PreBooking extends Model
     {
         return $this->belongsTo(CareType::class);
     }
+
+    public function addOns()
+    {
+        return $this->belongsToMany(AddOn::class)
+                    ->withPivot('price_at_booking');
+    }
 }
