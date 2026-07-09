@@ -5,20 +5,20 @@
 
 @push('head')
 <meta name="description" content="Learn how CavalCare was founded to give Nigerian families access to professional, licensed in-home nursing care. Our mission: healing at home, with intention.">
-<meta name="keywords" content="CavalCare about, in-home nursing Nigeria story, home nurse Nigeria mission, CavalCare values, Nigerian healthcare startup">
+<meta name="keywords" content="CavalCare about, in-home nursing Nigeria story, home healthcare Nigeria mission, CavalCare values, Nigerian healthcare startup">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{{ url('/about') }}">
 
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="{{ url('/about') }}">
 <meta property="og:title"       content="About CavalCare — Our Story, Mission & Values">
-<meta property="og:description" content="CavalCare was founded because too many Nigerian families were navigating post-hospital care alone. We provide verified nurses so healing happens at home, with intention.">
+<meta property="og:description" content="CavalCare was founded because too many Nigerian families were navigating post-hospital care alone. We provide verified healthcare professionals so healing happens at home, with intention.">
 <meta property="og:image"       content="{{ asset('images/og-about.jpg') }}">
 <meta property="og:site_name"   content="CavalCare">
 
 <meta name="twitter:card"        content="summary_large_image">
 <meta name="twitter:title"       content="About CavalCare — Our Story, Mission & Values">
-<meta name="twitter:description" content="Founded to ensure no Nigerian family navigates post-hospital care alone. Licensed nurses, real-time reports, 24/7 support.">
+<meta name="twitter:description" content="Founded to ensure no Nigerian family navigates post-hospital care alone. Licensed healthcare professionals, real-time reports, 24/7 support.">
 <meta name="twitter:image"       content="{{ asset('images/og-about.jpg') }}">
 
 <script type="application/ld+json">
@@ -1143,7 +1143,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           <p class="ah-lead">
             Someone gets discharged from the hospital. The doctors say "rest at home."
             
-            But at home, there's no nurse. No one monitoring the condition closely as a professional, until there is an emergency...
+            But at home, there's no healthcare professional. No one monitoring the condition closely as a professional, until there is an emergency...
           </p>
         </div>
 
@@ -1171,14 +1171,14 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
   <div class="marquee-track">
     @php
     $mItems = [
-      ['i'=>'bi-patch-check',  't'=>'Licensed Nurses'],
+      ['i'=>'bi-patch-check',  't'=>'Licensed Healthcare Professionals'],
       ['i'=>'bi-shield-check', 't'=>'Background Verified'],
       ['i'=>'bi-heart',        't'=>'Dignity in Every Visit'],
       ['i'=>'bi-bell',         't'=>'Real-Time Reports'],
       ['i'=>'bi-clock',        't'=>'24 / 7 Coordinators'],
       ['i'=>'bi-house-heart',  't'=>'In-Home Professional Care'],
       ['i'=>'bi-people',       't'=>'Family-First Approach'],
-      ['i'=>'bi-patch-check',  't'=>'Licensed Nurses'],
+      ['i'=>'bi-patch-check',  't'=>'Licensed Healthcare Professionals'],
       ['i'=>'bi-shield-check', 't'=>'Background Verified'],
       ['i'=>'bi-heart',        't'=>'Dignity in Every Visit'],
       ['i'=>'bi-bell',         't'=>'Real-Time Reports'],
@@ -1215,7 +1215,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
         <div class="reveal" style="transition-delay:.14s;">
           <p>
-            But most families aren't trained nurses. They're sons and daughters, husbands and wives —
+            But most families aren't trained healthcare professionals. They're sons and daughters, husbands and wives —
             professionals with jobs and children of their own, who love someone deeply and have no idea
             how to care for them clinically.
           </p>
@@ -1279,11 +1279,11 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
         <div class="what-text reveal" style="transition-delay:.1s;">
           <p>
-          Whether your loved one needs support after surgery, help through a terminal illness, post-natal recovery care, or consistent elderly support, we will make sure a qualified nurse is there.
+          Whether your loved one needs support after surgery, help through a terminal illness, post-natal recovery care, or consistent elderly support, we will make sure a qualified healthcare professional is there.
           </p>
           <p>
             Not an informal helper. Not a trained caregiver.
-            <strong>A licensed nurse</strong>, background-checked, matched to your loved one's
+            <strong>A licensed healthcare professional</strong>, background-checked, matched to your loved one's
             specific situation, and accountable to you every step of the way.
           </p>
         </div>
@@ -1293,14 +1293,14 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             <div class="wd-icon teal"><i class="bi bi-patch-check"></i></div>
             <div>
               <div class="wd-label">Licensed &amp; Verified</div>
-              <div class="wd-desc">Every nurse carries a valid nursing licence and passes our background verification before being placed with any family.</div>
+              <div class="wd-desc">Every healthcare professional carries a valid nursing licence and passes our background verification before being placed with any family.</div>
             </div>
           </div>
           <div class="wd-row">
             <div class="wd-icon peach"><i class="bi bi-person-check"></i></div>
             <div>
               <div class="wd-label">Matched to Your Situation</div>
-              <div class="wd-desc">We don't send the nearest available nurse. We match based on your loved one's specific clinical needs.</div>
+              <div class="wd-desc">We don't send the nearest available healthcare professional. We match based on your loved one's specific clinical needs.</div>
             </div>
           </div>
           <div class="wd-row">
@@ -1338,7 +1338,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         <div class="value-ico"><i class="bi bi-hospital"></i></div>
         <div class="value-title">Clinical Integrity</div>
         <div class="value-body">
-          We are not replacing doctors or hospitals. Every nurse we place works within the
+          We are not replacing doctors or hospitals. Every healthcare professional we place works within the
           clinical plan set by your loved one's medical team. We respect medical boundaries.
           And we escalate to the hospital when a situation needs immediate attention before
           it becomes an emergency.
@@ -1353,7 +1353,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           Many families have experienced loved ones treated as burdens in hospitals.
           We ensure that the elderly parent, the disabled child, the post-natal mother,
           and the terminal patient are always treated with full human dignity.
-          This is non-negotiable in every nurse interaction.
+          This is non-negotiable in every healthcare professional interaction.
         </div>
       </div>
 
@@ -1441,7 +1441,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
       <h2 class="ac-heading">
         Your loved one deserves proper care —<br>
-        <em>and we have the right nurse for them</em>
+        <em>and we have the right healthcare professional for them</em>
       </h2>
 
       <p class="ac-sub">

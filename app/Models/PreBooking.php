@@ -35,7 +35,11 @@ class PreBooking extends Model
 
     public function addOns()
     {
-        return $this->belongsToMany(AddOn::class)
-                    ->withPivot('price_at_booking');
+        return $this->belongsToMany(
+            AddOn::class,
+            'add_on_pre_booking',   // explicit pivot table — matches your migration
+            'pre_booking_id',       // this model's foreign key on the pivot
+            'add_on_id'             // related model's foreign key on the pivot
+        )->withPivot('price_at_booking');
     }
 }

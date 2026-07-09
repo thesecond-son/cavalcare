@@ -706,7 +706,7 @@ a { color:inherit; text-decoration:none; }
             </div>
 
             <p class="addons-intro">
-              Our nurses handle all of your loved one's core care needs.
+              Our healthcare professionals handle all of your loved one's core care needs.
               <strong>Is there anything more you'd like them to take care of?</strong>
             </p>
 
@@ -961,8 +961,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const cb = label.querySelector('.addon-hidden');
       cb.checked = !cb.checked;
       label.classList.toggle('selected', cb.checked);
+      updateRevealBtn();
     });
   });
+
+  function updateTypeLabel() {
     const sel = document.getElementById('care_type_id');
     const opt = sel?.options[sel.selectedIndex];
     if (opt?.value) {

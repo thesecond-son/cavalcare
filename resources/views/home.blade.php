@@ -1,28 +1,28 @@
 {{-- resources/views/home.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'CavalCare — Licensed In-Home Nursing Care in Nigeria')
+@section('title', 'CavalCare — Licensed In-Home Healthcare in Nigeria')
 
 @push('head')
 {{-- Primary SEO --}}
-<meta name="description" content="CavalCare connects Nigerian families with verified, licensed nurses for in-home care — elderly care, post-surgery recovery, post-natal support & more. Real-time visit reports. 24/7 support.">
-<meta name="keywords" content="in-home nursing care Nigeria, home nurse Lagos, elderly care nurse Nigeria, post-surgery home care, post-natal nurse, licensed home nurse, CavalCare">
+<meta name="description" content="CavalCare connects Nigerian families with verified, licensed healthcare professionals for in-home care — elderly care, post-surgery recovery, post-natal support & more. Real-time visit reports. 24/7 support.">
+<meta name="keywords" content="in-home healthcare Nigeria, home healthcare professional Lagos, elderly care healthcare professional Nigeria, post-surgery home care, post-natal healthcare professional, licensed home healthcare professional, CavalCare">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{{ url('/') }}">
 
 {{-- Open Graph --}}
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="{{ url('/') }}">
-<meta property="og:title"       content="CavalCare — Licensed In-Home Nursing Care in Nigeria">
-<meta property="og:description" content="Verified, licensed nurses sent to your loved one's home. Elderly care, post-surgery recovery, post-natal support. Real-time visit reports after every visit.">
+<meta property="og:title"       content="CavalCare — Licensed In-Home Healthcare in Nigeria">
+<meta property="og:description" content="Verified, licensed healthcare professionals sent to your loved one's home. Elderly care, post-surgery recovery, post-natal support. Real-time visit reports after every visit.">
 <meta property="og:image"       content="{{ asset('images/og-home.jpg') }}">
 <meta property="og:locale"      content="en_NG">
 <meta property="og:site_name"   content="CavalCare">
 
 {{-- Twitter Card --}}
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:title"       content="CavalCare — Licensed In-Home Nursing Care in Nigeria">
-<meta name="twitter:description" content="Verified, licensed nurses sent to your loved one's home. Real-time visit reports. 24/7 support.">
+<meta name="twitter:title"       content="CavalCare — Licensed In-Home Healthcare in Nigeria">
+<meta name="twitter:description" content="Verified, licensed healthcare professionals sent to your loved one's home. Real-time visit reports. 24/7 support.">
 <meta name="twitter:image"       content="{{ asset('images/og-home.jpg') }}">
 
 {{-- Structured Data: LocalBusiness --}}
@@ -31,7 +31,7 @@
   "@@context": "https://schema.org",
   "@@type": "MedicalBusiness",
   "name": "CavalCare",
-  "description": "CavalCare provides professional licensed in-home nursing care across Nigeria, including elderly care, post-surgery recovery, and post-natal support.",
+  "description": "CavalCare provides professional licensed in-home healthcare across Nigeria, including elderly care, post-surgery recovery, and post-natal support.",
   "url": "{{ url('/') }}",
   "logo": "{{ asset('images/logo.png') }}",
   "telephone": "+2347063112134",
@@ -43,7 +43,7 @@
   "sameAs": [],
   "offers": {
     "@@type": "Offer",
-    "description": "Licensed in-home nursing care plans for Nigerian families"
+    "description": "Licensed in-home healthcare plans for Nigerian families"
   }
 }
 </script>
@@ -57,10 +57,10 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How do I know the nurse sent to my home is qualified and trustworthy?",
+      "name": "How do I know the healthcare professional sent to my home is qualified and trustworthy?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Every CavalCare nurse has their nursing licence verified and passes a thorough background check before being assigned to any family."
+        "text": "Every CavalCare healthcare professional has their healthcare licence verified and passes a thorough background check before being assigned to any family."
       }
     },
     {
@@ -73,10 +73,10 @@
     },
     {
       "@type": "Question",
-      "name": "What if I am not happy with the nurse assigned to us?",
+      "name": "What if I am not happy with the healthcare professional assigned to us?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Just let us know and we will reassign a different nurse at no extra cost and with no questions asked."
+        "text": "Just let us know and we will reassign a different healthcare professional at no extra cost and with no questions asked."
       }
     },
     {
@@ -1450,7 +1450,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           </h1>
 
           <p class="hero-p">
-          Caval Care sends Verified licensed nurses to your loved one's home 
+          Caval Care sends Verified licensed healthcare professionals to your loved one's home 
           for elderly care, post-surgery recovery, post-natal support, 
           and we would keep you updated.
           </p>
@@ -1536,12 +1536,12 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
               <div class="fc-av" style="background:var(--cream);color:var(--ocean);">NA</div>
               <div class="fc-rtext">
                 <p>Thursday · 10:00 AM</p>
-                <span>Nurse Adaeze · Post-surgery</span>
+                <span>Healthcare Professional Adaeze · Post-surgery</span>
               </div>
             </div>
             <div class="fc-btns">
               <a href="#" class="fc-btn dk">View report</a>
-              <a href="#" class="fc-btn lt">Contact nurse</a>
+              <a href="#" class="fc-btn lt">Contact healthcare professional</a>
             </div>
           </div>
 
@@ -1562,14 +1562,14 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
   <div class="marquee-track">
     @php
     $marqueeItems = [
-      ['icon'=>'bi-patch-check','text'=>'Licensed & Insured Nurses'],
+      ['icon'=>'bi-patch-check','text'=>'Licensed & Insured Healthcare Professionals'],
       ['icon'=>'bi-shield-check','text'=>'Background Verified'],
       ['icon'=>'bi-bell','text'=>'Real-Time Visit Reports'],
       ['icon'=>'bi-clock','text'=>'24/7 Care Coordinators'],
       ['icon'=>'bi-heart','text'=>'500+ Families Served'],
       ['icon'=>'bi-star','text'=>'98% Satisfaction Rate'],
       ['icon'=>'bi-telephone','text'=>'Always Reachable'],
-      ['icon'=>'bi-patch-check','text'=>'Licensed & Insured Nurses'],
+      ['icon'=>'bi-patch-check','text'=>'Licensed & Insured Healthcare Professionals'],
       ['icon'=>'bi-shield-check','text'=>'Background Verified'],
       ['icon'=>'bi-bell','text'=>'Real-Time Visit Reports'],
       ['icon'=>'bi-clock','text'=>'24/7 Care Coordinators'],
@@ -1595,7 +1595,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       <div class="trust-card reveal">
         <div class="trust-ico"><i class="bi bi-patch-check"></i></div>
         <div class="trust-t">Verified Credentials</div>
-        <div class="trust-d">All nurses are licenses and verified to ensure you and your loved one feels secure.</div>
+        <div class="trust-d">All healthcare professionals are licenses and verified to ensure you and your loved one feels secure.</div>
       </div>
       <div class="trust-card reveal" style="transition-delay:.1s">
         <div class="trust-ico"><i class="bi bi-bell"></i></div>
@@ -1625,7 +1625,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         </h2>
       </div>
       <p class="sec-sub" style="margin-top:0;max-width:320px;">
-      We send trained, licensed and thoroughly verified nurses that is specific to what your loved one needs.
+      We send trained, licensed and thoroughly verified healthcare professionals that is specific to what your loved one needs.
       </p>
     </div>
 
@@ -1679,9 +1679,9 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
     @php
     $steps = [
       ['n'=>'01','t'=>'Choose a Care plan','d'=>'We have different service plans, you can read through them and pick the one that matches what your loved one is going through right now.','i'=>'bi-telephone','bg'=>'h-white'],
-      ['n'=>'02','t'=>'Fill the form','d'=>'This is where you give us the details we need to match the right nurse. It would take just a few minutes.','i'=>'bi-clipboard-check','bg'=>'h-ocean'],
+      ['n'=>'02','t'=>'Fill the form','d'=>'This is where you give us the details we need to match the right healthcare professional. It would take just a few minutes.','i'=>'bi-clipboard-check','bg'=>'h-ocean'],
       ['n'=>'03','t'=>'Meet Your Caregiver','d'=>'Once your form is submitted, you will receive a summary of your selected care plan and the cost. Review it, then proceed to payment.','i'=>'bi-people','bg'=>'h-yellow'],
-      ['n'=>'04','t'=>'Begin Quality Care','d'=>'Once your payment is confirmed, our team gets to work. We review your loved one\'s details and match them with a licensed, verified nurse who fits their specific needs within 48 hours.','i'=>'bi-heart','bg'=>'h-peach'],
+      ['n'=>'04','t'=>'Begin Quality Care','d'=>'Once your payment is confirmed, our team gets to work. We review your loved one\'s details and match them with a licensed, verified healthcare professional who fits their specific needs within 48 hours.','i'=>'bi-heart','bg'=>'h-peach'],
     ];
     @endphp
 
@@ -1787,7 +1787,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           <em style="font-style:italic;color:var(--indigo)">on the safety of your loved ones.</em>
         </h2>
         <p class="sec-sub">
-        We have licensed verified nurses and you will be updated within the care hours.
+        We have licensed verified healthcare professionals and you will be updated within the care hours.
         </p>
 
         <ul class="snapshot-checklist">
@@ -1797,7 +1797,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           </li>
           <li class="sc-item">
             <span class="sc-check"><i class="bi bi-check"></i></span>
-            You can message your nurse directly during the visit hours
+            You can message your healthcare professional directly during the visit hours
           </li>
           <li class="sc-item">
             <span class="sc-check"><i class="bi bi-check"></i></span>
@@ -1842,7 +1842,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           <div class="mockup-next">
             <div class="mn-label">Next Scheduled Visit</div>
             <div class="mn-time">Thursday · 10:00 AM</div>
-            <div class="mn-nurse">Nurse Adaeze · Post-surgery care</div>
+            <div class="mn-nurse">Healthcare Professional Adaeze · Post-surgery care</div>
           </div>
 
           <div style="font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Our Services</div>
@@ -1866,7 +1866,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           </div>
 
           <a href="#care-plans" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;font-size:.86rem;padding:12px;">
-            Book a Nurse →
+            Book a Healthcare Professional →
           </a>
         </div>
       </div>
@@ -1893,28 +1893,28 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
     @php
     $faqs = [
       [
-        'q' => 'How are your nurses verified?',
-        'a' => 'Every nurse on the CavalCare platform goes through a rigorous vetting process that includes verification of their nursing licence with the Nursing and Midwifery Council of Nigeria (NMCN), a criminal background check, reference checks from previous employers, and an in-person interview with our care team. Only nurses who pass all stages are approved to take assignments.',
+        'q' => 'How are your healthcare professionals verified?',
+        'a' => 'Every healthcare professional on the CavalCare platform goes through a rigorous vetting process that includes verification of their healthcare licence with the Nursing and Midwifery Council of Nigeria (NMCN), a criminal background check, reference checks from previous employers, and an in-person interview with our care team. Only healthcare professionals who pass all stages are approved to take assignments.',
       ],
       [
-        'q' => 'How quickly can you assign a nurse to my loved one?',
-        'a' => 'Once your booking form is submitted and payment is confirmed, our team begins matching immediately. In most cases we assign a qualified nurse within 48 hours. For urgent situations, please call us directly and we will do our best to expedite the process.',
+        'q' => 'How quickly can you assign a healthcare professional to my loved one?',
+        'a' => 'Once your booking form is submitted and payment is confirmed, our team begins matching immediately. In most cases we assign a qualified healthcare professional within 48 hours. For urgent situations, please call us directly and we will do our best to expedite the process.',
       ],
       [
         'q' => 'How will I know what happens during each visit?',
-        'a' => 'After every visit you will receive a detailed care report sent directly to your phone. The report covers vitals, medications administered, any observations the nurse has noted, and the scheduled time of the next visit. You can also message your assigned nurse directly during active visit hours.',
+        'a' => 'After every visit you will receive a detailed care report sent directly to your phone. The report covers vitals, medications administered, any observations the healthcare professional has noted, and the scheduled time of the next visit. You can also message your assigned healthcare professional directly during active visit hours.',
       ],
       [
         'q' => 'Can I change or cancel my care plan?',
         'a' => 'Yes. You can upgrade, downgrade, or pause your care plan at any time by contacting our care coordinators. Cancellations made at least 24 hours before the next scheduled visit are fully refunded for unused days. We understand that care needs change, and we are here to be flexible with you.',
       ],
       [
-        'q' => 'What types of care do your nurses provide?',
-        'a' => 'Our nurses are trained to handle a range of in-home care needs including elderly care, post-surgery recovery, post-natal support, and chronic illness management. Each nurse is matched to your loved one based on their specific clinical background and your family\'s particular requirements.',
+        'q' => 'What types of care do your healthcare professionals provide?',
+        'a' => 'Our healthcare professionals are trained to handle a range of in-home care needs including elderly care, post-surgery recovery, post-natal support, and chronic illness management. Each healthcare professional is matched to your loved one based on their specific clinical background and your family\'s particular requirements.',
       ],
       [
-        'q' => 'What happens if I am not happy with my assigned nurse?',
-        'a' => 'Your satisfaction matters deeply to us. If for any reason the assigned nurse is not the right fit, simply contact our support team and we will arrange a replacement as quickly as possible — no questions asked. Our goal is to give both you and your loved one full peace of mind.',
+        'q' => 'What happens if I am not happy with my assigned healthcare professional?',
+        'a' => 'Your satisfaction matters deeply to us. If for any reason the assigned healthcare professional is not the right fit, simply contact our support team and we will arrange a replacement as quickly as possible — no questions asked. Our goal is to give both you and your loved one full peace of mind.',
       ],
       [
         'q' => 'Are your services available outside Lagos?',
@@ -1969,7 +1969,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
       <h2 class="cta-h2">
       Your loved one deserves proper care<br>
-        <em>and we have the right nurse fit for them</em>
+        <em>and we have the right healthcare professional fit for them</em>
       </h2>
 
       <p class="cta-p">

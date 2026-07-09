@@ -12,8 +12,12 @@ class Addon extends Model
     protected $casts = ['is_active' => 'boolean'];
  
     public function preBookings()
-    {
-        return $this->belongsToMany(PreBooking::class)
-                    ->withPivot('price_at_booking');
-    }
+{
+    return $this->belongsToMany(
+       PreBooking::class,
+        'add_on_pre_booking',
+        'add_on_id',
+        'pre_booking_id'
+    )->withPivot('price_at_booking');
+}
 }
