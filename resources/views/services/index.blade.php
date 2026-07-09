@@ -1105,11 +1105,11 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       <div class="cta-actions">
         <a href="{{ url('/') }}#care-plans" class="btn btn-yellow">
           <i class="bi bi-calendar-check"></i>
-          Schedule Free Consultation
+          Book a Care Plan
         </a>
-        <a href="tel:+2348000000000" class="btn-ghost">
+        <a href="tel:+2347063112134" class="btn-ghost">
           <i class="bi bi-telephone"></i>
-          Call: +234 800 000 0000
+          Call: +234 706 311 2134
         </a>
       </div>
 

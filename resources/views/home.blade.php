@@ -1977,9 +1977,9 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       </p>
 
       <div class="cta-actions">
-        <a href="#" class="btn btn-yellow">
+        <a href="#care-plans" class="btn btn-yellow">
           <i class="bi bi-calendar-check"></i>
-          Schedule Free Consultation
+          Book a Care Plan
         </a>
         <a href="https://wa.me/message/4PNWSMS5KTZUB1" class="btn-ghost">
           <i class="bi bi-telephone"></i>

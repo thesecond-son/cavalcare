@@ -1451,7 +1451,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       <div class="ac-actions">
         <a href="{{ url('/') }}#care-plans" class="btn btn-primary">
           <i class="bi bi-calendar-check"></i>
-          Schedule Free Consultation
+          Book a Care Plan
         </a>
         <a href="{{ url('/services') }}" class="btn-outline-dark">
           <i class="bi bi-grid"></i>
