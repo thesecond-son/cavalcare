@@ -1215,7 +1215,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
         <div class="reveal" style="transition-delay:.14s;">
           <p>
-            But most families aren't trained healthcare professionals. They're sons and daughters, husbands and wives —
+            But most families aren't trained healthcare professionals. They're sons and daughters, husbands and wives;
             professionals with jobs and children of their own, who love someone deeply and have no idea
             how to care for them clinically.
           </p>
@@ -1241,7 +1241,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
         <div class="origin-stat-card reveal" style="transition-delay:.18s;">
           <div class="origin-stat-num" data-count="98" data-suffix="%">98%</div>
-          <div class="origin-stat-lbl">Family satisfaction rate — measured after every care cycle</div>
+          <div class="origin-stat-lbl">Family satisfaction rate, measured after every care cycle</div>
         </div>
 
         <div class="origin-photo reveal" style="transition-delay:.26s;">
@@ -1440,7 +1440,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       </span>
 
       <h2 class="ac-heading">
-        Your loved one deserves proper care —<br>
+        Your loved one deserves proper care<br>
         <em>and we have the right healthcare professional for them</em>
       </h2>
 

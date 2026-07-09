@@ -4,21 +4,21 @@
 @section('title', 'In-Home Care Services in Nigeria — CavalCare')
 
 @push('head')
-<meta name="description" content="Explore CavalCare's in-home nursing services in Nigeria: elderly care, post-surgery recovery, post-natal care, and more. Licensed, verified nurses matched to your loved one's needs.">
-<meta name="keywords" content="in-home nursing services Nigeria, elderly care at home Nigeria, post-surgery home nurse, post-natal care Nigeria, licensed home nursing, CavalCare services">
+<meta name="description" content="Explore CavalCare's in-home healthcare services in Nigeria: elderly care, post-surgery recovery, post-natal care, and more. Licensed, verified healthcare professionals matched to your loved one's needs.">
+<meta name="keywords" content="in-home healthcare services Nigeria, elderly care at home Nigeria, post-surgery home healthcare professional, post-natal care Nigeria, licensed home healthcare, CavalCare services">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{{ url('/services') }}">
 
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="{{ url('/services') }}">
 <meta property="og:title"       content="In-Home Care Services in Nigeria — CavalCare">
-<meta property="og:description" content="Elderly care, post-surgery recovery, post-natal support and more — all delivered by licensed, verified nurses in your home.">
+<meta property="og:description" content="Elderly care, post-surgery recovery, post-natal support and more — all delivered by licensed, verified healthcare professionals in your home.">
 <meta property="og:image"       content="{{ asset('images/og-services.jpg') }}">
 <meta property="og:site_name"   content="CavalCare">
 
 <meta name="twitter:card"        content="summary_large_image">
 <meta name="twitter:title"       content="In-Home Care Services — CavalCare Nigeria">
-<meta name="twitter:description" content="Licensed nurses for elderly care, post-surgery recovery, post-natal care and more. Book online.">
+<meta name="twitter:description" content="Licensed healthcare professionals for elderly care, post-surgery recovery, post-natal care and more. Book online.">
 <meta name="twitter:image"       content="{{ asset('images/og-services.jpg') }}">
 
 <script type="application/ld+json">
@@ -30,8 +30,8 @@
     "name": "CavalCare",
     "url": "{{ url('/') }}"
   },
-  "name": "In-Home Nursing Care Services",
-  "description": "CavalCare provides licensed, verified nurses for elderly care, post-surgery recovery, post-natal support and specialist in-home nursing across Nigeria.",
+  "name": "In-Home HealthCare Services",
+  "description": "CavalCare provides licensed, verified healthcare professionals for elderly care, post-surgery recovery, post-natal support and specialist in-home healthcare across Nigeria.",
   "areaServed": "Nigeria",
   "url": "{{ url('/services') }}"
 }
@@ -879,7 +879,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         that makes you feel relieved about your <em>loved one</em>
         </h1>
         <p class="ph-sub">
-        Our nurses are trained with clinical certifications to handle any health situations that your loved one might be facing
+        Our healthcare professionals are trained with clinical certifications to handle any health situations that your loved one might be facing
         </p>
       </div>
 
@@ -917,14 +917,14 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
   <div class="marquee-track">
     @php
     $mItems = [
-      ['i'=>'bi-patch-check', 't'=>'Licensed Nurses'],
+      ['i'=>'bi-patch-check', 't'=>'Licensed Healthcare Professionals'],
       ['i'=>'bi-shield-check', 't'=>'Background Verified'],
       ['i'=>'bi-bell',         't'=>'Real-Time Reports'],
       ['i'=>'bi-clock',        't'=>'24/7 Coordinators'],
       ['i'=>'bi-heart',        't'=>'Compassionate Care'],
       ['i'=>'bi-house-heart',  't'=>'In-Home Service'],
       ['i'=>'bi-star',         't'=>'98% Satisfaction'],
-      ['i'=>'bi-patch-check', 't'=>'Licensed Nurses'],
+      ['i'=>'bi-patch-check', 't'=>'Licensed Healthcare Professionals'],
       ['i'=>'bi-shield-check', 't'=>'Background Verified'],
       ['i'=>'bi-bell',         't'=>'Real-Time Reports'],
       ['i'=>'bi-clock',        't'=>'24/7 Coordinators'],

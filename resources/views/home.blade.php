@@ -5,7 +5,7 @@
 
 @push('head')
 {{-- Primary SEO --}}
-<meta name="description" content="CavalCare connects Nigerian families with verified, licensed healthcare professionals for in-home care — elderly care, post-surgery recovery, post-natal support & more. Real-time visit reports. 24/7 support.">
+<meta name="description" content="CavalCare connects Nigerian families with verified, licensed healthcare professionals for in-home care; elderly care, post-surgery recovery, post-natal support & more. Real-time visit reports. 24/7 support.">
 <meta name="keywords" content="in-home healthcare Nigeria, home healthcare professional Lagos, elderly care healthcare professional Nigeria, post-surgery home care, post-natal healthcare professional, licensed home healthcare professional, CavalCare">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{{ url('/') }}">
@@ -1914,7 +1914,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       ],
       [
         'q' => 'What happens if I am not happy with my assigned healthcare professional?',
-        'a' => 'Your satisfaction matters deeply to us. If for any reason the assigned healthcare professional is not the right fit, simply contact our support team and we will arrange a replacement as quickly as possible — no questions asked. Our goal is to give both you and your loved one full peace of mind.',
+        'a' => 'Your satisfaction matters deeply to us. If for any reason the assigned healthcare professional is not the right fit, simply contact our support team and we will arrange a replacement as quickly as possible, no questions asked. Our goal is to give both you and your loved one full peace of mind.',
       ],
       [
         'q' => 'Are your services available outside Lagos?',
