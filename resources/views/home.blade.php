@@ -1752,7 +1752,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             </li>
             @endforeach
           </ul>
-          <a href="{{ url('/book/' . $plan->id) }}"
+          <a href="{{ route('booking.create', $plan->slug) }}"
              class="plan-cta {{ $pop ? 'plan-cta-featured' : 'plan-cta-default' }}">
             {{ $pop ? 'Get Started' : 'Choose Plan' }}
           </a>

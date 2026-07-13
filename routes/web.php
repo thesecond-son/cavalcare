@@ -18,7 +18,16 @@ Route::get('/services', [ServiceController::class, 'index'])->name('services');
 
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
-Route::get('/book/{carePlan}', [BookingController::class, 'create'])->name('booking.create');
+// ── Booking ───────────────────────────────────────────────────────────────
+// {carePlan} now resolves by the `slug` column (see CarePlan::getRouteKeyName).
+// URLs look like /book/full-care-plan-abc12 instead of /book/3.
+// Laravel still returns 404 automatically when the slug isn't found.
+ 
+Route::get('/book/{carePlan:slug}', [BookingController::class, 'create'])
+     ->name('booking.create');
+
+Route::post('/book/calculate-price', [BookingController::class, 'calculatePrice'])
+     ->name('booking.calculate-price');
 
 Route::post('/book/initiate', [BookingController::class, 'initiate'])->name('booking.initiate');
 
