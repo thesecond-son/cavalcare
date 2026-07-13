@@ -818,10 +818,10 @@ a { color:inherit; text-decoration:none; }
 
           {{-- PAY BUTTON (shown after price reveal) --}}
           <div class="pay-btn-wrap" id="payBtnWrap" style="display:none; margin-top:16px;">
-            <button type="button" id="payBtn" class="pay-btn">
+            <!-- <button type="button" id="payBtn" class="pay-btn">
               <i class="bi bi-credit-card-2-front"></i>
               Pay Now & Get Started
-            </button>
+            </button> -->
             <p class="pay-btn-hint">
               <i class="bi bi-shield-lock"></i>
               Secured by Paystack · SSL encrypted

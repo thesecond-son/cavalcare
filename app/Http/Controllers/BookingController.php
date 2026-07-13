@@ -14,10 +14,12 @@ use App\Mail\BookingReceivedMail;
 
 class BookingController extends Controller
 {
-    public function create(CarePlan $carePlan)
+    public function create(CarePlan $carePlan, ?CareType $careType = null)
     {
         return view('bookings.create', [
-            'carePlan'  => $carePlan,
+            'carePlan'          => $carePlan,
+            'preselectedCareType' => $careType,
+            'carePlans' => CarePlan::orderBy('name')->get(),
             'careTypes' => CareType::orderBy('name')->get(),
             'addOns'    => AddOn::where('is_active', true)->orderBy('name')->get(),
         ]);

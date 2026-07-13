@@ -26,6 +26,9 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/book/{carePlan:slug}', [BookingController::class, 'create'])
      ->name('booking.create');
 
+Route::get('/book/service/{careType}', [BookingController::class, 'create'])
+     ->name('booking.create.service');
+
 Route::post('/book/calculate-price', [BookingController::class, 'calculatePrice'])
      ->name('booking.calculate-price');
 

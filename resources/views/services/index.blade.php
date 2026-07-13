@@ -1014,11 +1014,11 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
   @endif
 
-          <a href="{{ url('/book') }}?service={{ $careType->id }}"
-             class="btn btn-primary">
-            Book {{ $careType->name }}
-            <i class="bi bi-arrow-right"></i>
-          </a>
+  <a href="{{ route('booking.create.service', $careType->slug) }}"
+          class="btn btn-primary">
+          Book {{ $careType->name }}
+          <i class="bi bi-arrow-right"></i>
+        </a>
 
         </div>
 
@@ -1045,7 +1045,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
               <p class="svc-chip-sub">{{ Str::limit($desc, 100) }}</p>
             @endif
     
-            <a href="{{ url('/book') }}?service={{ $careType->id }}" class="chip-book">
+            <a href="{{ route('booking.create.service', $careType->slug) }}" class="chip-book">
               Book this service
               <i class="bi bi-arrow-right"></i>
             </a>
