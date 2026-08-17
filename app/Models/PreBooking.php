@@ -42,6 +42,11 @@ class PreBooking extends Model
         return $this->belongsTo(CareType::class);
     }
 
+    public function booking()
+    {
+        return $this->hasOne(Booking::class);
+    }
+
     public function addOns()
     {
         return $this->belongsToMany(

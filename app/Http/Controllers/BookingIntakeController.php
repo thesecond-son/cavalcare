@@ -95,6 +95,10 @@ class BookingIntakeController extends Controller
             'booking_details' => $data['booking_details'],
         ]);
 
+        $preBooking->update([
+            'status' => 'converted',
+        ]);
+
         // Send confirmation email — get the client email from the pre-booking
         $email = $preBooking->booker_details['email'] ?? null;
         if ($email) {

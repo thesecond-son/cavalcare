@@ -54,6 +54,11 @@ class Booking extends Model
         return $this->belongsTo(CareType::class);
     }
 
+    public function preBooking()
+    {
+        return $this->belongsTo(PreBooking::class);
+    }
+
      // ── Token generation ───────────────────────────────────
  
     /**
