@@ -11,6 +11,7 @@ use App\Models\CarePlan;
 use App\Models\PreBooking;
 use App\Models\AddOn;
 use App\Mail\BookingReceivedMail;
+use App\Mail\IntakeFormLinkMail;
 
 class BookingController extends Controller
 {
@@ -111,8 +112,8 @@ class BookingController extends Controller
             ]);
 
             try {
-                Mail::to($preBooking->booker_details['email'])->send(
-                    new BookingReceivedMail($preBooking)
+                Mail::to($preBooking->booker_details['email'])
+                ->send(new IntakeFormLinkMail($preBooking)
                 );
             } catch (\Throwable $e) {
                 report($e);

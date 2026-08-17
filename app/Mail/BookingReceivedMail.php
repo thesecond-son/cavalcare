@@ -37,7 +37,7 @@ class BookingReceivedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.booking-received',
+            view: 'emails.intake-form',
             with: [
                 'preBooking' => $this->preBooking,
 
