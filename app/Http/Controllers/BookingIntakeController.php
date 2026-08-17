@@ -17,19 +17,30 @@ class BookingIntakeController extends Controller
      * {preBooking} is resolved by token via PreBooking::getRouteKeyName().
      */
     public function show(PreBooking $preBooking)
-    {
-        // If intake already done, the view handles the "already submitted" state
-        $preBooking->load('carePlan', 'careType');
+{
+    // Has this PreBooking already been converted into a Booking?
+    $existingBooking = $preBooking->booking;
 
-        return view('bookings.intake-form', [
-            'booking'  => $preBooking,   // the view uses $booking — PreBooking has the same fields it needs
-            'carePlan' => $preBooking->carePlan,
-            'careType' => $preBooking->careType,
-            'token'    => $preBooking->token,
-            // Tell the view whether this has already been submitted
-            'alreadySubmitted' => $preBooking->booking()->exists(),
+    if ($existingBooking) {
+        return view('bookings.intake-already-submitted', [
+            'booking' => $existingBooking,
+            'preBooking' => $preBooking,
         ]);
     }
+
+    $preBooking->load('carePlan', 'careType');
+
+    $durationDays = $preBooking->carePlan?->meta['duration_days'] ?? null;
+
+    return view('bookings.intake-form', [
+        'booking' => $preBooking,
+        'carePlan' => $preBooking->carePlan,
+        'careType' => $preBooking->careType,
+        'token' => $preBooking->token,
+        'durationDays' => $durationDays,
+        'alreadySubmitted' => false,
+    ]);
+}
 
     /**
      * POST /intake/{preBooking}
@@ -105,6 +116,16 @@ class BookingIntakeController extends Controller
             Mail::to($email)->send(new IntakeConfirmation($booking, $preBooking));
         }
 
-        return response()->json(['success' => true], 200);
+        return response()->json([
+            'success'  => true,
+            'redirect' => route('booking.intake.confirmation', $booking->id),
+        ], 200);
+    }
+
+    public function confirmation(Booking $booking)
+    {
+        return view('bookings.intake-confirmation', [
+            'booking' => $booking,
+        ]);
     }
 }

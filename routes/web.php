@@ -48,6 +48,9 @@ Route::get('/intake/{preBooking}',  [BookingIntakeController::class, 'show'])
 Route::post('/intake/{preBooking}', [BookingIntakeController::class, 'submit'])
      ->name('booking.intake.submit');
 
+Route::get('/intake/confirmation/{booking}', [BookingIntakeController::class, 'confirmation'])
+     ->name('booking.intake.confirmation');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
