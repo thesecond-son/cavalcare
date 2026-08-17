@@ -103,14 +103,19 @@ class BookingController extends Controller
         $verification = $this->verifyPaystack($data['paystack_reference']);
 
         if ($verification['status'] === 'paid') {
-            $preBooking->generateToken()->save();
+           
+            // Generate the private intake token
+            $preBooking->generateToken();
+            $preBooking->save();
 
+            // Mark payment as successful
             $preBooking->update([
                 'status'             => 'paid',
                 'paystack_reference' => $data['paystack_reference'],
                 'amount_paid'        => $verification['amount'],
             ]);
 
+            // Send the intake form email
             try {
                 Mail::to($preBooking->booker_details['email'])
                 ->send(new IntakeFormLinkMail($preBooking)

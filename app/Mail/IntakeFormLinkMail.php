@@ -48,7 +48,7 @@ class IntakeFormLinkMail extends Mailable
 
                 'intakeUrl' => route(
                     'booking.intake',
-                    ['token' => $this->preBooking->token]
+                    ['preBooking' => $this->preBooking->token]
                 ),
             ],
         );

@@ -13,17 +13,11 @@ class BookingReceivedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct(
         public PreBooking $preBooking
     ) {
     }
 
-    /**
-     * Email subject.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -31,38 +25,26 @@ class BookingReceivedMail extends Mailable
         );
     }
 
-    /**
-     * Email content.
-     */
     public function content(): Content
     {
         return new Content(
-            view: 'emails.intake-form',
+            view: 'emails.intake-form-link',
             with: [
                 'preBooking' => $this->preBooking,
 
                 'firstName' => explode(
                     ' ',
-                    $this->preBooking->booker_details['name'] ?? ''
+                    $this->preBooking->booker_details['name']
                 )[0],
 
-                'planName' => $this->preBooking->carePlan?->name ?? 'N/A',
+                'planName' => $this->preBooking->carePlan->name,
 
-                'careType' => $this->preBooking->careType?->name ?? 'N/A',
+                'careType' => $this->preBooking->careType->name,
 
-                'intakeUrl' => route(
-                    'booking.intake',
-                    $this->preBooking->token
-                ),
+                'intakeUrl' => route('booking.intake', [
+                    'preBooking' => $this->preBooking->token,
+                ]),
             ],
         );
-    }
-
-    /**
-     * Email attachments.
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }
