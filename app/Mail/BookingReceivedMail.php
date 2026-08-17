@@ -2,26 +2,28 @@
 
 namespace App\Mail;
 
+use App\Models\PreBooking;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\PreBooking;
 
 class BookingReceivedMail extends Mailable
 {
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public PreBooking $preBooking)
-    {
-       
+    public function __construct(
+        public PreBooking $preBooking
+    ) {
     }
 
+    /**
+     * Email subject.
+     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -29,18 +31,38 @@ class BookingReceivedMail extends Mailable
         );
     }
 
-    public function build()
+    /**
+     * Email content.
+     */
+    public function content(): Content
     {
         return new Content(
-            view: 'emails.booking-received',  // your existing template
+            view: 'emails.booking-received',
             with: [
                 'preBooking' => $this->preBooking,
-                'firstName'  => explode(' ', $this->preBooking->booker_details['name'])[0],
-                'planName'   => $this->preBooking->carePlan->name,
-                'careType'   => $this->preBooking->careType->name,
-                // ── NEW: pass the intake URL into your template ──
-                'intakeUrl'  => route('booking.intake', $this->preBooking->token),
+
+                'firstName' => explode(
+                    ' ',
+                    $this->preBooking->booker_details['name'] ?? ''
+                )[0],
+
+                'planName' => $this->preBooking->carePlan?->name ?? 'N/A',
+
+                'careType' => $this->preBooking->careType?->name ?? 'N/A',
+
+                'intakeUrl' => route(
+                    'booking.intake',
+                    $this->preBooking->token
+                ),
             ],
         );
+    }
+
+    /**
+     * Email attachments.
+     */
+    public function attachments(): array
+    {
+        return [];
     }
 }

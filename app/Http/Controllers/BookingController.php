@@ -110,9 +110,13 @@ class BookingController extends Controller
                 'amount_paid'        => $verification['amount'],
             ]);
 
-            Mail::to($preBooking->booker_details['email'])->send(
-                new BookingReceivedMail($preBooking)
-            );
+            try {
+                Mail::to($preBooking->booker_details['email'])->send(
+                    new BookingReceivedMail($preBooking)
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return response()->json([
                 'success'  => true,
