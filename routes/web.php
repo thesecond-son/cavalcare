@@ -23,7 +23,7 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 // URLs look like /book/full-care-plan-abc12 instead of /book/3.
 // Laravel still returns 404 automatically when the slug isn't found.
  
-Route::get('/book/{carePlan:slug}', [BookingController::class, 'create'])
+Route::get('/book/{careType:slug}', [BookingController::class, 'create'])
      ->name('booking.create');
 
 Route::get('/book/service/{careType}', [BookingController::class, 'create'])

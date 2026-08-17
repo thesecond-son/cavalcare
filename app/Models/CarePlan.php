@@ -11,43 +11,67 @@ class CarePlan extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'care_type_id',   // ← new: parent care type
         'name',
         'slug',
         'price',
+        'description',    // ← new: shown on booking page
+        'billing_cycle',  // ← new: per_day | per_night | per_24h | per_week | per_month | flat
         'meta',
     ];
 
     protected $casts = [
-        'meta' => 'array',
+        'meta'       => 'array',
+        'price'      => 'integer',
+        'price_from' => 'boolean',
     ];
 
-    // ─── Slug: auto-generate on create ───────────────────────────────────
+    // ─── Auto-generate slug on create ────────────────────────────────────
 
     protected static function booted(): void
     {
         static::creating(function (CarePlan $plan) {
             if (empty($plan->slug)) {
-                // Append a short random suffix so slugs stay unique
-                // even if two plans have the same name.
                 $plan->slug = Str::slug($plan->name) . '-' . Str::lower(Str::random(5));
             }
         });
     }
 
-    // ─── Route model binding — uses slug instead of id ───────────────────
-    //
-    // Laravel will now resolve {carePlan} in routes by looking up
-    // the slug column instead of the primary key. If the slug doesn't
-    // exist it automatically returns a 404 — exactly the same safety
-    // as before, but with a human-readable URL like /book/full-care-plan-abc12
-    // instead of /book/3.
+    // ─── Route model binding — uses slug ─────────────────────────────────
 
     public function getRouteKeyName(): string
     {
         return 'slug';
     }
 
-    // ─── Convenience: pull features out of meta ──────────────────────────
+    // ─── Billing cycle label ──────────────────────────────────────────────
+    // Returns a human-readable suffix like "/day", "/week", etc.
+
+    public function getBillingLabelAttribute(): string
+    {
+        return match ($this->billing_cycle) {
+            'per_day'   => '/day',
+            'per_night' => '/night',
+            'per_24h'   => '/24 hours',
+            'per_week'  => '/week',
+            'per_month' => '/month',
+            'flat'      => ' (one-time)',
+            default     => '',
+        };
+    }
+
+    // ─── Formatted price string ───────────────────────────────────────────
+    // e.g. "₦35,000/day"  or  "from ₦40,000"
+
+    public function getFormattedPriceAttribute(): string
+    {
+        $amount = '₦' . number_format($this->price);
+        $label  = $this->billing_label;
+
+        return $amount . $label;
+    }
+
+    // ─── Convenience: features from meta ─────────────────────────────────
 
     public function getFeaturesAttribute(): array
     {
@@ -56,18 +80,18 @@ class CarePlan extends Model
 
     // ─── Relationships ────────────────────────────────────────────────────
 
-    public function caregivers()
+    public function careType()
     {
-        return $this->belongsToMany(
-            Caregiver::class,
-            'caregiver_care_plan',
-            'care_plan_id',
-            'caregiver_id'
-        );
+        return $this->belongsTo(CareType::class);
     }
 
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function preBookings()
+    {
+        return $this->hasMany(PreBooking::class);
     }
 }

@@ -1456,7 +1456,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           </p>
 
           <div class="hero-actions">
-            <a href="#care-plans" class="btn btn-primary">
+            <a href="#care-plans-cta" class="btn btn-primary">
               Get Started Here
               <i class="bi bi-arrow-right"></i>
             </a>
@@ -1637,11 +1637,11 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       @foreach ($careTypes as $index => $careType)
         @php
           $meta = $careType->meta ?? [];
-          $icon = $meta['bi_icon'] ?? ($svcIcons[$index % count($svcIcons)]);
-          $description = $meta['description'] ?? 'Professional care tailored to your family\'s needs.';
+          $icon = $meta['icon'] ?? ($svcIcons[$index % count($svcIcons)]);
+          $description = $careType->description ?? 'Professional care tailored to your family\'s needs.';
           $col = $svcColors[$index % count($svcColors)];
         @endphp
-        <a href="#" class="svc-card {{ $col }} reveal" style="transition-delay:{{ $index * 0.07 }}s;" aria-label="{{ $careType->name }}">
+        <a href="{{ route('services') }}#service-{{ $careType->id }}" class="svc-card {{ $col }} reveal" style="transition-delay:{{ $index * 0.07 }}s;" aria-label="{{ $careType->name }}">
           <div class="svc-icon-wrap">
             <i class="bi {{ $icon }}"></i>
           </div>
@@ -1701,63 +1701,57 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 </section>
 
 
-{{-- ── CARE PLANS ───────────────────────────────────── --}}
-<section id="care-plans" class="plans-sec" aria-label="Care plans">
+{{-- ── CARE PLANS ───────────────────────────────────────
+     CareType cards, each listing its CarePlans, shown above the
+     "View Care Plans" CTA button. ── --}}
+<section id="care-plans-cta" class="plans-sec" aria-label="Care plans">
   <div class="wrap">
-
-    <div class="reveal">
+    <div class="reveal" style="text-align:center;">
       <span class="pill pill-peach sec-eyebrow">Flexible Pricing</span>
       <h2 class="sec-title">
-      There is specific Care plan that works<br>
+      There is a specific Care plan that works<br>
         <em style="font-style:italic;color:var(--indigo)">for you</em>
       </h2>
-      <p class="sec-sub">
-      We have daily plans, weekend plans, flexible and monthly plans depending on what you think your loved ones need, 
-      so you can feel at peace
+      <p class="sec-sub" style="margin-left:auto;margin-right:auto;text-align:center;">
+      Every care type has its own set of daily, weekly and monthly plans.
+      Browse a service to see the plans and pricing that fit your loved one's needs.
       </p>
     </div>
 
     <div class="plans-scroll">
-      @foreach($carePlans as $index => $plan)
-        @php
-          $meta = $plan->meta ?? [];
-          $recommended = $meta['recommended_for'] ?? [];
-          $pop = ($index === 1);
-        @endphp
-        <div class="plan-card {{ $pop ? 'plan-featured' : '' }} reveal"
-             style="transition-delay:{{ $index * 0.08 }}s;" role="article">
-          @if($pop)
-            <div class="plan-badge" aria-label="Most popular plan">Most Popular</div>
+      @foreach ($careTypes as $ctIndex => $careType)
+        @php $ctPlans = $careType->carePlans; @endphp
+        @if($ctPlans->isNotEmpty())
+        <div class="plan-card{{ $ctIndex === 1 ? ' plan-featured' : '' }} reveal" style="transition-delay:{{ $ctIndex * 0.08 }}s;">
+          @if($ctIndex === 1)
+            <span class="plan-badge">Popular</span>
           @endif
           <div>
-            <div class="plan-name">{{ $plan->name }}</div>
-            <div class="plan-meta">
-              {{ $meta['daily_hours'] ?? 'Flexible' }} hrs/day ·
-              {{ $meta['duration_days'] ?? 'Ongoing' }} days
-            </div>
+            <div class="plan-name">{{ $careType->name }}</div>
+            <div class="plan-meta">{{ $ctPlans->count() }} plan{{ $ctPlans->count() > 1 ? 's' : '' }} available</div>
           </div>
-          <ul class="plan-feats" aria-label="Plan features">
-            <li class="plan-feat">
-              <span class="plan-check" aria-hidden="true">
-                <i class="bi bi-check"></i>
-              </span>
-              Up to {{ $meta['max_caregivers'] ?? 1 }} dedicated caregiver(s)
-            </li>
-            @foreach($recommended as $ctId)
-            <li class="plan-feat">
-              <span class="plan-check" aria-hidden="true">
-                <i class="bi bi-check"></i>
-              </span>
-              {{ \App\Models\CareType::find($ctId)?->name }}
-            </li>
+          <ul class="plan-feats">
+            @foreach($ctPlans as $plan)
+              <li class="plan-feat">
+                <span class="plan-check"><i class="bi bi-check"></i></span>
+                <span>{{ $plan->name }} — {{ $plan->formatted_price }}</span>
+              </li>
             @endforeach
           </ul>
-          <a href="{{ route('booking.create', $plan->slug) }}"
-             class="plan-cta {{ $pop ? 'plan-cta-featured' : 'plan-cta-default' }}">
-            {{ $pop ? 'Get Started' : 'Choose Plan' }}
+          <a href="{{ route('booking.create', $careType->slug) }}"
+             class="plan-cta {{ $ctIndex === 1 ? 'plan-cta-featured' : 'plan-cta-default' }}">
+            View Plans
           </a>
         </div>
+        @endif
       @endforeach
+    </div>
+
+    <div class="reveal" style="text-align:center;margin-top:36px;">
+      <a href="{{ route('services') }}" class="btn btn-primary" style="margin-top:20px;">
+        View Care Plans
+        <i class="bi bi-arrow-right"></i>
+      </a>
     </div>
 
     <div class="reveal" style="text-align:center;margin-top:36px;transition-delay:.3s;">
@@ -1806,7 +1800,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         </ul>
 
         <div style="margin-top:28px;">
-          <a href="#care-plans" class="btn btn-primary">
+          <a href="#care-plans-cta" class="btn btn-primary">
             Get Started Here
             <i class="bi bi-arrow-right"></i>
           </a>
@@ -1865,7 +1859,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             </a>
           </div>
 
-          <a href="#care-plans" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;font-size:.86rem;padding:12px;">
+          <a href="#care-plans-cta" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;font-size:.86rem;padding:12px;">
             Book a Healthcare Professional →
           </a>
         </div>
@@ -1977,7 +1971,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       </p>
 
       <div class="cta-actions">
-        <a href="#care-plans" class="btn btn-yellow">
+        <a href="#care-plans-cta" class="btn btn-yellow">
           <i class="bi bi-calendar-check"></i>
           Book a Care Plan
         </a>

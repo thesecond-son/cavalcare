@@ -10,24 +10,13 @@ class ServiceController extends Controller
 {
     public function index()
 {
-    $carePlans = CarePlan::orderBy('price')->get();
-
-    $plans = CarePlan::query()
-    ->get()
-    ->map(function ($plan) {
-        $plan->care_types = \App\Models\CareType::whereIn(
-            'id',
-            data_get($plan->meta, 'recommended_for', [])
-        )->pluck('name');
-
-        return $plan;
-    });
-
+    // Each care type carries its own ordered list of plans, so the view
+    // can render "plans under each care type" instead of one flat list.
     $careTypes = CareType::query()
-        ->whereNotNull('meta->description')
+        ->with(['carePlans' => fn ($q) => $q->orderBy('price')])
+        ->orderBy('name')
         ->get();
 
-
-    return view('services.index', compact('carePlans', 'careTypes', 'plans'));
+    return view('services.index', compact('careTypes'));
 }
 }

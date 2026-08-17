@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class PreBooking extends Model
 {
@@ -41,5 +42,12 @@ class PreBooking extends Model
             'pre_booking_id',       // this model's foreign key on the pivot
             'add_on_id'             // related model's foreign key on the pivot
         )->withPivot('price_at_booking');
+    }
+
+    public function generateToken(): self
+    {
+        $this->token = Str::random(64);
+
+        return $this;
     }
 }

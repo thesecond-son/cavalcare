@@ -1,8 +1,8 @@
 {{-- resources/views/bookings/intake.blade.php --}}
 {{--
   ROUTE:   GET  /intake/{token}    → BookingIntakeController@show
-  POST:    POST /intake/{token}    → BookingIntakeController@submit
-  The $booking is resolved from the signed token. Never expose the booking ID in the URL.
+           POST /intake/{token}    → BookingIntakeController@submit
+  $booking is a PreBooking resolved by token.
 --}}
 @extends('layouts.app')
 
@@ -18,7 +18,7 @@
 
 <style>
 /* ═══════════════════════════════════════════════
-   TOKENS — identical to every CavalCare page
+   TOKENS
 ═══════════════════════════════════════════════ */
 :root{
   --cream:#F0FFDB; --yellow:#04A9A7; --ocean:#1A3A2F;
@@ -65,7 +65,7 @@ a{color:inherit;}
 @media(max-width:767px){.wrap{padding:0 16px;}}
 
 /* ═══════════════════════════════════════════════
-   NAV (minimal — no links, just logo + secure badge)
+   NAV
 ═══════════════════════════════════════════════ */
 .intake-nav{
   position:fixed;top:0;left:0;right:0;z-index:200;
@@ -107,12 +107,9 @@ a{color:inherit;}
   bottom:-12%;left:-8%;}
 
 /* ═══════════════════════════════════════════════
-   PAGE HERO HEADER
+   PAGE HERO
 ═══════════════════════════════════════════════ */
-.intake-hero{
-  padding:44px 0 36px;
-  text-align:center;
-}
+.intake-hero{padding:44px 0 36px;text-align:center;}
 @media(max-width:767px){.intake-hero{padding:32px 0 24px;}}
 
 .intake-hero-pill{
@@ -146,14 +143,14 @@ a{color:inherit;}
   max-width:500px;margin:0 auto;line-height:1.72;
 }
 
-/* ── booking summary ribbon ── */
+/* ── booking ribbon ── */
 .booking-ribbon{
   display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 20px;
   margin:20px auto 0;
   padding:14px 20px;
   background:#fff;border-radius:var(--r-lg);
   border:1px solid rgba(26,58,47,.08);
-  max-width:600px;
+  max-width:620px;
   font-size:.82rem;color:var(--muted);
 }
 .br-item{display:flex;align-items:center;gap:7px;}
@@ -165,32 +162,21 @@ a{color:inherit;}
 /* ═══════════════════════════════════════════════
    PROGRESS BAR
 ═══════════════════════════════════════════════ */
-.progress-wrap{
-  max-width:600px;margin:0 auto 36px;
-  padding:0 0 0;
-}
+.progress-wrap{max-width:600px;margin:0 auto 36px;}
 @media(max-width:767px){.progress-wrap{margin-bottom:24px;}}
 .progress-steps{
   display:flex;align-items:flex-start;justify-content:space-between;
-  position:relative;gap:0;
+  position:relative;
 }
 .progress-steps::before{
-  content:'';
-  position:absolute;
+  content:'';position:absolute;
   top:14px;left:14px;right:14px;
-  height:2px;
-  background:rgba(26,58,47,.12);
-  z-index:0;
+  height:2px;background:rgba(26,58,47,.12);z-index:0;
 }
 .progress-fill{
-  content:'';
-  position:absolute;
-  top:14px;left:14px;
-  height:2px;
-  background:var(--ocean);
-  z-index:1;
-  width:var(--prog-w,0%);
-  transition:width .5s var(--smooth);
+  position:absolute;top:14px;left:14px;
+  height:2px;background:var(--ocean);z-index:1;
+  width:var(--prog-w,0%);transition:width .5s var(--smooth);
 }
 .ps-step{
   display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -210,8 +196,7 @@ a{color:inherit;}
 }
 .ps-step.done .ps-dot{
   border-color:var(--ocean);background:var(--ocean);color:#fff;
-  font-size:.8rem;
-  animation:checkBounce .4s var(--spring);
+  font-size:.8rem;animation:checkBounce .4s var(--spring);
 }
 .ps-label{
   font-size:.6rem;font-weight:600;
@@ -231,8 +216,6 @@ a{color:inherit;}
   overflow:hidden;
   margin-bottom:24px;
 }
-
-/* section header inside card */
 .isec-header{
   padding:22px 28px 0;
   display:flex;align-items:flex-start;gap:14px;
@@ -255,11 +238,10 @@ a{color:inherit;}
   font-size:1.15rem;font-weight:400;line-height:1.2;color:var(--ocean);
 }
 .isec-sub{font-size:.8rem;color:var(--muted);margin-top:3px;line-height:1.5;}
-
 .isec-body{padding:20px 28px 28px;}
 @media(max-width:479px){.isec-body{padding:16px 18px 22px;}}
 
-/* ── field styles (matches create.blade.php) ── */
+/* ── fields ── */
 .field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
 .field-group:last-child{margin-bottom:0;}
 .field-label{font-size:.8rem;font-weight:600;color:var(--ocean);letter-spacing:.01em;}
@@ -283,12 +265,9 @@ a{color:inherit;}
   background:#fafffe;
 }
 .field-input.has-error,.field-select.has-error,.field-textarea.has-error{
-  border-color:var(--danger);
-  box-shadow:0 0 0 3px rgba(192,57,43,.08);
+  border-color:var(--danger);box-shadow:0 0 0 3px rgba(192,57,43,.08);
 }
-.field-input.is-valid,.field-select.is-valid,.field-textarea.is-valid{
-  border-color:var(--success);
-}
+.field-input.is-valid,.field-select.is-valid,.field-textarea.is-valid{border-color:var(--success);}
 .field-textarea{resize:vertical;min-height:80px;line-height:1.6;}
 
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -301,13 +280,10 @@ a{color:inherit;}
   color:var(--muted);font-size:.9rem;pointer-events:none;
 }
 
-.v-error{
-  display:flex;align-items:center;gap:5px;
-  font-size:.72rem;color:var(--danger);margin-top:3px;
-}
+.v-error{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--danger);margin-top:3px;}
 .v-error i{font-size:11px;flex-shrink:0;}
 
-/* ── repeater (medications / allergies / tasks) ── */
+/* ── repeater ── */
 .repeater-wrap{display:flex;flex-direction:column;gap:10px;}
 .repeater-item{
   display:flex;align-items:flex-start;gap:8px;
@@ -317,22 +293,15 @@ a{color:inherit;}
   transition:border-color .2s,box-shadow .2s;
   animation:fadeUp .3s var(--out) both;
 }
-.repeater-item:focus-within{
-  border-color:rgba(26,58,47,.2);
-  box-shadow:0 2px 12px rgba(26,58,47,.05);
-}
+.repeater-item:focus-within{border-color:rgba(26,58,47,.2);box-shadow:0 2px 12px rgba(26,58,47,.05);}
 .repeater-item .field-input,.repeater-item .field-textarea{
-  border:none;background:transparent;padding:4px 6px;
-  box-shadow:none;font-size:.9rem;
+  border:none;background:transparent;padding:4px 6px;box-shadow:none;font-size:.9rem;
 }
-.repeater-item .field-input:focus,.repeater-item .field-textarea:focus{
-  box-shadow:none;background:transparent;
-}
+.repeater-item .field-input:focus,.repeater-item .field-textarea:focus{box-shadow:none;background:transparent;}
 .repeater-remove{
   width:30px;height:30px;flex-shrink:0;
   background:none;border:none;cursor:pointer;
-  border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
   color:var(--muted);margin-top:2px;
   transition:background .2s,color .2s,transform .2s var(--spring);
   -webkit-tap-highlight-color:transparent;
@@ -353,11 +322,8 @@ a{color:inherit;}
 .char-count{font-size:.68rem;color:var(--muted);text-align:right;margin-top:2px;}
 .char-count.over{color:var(--danger);}
 
-/* ── section divider within card ── */
-.isec-divider{
-  height:1px;background:rgba(26,58,47,.07);
-  margin:0 28px;
-}
+/* ── section divider ── */
+.isec-divider{height:1px;background:rgba(26,58,47,.07);margin:0 28px;}
 @media(max-width:479px){.isec-divider{margin:0 18px;}}
 
 /* ═══════════════════════════════════════════════
@@ -369,23 +335,17 @@ a{color:inherit;}
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid rgba(26,58,47,.08);
   padding:14px 20px max(14px, env(safe-area-inset-bottom));
-  z-index:100;
-  transition:box-shadow .3s;
+  z-index:100;transition:box-shadow .3s;
 }
 .submit-footer.elevated{box-shadow:0 -4px 24px rgba(26,58,47,.1);}
 .submit-footer-inner{
   max-width:860px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
 }
-.sf-left{
-  display:flex;align-items:center;gap:8px;
-  font-size:.78rem;color:var(--muted);
-}
+.sf-left{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);}
 .sf-left i{font-size:15px;color:var(--ocean);}
 .sf-right{display:flex;align-items:center;gap:10px;}
 
-/* ── submit button ── */
 .submit-btn{
   display:inline-flex;align-items:center;gap:9px;
   font-family:'Cabin',sans-serif;font-size:.95rem;font-weight:600;
@@ -395,8 +355,7 @@ a{color:inherit;}
   box-shadow:0 4px 16px rgba(26,58,47,.22);
   position:relative;overflow:hidden;
   transition:transform .22s var(--spring),box-shadow .22s,background .18s,opacity .2s;
-  -webkit-tap-highlight-color:transparent;
-  min-height:48px;
+  -webkit-tap-highlight-color:transparent;min-height:48px;
 }
 .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,58,47,.3);}
 .submit-btn:active{transform:scale(.96)!important;}
@@ -409,7 +368,6 @@ a{color:inherit;}
   transform:scale(0);animation:ripple .6s ease-out forwards;
 }
 
-/* ── save draft button ── */
 .save-draft-btn{
   display:inline-flex;align-items:center;gap:7px;
   font-family:'Cabin',sans-serif;font-size:.85rem;font-weight:600;
@@ -417,39 +375,28 @@ a{color:inherit;}
   padding:12px 20px;border-radius:var(--r-sm);
   border:1.5px solid rgba(26,58,47,.22);cursor:pointer;
   transition:background .2s,border-color .2s,transform .22s var(--spring);
-  -webkit-tap-highlight-color:transparent;
-  min-height:48px;
+  -webkit-tap-highlight-color:transparent;min-height:48px;
 }
 .save-draft-btn:hover{background:rgba(26,58,47,.05);border-color:rgba(26,58,47,.35);}
 
 /* ═══════════════════════════════════════════════
    SUCCESS STATE
 ═══════════════════════════════════════════════ */
-.intake-success{
-  display:none;
-  text-align:center;
-  padding:72px 24px 80px;
-}
+.intake-success{display:none;text-align:center;padding:72px 24px 80px;}
 .success-ico-wrap{
   width:80px;height:80px;border-radius:50%;
   background:rgba(4,169,167,.12);
   display:flex;align-items:center;justify-content:center;
-  margin:0 auto 24px;
-  animation:checkBounce .6s var(--spring);
+  margin:0 auto 24px;animation:checkBounce .6s var(--spring);
 }
 .success-ico-wrap i{font-size:36px;color:var(--yellow);}
 .success-title{
   font-family:'Nanum Myeongjo',serif;
   font-size:clamp(1.7rem,5vw,2.4rem);
-  font-weight:400;line-height:1.1;color:var(--ocean);
-  margin-bottom:12px;
+  font-weight:400;line-height:1.1;color:var(--ocean);margin-bottom:12px;
 }
 .success-sub{font-size:.97rem;color:var(--muted);max-width:440px;margin:0 auto 28px;line-height:1.72;}
-.success-next{
-  display:flex;flex-direction:column;gap:10px;
-  max-width:400px;margin:0 auto;
-  list-style:none;
-}
+.success-next{display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;list-style:none;}
 .sn-item{
   display:flex;align-items:flex-start;gap:12px;
   background:#fff;border-radius:var(--r-md);
@@ -466,9 +413,7 @@ a{color:inherit;}
 /* ═══════════════════════════════════════════════
    ALREADY SUBMITTED STATE
 ═══════════════════════════════════════════════ */
-.intake-already{
-  text-align:center;padding:72px 24px;
-}
+.intake-already{text-align:center;padding:72px 24px;}
 .already-ico{font-size:48px;color:var(--yellow);margin-bottom:20px;}
 .already-title{
   font-family:'Nanum Myeongjo',serif;
@@ -478,7 +423,7 @@ a{color:inherit;}
 .already-sub{font-size:.95rem;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.7;}
 
 /* ═══════════════════════════════════════════════
-   MOBILE REFINEMENTS
+   MOBILE
 ═══════════════════════════════════════════════ */
 @media(max-width:767px){
   .intake-hero{padding:28px 0 20px;}
@@ -505,7 +450,7 @@ a{color:inherit;}
 
 @section('content')
 
-{{-- ═══════════════ MINIMAL NAV ═══════════════ --}}
+{{-- MINIMAL NAV --}}
 <nav class="intake-nav" id="intakeNav" aria-label="Page navigation">
   <div class="intake-nav-inner">
     <a href="{{ url('/') }}" class="intake-nav-logo" aria-label="CavalCare home">
@@ -518,30 +463,27 @@ a{color:inherit;}
   </div>
 </nav>
 
-{{-- ════════════════════════════════════════════════
-     MAIN PAGE
-════════════════════════════════════════════════ --}}
 <div class="intake-page">
   <div class="intake-glow ig1" aria-hidden="true"></div>
   <div class="intake-glow ig2" aria-hidden="true"></div>
 
   <div class="wrap">
 
-    {{-- ── ALREADY SUBMITTED ───────────────────── --}}
+    {{-- ── ALREADY SUBMITTED ── --}}
     @if($alreadySubmitted)
     <div class="intake-already">
       <div class="already-ico"><i class="bi bi-check-circle-fill"></i></div>
       <h1 class="already-title">You've already submitted your details</h1>
       <p class="already-sub">
         Your care information was received on
-        {{ $booking->booking?->created_at->format('D, d M Y \a\t H:i') }}
+        {{ $booking->booking?->created_at->format('D, d M Y \a\t H:i') }}.
         Our team will be in touch shortly. If you need to make a correction, please
         <a href="https://wa.me/{{ config('app.whatsapp_number') }}" style="color:var(--ocean);font-weight:600;">contact us</a>.
       </p>
     </div>
     @else
 
-    {{-- ── PAGE HERO ────────────────────────────── --}}
+    {{-- ── PAGE HERO ── --}}
     <div class="intake-hero reveal">
       <div class="intake-hero-pill">
         <span class="intake-hero-pill-dot"></span>
@@ -555,26 +497,35 @@ a{color:inherit;}
         It stays private and is never shared.
       </p>
 
-      {{-- booking summary ribbon --}}
+      {{-- Booking summary ribbon --}}
+      {{-- Now reads care type from $booking->careType (PreBooking belongsTo CareType)
+           and plan name from $booking->carePlan (PreBooking belongsTo CarePlan) --}}
       <div class="booking-ribbon">
         <div class="br-item">
           <i class="bi bi-person-check"></i>
-          <span>Booking for <strong>{{ $booking->name }}</strong></span>
-        </div>
-        <div class="br-sep"></div>
-        <div class="br-item">
-          <i class="bi bi-clipboard-pulse"></i>
-          <span>Plan: <strong>{{ $booking->carePlan->name }}</strong></span>
+          <span>Booking for <strong>{{ $booking->booker_details['name'] ?? '—' }}</strong></span>
         </div>
         <div class="br-sep"></div>
         <div class="br-item">
           <i class="bi bi-heart-pulse"></i>
-          <span>Type: <strong>{{ $booking->careType->name }}</strong></span>
+          <span>Type: <strong>{{ $booking->careType->name ?? '—' }}</strong></span>
         </div>
+        <div class="br-sep"></div>
+        <div class="br-item">
+          <i class="bi bi-clipboard-pulse"></i>
+          <span>Plan: <strong>{{ $booking->carePlan->name ?? '—' }}</strong></span>
+        </div>
+        @if($booking->carePlan)
+        <div class="br-sep"></div>
+        <div class="br-item">
+          <i class="bi bi-tag"></i>
+          <span><strong>{{ $booking->carePlan->formatted_price }}</strong></span>
+        </div>
+        @endif
       </div>
     </div>
 
-    {{-- ── PROGRESS BAR ─────────────────────────── --}}
+    {{-- ── PROGRESS BAR ── --}}
     <div class="progress-wrap reveal" style="transition-delay:.08s;" aria-label="Form progress">
       <div class="progress-steps" id="progressSteps">
         <div class="ps-step done" id="pStep0">
@@ -612,9 +563,7 @@ a{color:inherit;}
     >
       @csrf
 
-      {{-- ────────────────────────────────────────
-           STEP 1 — BOOKER DETAILS
-      ──────────────────────────────────────── --}}
+      {{-- ── STEP 1: BOOKER DETAILS ── --}}
       <div class="form-step reveal" id="formStep1" data-step="1" style="transition-delay:.12s;">
         <div class="intake-form-card">
           <div class="isec-header">
@@ -635,7 +584,7 @@ a{color:inherit;}
                   type="text" id="booker_name"
                   name="booker_details[name]"
                   class="field-input @error('booker_details.name') has-error @enderror"
-                  value="{{ old('booker_details.name', $booking->name) }}"
+                  value="{{ old('booker_details.name', $booking->booker_details['name'] ?? '') }}"
                   placeholder="Surname first"
                   required autocomplete="name"
                 >
@@ -651,7 +600,7 @@ a{color:inherit;}
                   type="tel" id="booker_phone"
                   name="booker_details[phone]"
                   class="field-input @error('booker_details.phone') has-error @enderror"
-                  value="{{ old('booker_details.phone', $booking->phone) }}"
+                  value="{{ old('booker_details.phone', $booking->booker_details['phone'] ?? '') }}"
                   placeholder="+234 800 000 0000"
                   required autocomplete="tel"
                 >
@@ -687,7 +636,7 @@ a{color:inherit;}
               </div>
               <div class="field-group">
                 <label class="field-label" for="booker_emergency">
-                  Emergency Contact Number <span class="opt">(optional)</span>
+                  Emergency Contact <span class="opt">(optional)</span>
                 </label>
                 <input
                   type="tel" id="booker_emergency"
@@ -712,8 +661,7 @@ a{color:inherit;}
                 name="booker_details[address]"
                 class="field-textarea @error('booker_details.address') has-error @enderror"
                 placeholder="Street address, area, city"
-                rows="2"
-                required
+                rows="2" required
               >{{ old('booker_details.address') }}</textarea>
               @error('booker_details.address')
                 <p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>
@@ -724,9 +672,7 @@ a{color:inherit;}
         </div>
       </div>
 
-      {{-- ────────────────────────────────────────
-           STEP 2 — PATIENT DETAILS
-      ──────────────────────────────────────── --}}
+      {{-- ── STEP 2: PATIENT DETAILS ── --}}
       <div class="form-step reveal" id="formStep2" data-step="2" style="transition-delay:.16s;">
         <div class="intake-form-card">
           <div class="isec-header">
@@ -746,7 +692,7 @@ a{color:inherit;}
                 type="text" id="patient_full_name"
                 name="patient_details[full_name]"
                 class="field-input @error('patient_details.full_name') has-error @enderror"
-                value="{{ old('patient_details.full_name', $booking->patient_name) }}"
+                value="{{ old('patient_details.full_name') }}"
                 placeholder="Surname first"
                 required
               >
@@ -764,7 +710,7 @@ a{color:inherit;}
                   type="number" id="patient_age"
                   name="patient_details[age]"
                   class="field-input @error('patient_details.age') has-error @enderror"
-                  value="{{ old('patient_details.age', $booking->patient_age) }}"
+                  value="{{ old('patient_details.age') }}"
                   placeholder="e.g. 72"
                   min="1" max="120" required
                 >
@@ -858,9 +804,7 @@ a{color:inherit;}
                 name="patient_details[diagnosis]"
                 class="field-textarea @error('patient_details.diagnosis') has-error @enderror"
                 placeholder="e.g. Type 2 Diabetes, post-op knee replacement, stroke recovery…"
-                rows="3"
-                maxlength="800"
-                data-char-max="800"
+                rows="3" maxlength="800" data-char-max="800"
               >{{ old('patient_details.diagnosis') }}</textarea>
               <div class="char-count" id="diagnosisCount">0 / 800</div>
               @error('patient_details.diagnosis')
@@ -872,7 +816,7 @@ a{color:inherit;}
 
           <div class="isec-divider"></div>
 
-          {{-- ── MEDICATIONS ── --}}
+          {{-- MEDICATIONS --}}
           <div class="isec-header" style="margin-top:20px;">
             <div class="isec-ico ico-teal" style="width:34px;height:34px;border-radius:9px;">
               <i class="bi bi-capsule" style="font-size:15px;"></i>
@@ -884,7 +828,6 @@ a{color:inherit;}
           </div>
           <div class="isec-body">
             <div class="repeater-wrap" id="medsRepeater">
-              {{-- Items injected by JS or server-side on error --}}
               @php $meds = old('patient_details.medications', [['medication'=>'']]) @endphp
               @foreach($meds as $i => $med)
               <div class="repeater-item">
@@ -901,14 +844,17 @@ a{color:inherit;}
               </div>
               @endforeach
             </div>
-            <button type="button" class="add-row-btn" data-target="medsRepeater" data-name="patient_details[medications][][medication]" data-placeholder="e.g. Metformin 500mg, twice daily">
+            <button type="button" class="add-row-btn"
+              data-target="medsRepeater"
+              data-name="patient_details[medications][][medication]"
+              data-placeholder="e.g. Metformin 500mg, twice daily">
               <i class="bi bi-plus-circle"></i> Add Medication
             </button>
           </div>
 
           <div class="isec-divider"></div>
 
-          {{-- ── ALLERGIES ── --}}
+          {{-- ALLERGIES --}}
           <div class="isec-header" style="margin-top:20px;">
             <div class="isec-ico ico-teal" style="width:34px;height:34px;border-radius:9px;">
               <i class="bi bi-exclamation-triangle" style="font-size:15px;"></i>
@@ -936,14 +882,17 @@ a{color:inherit;}
               </div>
               @endforeach
             </div>
-            <button type="button" class="add-row-btn" data-target="allergyRepeater" data-name="patient_details[allergies][][allergy]" data-placeholder="e.g. Penicillin, Latex, Peanuts">
+            <button type="button" class="add-row-btn"
+              data-target="allergyRepeater"
+              data-name="patient_details[allergies][][allergy]"
+              data-placeholder="e.g. Penicillin, Latex, Peanuts">
               <i class="bi bi-plus-circle"></i> Add Allergy
             </button>
           </div>
 
           <div class="isec-divider"></div>
 
-          {{-- ── DAILY TASKS ── --}}
+          {{-- DAILY TASKS --}}
           <div class="isec-header" style="margin-top:20px;">
             <div class="isec-ico ico-teal" style="width:34px;height:34px;border-radius:9px;">
               <i class="bi bi-list-check" style="font-size:15px;"></i>
@@ -972,7 +921,10 @@ a{color:inherit;}
               </div>
               @endforeach
             </div>
-            <button type="button" class="add-row-btn" data-target="tasksRepeater" data-name="patient_details[daily_tasks][][task]" data-placeholder="e.g. Wound dressing, bathing assistance">
+            <button type="button" class="add-row-btn"
+              data-target="tasksRepeater"
+              data-name="patient_details[daily_tasks][][task]"
+              data-placeholder="e.g. Wound dressing, bathing assistance">
               <i class="bi bi-plus-circle"></i> Add Task
             </button>
           </div>
@@ -980,9 +932,9 @@ a{color:inherit;}
         </div>
       </div>
 
-      {{-- ────────────────────────────────────────
-           STEP 3 — CARE PLAN (dates)
-      ──────────────────────────────────────── --}}
+      {{-- ── STEP 3: CARE PLAN DATES ── --}}
+      {{-- duration_days is optional in meta — if not set, end date is left open --}}
+      @php $durationDays = (int) ($booking->carePlan->meta['duration_days'] ?? 0); @endphp
       <div class="form-step reveal" id="formStep3" data-step="3" style="transition-delay:.2s;">
         <div class="intake-form-card">
           <div class="isec-header">
@@ -1018,19 +970,27 @@ a{color:inherit;}
                   name="booking_details[end_date]"
                   class="field-input"
                   style="background:rgba(26,58,47,.04);cursor:default;"
-                  readonly
+                  @if($durationDays) readonly @endif
                 >
-                <p class="field-hint">Calculated automatically from your plan duration ({{ $booking->carePlan->meta['duration_days'] ?? '—' }} days)</p>
+                <p class="field-hint">
+                  @if($durationDays)
+                    Calculated automatically ({{ $durationDays }} days from start date)
+                  @else
+                    Optional — leave blank for open-ended or ongoing care
+                  @endif
+                </p>
               </div>
             </div>
+
+            {{-- Hidden fields required by the controller --}}
+            <input type="hidden" name="booking_details[care_type_id]" value="{{ $booking->care_type_id }}">
+            <input type="hidden" name="booking_details[care_plan_id]" value="{{ $booking->care_plan_id }}">
 
           </div>
         </div>
       </div>
 
-      {{-- ────────────────────────────────────────
-           STEP 4 — REVIEW SUMMARY (readonly)
-      ──────────────────────────────────────── --}}
+      {{-- ── STEP 4: REVIEW ── --}}
       <div class="form-step reveal" id="formStep4" data-step="4" style="transition-delay:.24s;">
         <div class="intake-form-card" style="background:var(--cream);border-color:rgba(26,58,47,.08);">
           <div class="isec-header">
@@ -1060,13 +1020,10 @@ a{color:inherit;}
       </div>
 
     </form>
-    {{-- end intakeForm --}}
 
-    {{-- ── SUCCESS MESSAGE (shown after AJAX submit) ── --}}
+    {{-- SUCCESS STATE --}}
     <div class="intake-success" id="intakeSuccess">
-      <div class="success-ico-wrap">
-        <i class="bi bi-check-lg"></i>
-      </div>
+      <div class="success-ico-wrap"><i class="bi bi-check-lg"></i></div>
       <h2 class="success-title">All done — thank you!</h2>
       <p class="success-sub">
         Your care details have been received. The CavalCare team will review everything and
@@ -1091,14 +1048,10 @@ a{color:inherit;}
     @endif {{-- end @if not submitted --}}
 
   </div>
-  {{-- end .wrap --}}
-
 </div>
-{{-- end .intake-page --}}
 
-
-{{-- ═══════════════ STICKY SUBMIT FOOTER ═══════════════ --}}
-@unless($booking->intake_submitted_at)
+{{-- STICKY SUBMIT FOOTER --}}
+@unless($alreadySubmitted)
 <footer class="submit-footer" id="submitFooter" role="contentinfo">
   <div class="submit-footer-inner">
     <div class="sf-left">
@@ -1132,14 +1085,15 @@ const navEl      = document.getElementById('intakeNav');
 const footer     = document.getElementById('submitFooter');
 const successEl  = document.getElementById('intakeSuccess');
 const DRAFT_KEY  = 'cavalcare_intake_draft_{{ $token }}';
+const DURATION   = {{ $durationDays }};
 
-/* ── Nav scroll state ─────────────────────────────────── */
+/* ── Nav scroll state ──────────────────────────────── */
 window.addEventListener('scroll', () => {
   navEl?.classList.toggle('scrolled', scrollY > 10);
   footer?.classList.toggle('elevated', scrollY > 80);
 }, { passive: true });
 
-/* ── Scroll reveal ────────────────────────────────────── */
+/* ── Scroll reveal ─────────────────────────────────── */
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
@@ -1147,7 +1101,7 @@ const io = new IntersectionObserver(entries => {
 }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-/* ── Ripple on submit button ──────────────────────────── */
+/* ── Ripple on submit button ───────────────────────── */
 submitBtn?.addEventListener('pointerdown', e => {
   const r    = document.createElement('span');
   const rect = submitBtn.getBoundingClientRect();
@@ -1158,7 +1112,7 @@ submitBtn?.addEventListener('pointerdown', e => {
   r.addEventListener('animationend', () => r.remove());
 });
 
-/* ── Character counter ────────────────────────────────── */
+/* ── Character counter ─────────────────────────────── */
 document.querySelectorAll('[data-char-max]').forEach(el => {
   const max     = parseInt(el.dataset.charMax);
   const counter = document.getElementById(el.id + 'Count');
@@ -1172,13 +1126,13 @@ document.querySelectorAll('[data-char-max]').forEach(el => {
   update();
 });
 
-/* ── Repeater — add row ───────────────────────────────── */
+/* ── Repeater — add row ────────────────────────────── */
 document.querySelectorAll('.add-row-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const wrapperId  = btn.dataset.target;
-    const wrapper    = document.getElementById(wrapperId);
-    const name       = btn.dataset.name;
-    const placeholder= btn.dataset.placeholder || '';
+    const wrapperId   = btn.dataset.target;
+    const wrapper     = document.getElementById(wrapperId);
+    const name        = btn.dataset.name;
+    const placeholder = btn.dataset.placeholder || '';
     if (!wrapper) return;
 
     const item = document.createElement('div');
@@ -1191,24 +1145,20 @@ document.querySelectorAll('.add-row-btn').forEach(btn => {
       </button>
     `;
     wrapper.appendChild(item);
-
-    // re-index names
-    reindexRepeater(wrapper, name.replace('[][]', '').replace('[][', '[').split('[')[0] + '[' + name.split('[').slice(1,-2).join('['));
-
+    reindexRepeater(wrapper);
     item.querySelector('input')?.focus();
     bindRemove(item.querySelector('.repeater-remove'));
   });
 });
 
-/* ── Repeater — remove row ────────────────────────────── */
+/* ── Repeater — remove row ─────────────────────────── */
 function bindRemove(btn) {
   btn.addEventListener('click', () => {
     const item    = btn.closest('.repeater-item');
     const wrapper = item.parentElement;
-    // keep at least one row
     if (wrapper.querySelectorAll('.repeater-item').length <= 1 &&
         wrapper.id === 'tasksRepeater') return;
-    item.style.opacity = '0';
+    item.style.opacity   = '0';
     item.style.transform = 'translateX(10px)';
     item.style.transition = 'opacity .2s, transform .2s';
     setTimeout(() => item.remove(), 200);
@@ -1216,29 +1166,25 @@ function bindRemove(btn) {
 }
 document.querySelectorAll('.repeater-remove').forEach(bindRemove);
 
-function reindexRepeater(wrapper, baseName) {
+function reindexRepeater(wrapper) {
   wrapper.querySelectorAll('.repeater-item').forEach((item, i) => {
     const input = item.querySelector('input, textarea');
-    if (input) {
-      // Replace last index number in name
-      input.name = input.name.replace(/\[\d+\]/, `[${i}]`);
-    }
+    if (input) input.name = input.name.replace(/\[\d+\]/, `[${i}]`);
   });
 }
 
-/* ── Date: auto-calculate end date ───────────────────── */
-const startDate = document.getElementById('start_date');
-const endDate   = document.getElementById('end_date');
-const DURATION  = {{ (int) ($booking->carePlan->meta['duration_days'] ?? 0) }};
+/* ── Date: auto-calculate end date ────────────────── */
+const startDateEl = document.getElementById('start_date');
+const endDateEl   = document.getElementById('end_date');
 
-startDate?.addEventListener('change', () => {
-  if (!startDate.value || !DURATION) return;
-  const start = new Date(startDate.value);
+startDateEl?.addEventListener('change', () => {
+  if (!startDateEl.value || !DURATION) return;
+  const start = new Date(startDateEl.value);
   start.setDate(start.getDate() + DURATION);
-  endDate.value = start.toISOString().split('T')[0];
+  endDateEl.value = start.toISOString().split('T')[0];
 });
 
-/* ── Live field validation ────────────────────────────── */
+/* ── Live field validation ─────────────────────────── */
 const requiredFields = [
   'booker_name','booker_phone','booker_state','booker_address',
   'patient_full_name','patient_age','patient_gender',
@@ -1260,7 +1206,7 @@ requiredFields.forEach(id => {
   el.addEventListener('input', () => { if (el.classList.contains('has-error')) validateField(el); });
 });
 
-/* ── Progress bar update ──────────────────────────────── */
+/* ── Progress bar ──────────────────────────────────── */
 const steps = ['pStep0','pStep1','pStep2','pStep3','pStep4'];
 const fill  = document.getElementById('progressFill');
 
@@ -1270,11 +1216,8 @@ function updateProgress() {
     return el && el.value.trim() !== '';
   }).length;
   const pct = Math.min(100, Math.round((filled / requiredFields.length) * 100));
-
-  // set CSS var for animated fill
   if (fill) fill.style.setProperty('--prog-w', pct + '%');
 
-  // step markers
   const stepIdx = pct < 25 ? 1 : pct < 50 ? 2 : pct < 75 ? 3 : pct < 100 ? 4 : 5;
   steps.forEach((id, i) => {
     const el = document.getElementById(id);
@@ -1291,7 +1234,7 @@ requiredFields.forEach(id => {
 });
 updateProgress();
 
-/* ── Save draft to localStorage ───────────────────────── */
+/* ── Save / restore draft ──────────────────────────── */
 function collectDraft() {
   const data = {};
   new FormData(form).forEach((v, k) => { data[k] = v; });
@@ -1304,7 +1247,6 @@ function restoreDraft() {
     if (!saved) return;
     const data = JSON.parse(saved);
     Object.entries(data).forEach(([k, v]) => {
-      // Simple fields only (not repeater arrays)
       const el = form.querySelector(`[name="${k}"]`);
       if (el && el.type !== 'hidden') el.value = v;
     });
@@ -1313,18 +1255,12 @@ function restoreDraft() {
 }
 
 function autosaveDraft() {
-  try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
-  } catch(e) {}
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); } catch(e) {}
 }
 
-// Restore on load
 restoreDraft();
-
-// Autosave every 30 seconds
 setInterval(autosaveDraft, 30000);
 
-// Manual save
 saveDraft?.addEventListener('click', () => {
   autosaveDraft();
   const orig = saveDraft.innerHTML;
@@ -1333,27 +1269,21 @@ saveDraft?.addEventListener('click', () => {
   setTimeout(() => { saveDraft.innerHTML = orig; saveDraft.style.color = ''; }, 2000);
 });
 
-/* ── Form submission ──────────────────────────────────── */
+/* ── Form submission ───────────────────────────────── */
 form?.addEventListener('submit', async e => {
   e.preventDefault();
 
-  // Validate all required fields
   let allOk = true;
   requiredFields.forEach(id => {
     const el = document.getElementById(id);
-    if (!validateField(el)) {
-      allOk = false;
-    }
+    if (!validateField(el)) allOk = false;
   });
 
   if (!allOk) {
-    // Scroll to first error
-    const firstError = form.querySelector('.has-error');
-    firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    form.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  // Disable submit
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Submitting…';
 
@@ -1365,22 +1295,15 @@ form?.addEventListener('submit', async e => {
     });
 
     if (res.ok) {
-      // Clear draft
       localStorage.removeItem(DRAFT_KEY);
-
-      // Hide form + footer, show success
       document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-      document.querySelector('.intake-hero').style.display = 'none';
+      document.querySelector('.intake-hero').style.display  = 'none';
       document.querySelector('.progress-wrap').style.display = 'none';
       if (footer) footer.style.display = 'none';
       successEl.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      // Mark all progress steps done
       if (fill) fill.style.setProperty('--prog-w', '100%');
-
     } else {
-      // Server validation errors — reload page to show them
       const html = await res.text();
       document.open(); document.write(html); document.close();
     }
@@ -1392,7 +1315,7 @@ form?.addEventListener('submit', async e => {
   }
 });
 
-/* ── Haptic on submit (Android) ────────────────────────── */
+/* ── Haptic on submit (Android) ────────────────────── */
 if ('vibrate' in navigator) {
   submitBtn?.addEventListener('pointerdown', () => navigator.vibrate(6));
 }

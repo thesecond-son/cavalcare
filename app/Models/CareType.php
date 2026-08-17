@@ -13,6 +13,7 @@ class CareType extends Model
     protected $fillable = [
         'name',
         'slug',
+        'description', // optional intro shown on the booking page
         'meta',
     ];
 
@@ -31,7 +32,7 @@ class CareType extends Model
         });
     }
 
-    // ─── Route model binding uses slug instead of id ──────────────────────
+    // ─── Route model binding uses slug ───────────────────────────────────
 
     public function getRouteKeyName(): string
     {
@@ -39,6 +40,15 @@ class CareType extends Model
     }
 
     // ─── Relationships ────────────────────────────────────────────────────
+
+    /**
+     * All pricing plans that belong to this care type.
+     * e.g. CareType "Elderly Care" → plans: Day Care, Night Care, 24hr Live-in, etc.
+     */
+    public function carePlans()
+    {
+        return $this->hasMany(CarePlan::class)->orderBy('price');
+    }
 
     public function caregivers()
     {
@@ -53,5 +63,10 @@ class CareType extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function preBookings()
+    {
+        return $this->hasMany(PreBooking::class);
     }
 }

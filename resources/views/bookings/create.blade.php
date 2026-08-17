@@ -1,7 +1,7 @@
 {{-- resources/views/bookings/create.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Begin Your Care Journey — CavalCare')
+@section('title', 'Book ' . $careType->name . ' — CavalCare')
 
 @push('head')
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
 
 <style>
 /* ═══════════════════════════════════════════════
-   TOKENS  (mirrors home.blade.php exactly)
+   TOKENS
 ═══════════════════════════════════════════════ */
 :root {
   --cream:      #F0FFDB;
@@ -48,13 +48,13 @@ a { color:inherit; text-decoration:none; }
 @keyframes fadeUp  { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
 @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
 @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
-@keyframes floatY  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
 @keyframes ripple  { to{transform:scale(2.4);opacity:0} }
 @keyframes revealPrice { 0%{opacity:0;transform:translateY(16px) scale(.96)} 100%{opacity:1;transform:none} }
 @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes pulse   { 0%,100%{box-shadow:0 0 0 0 rgba(26,58,47,.2)} 60%{box-shadow:0 0 0 10px rgba(26,58,47,0)} }
 @keyframes checkPop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
 @keyframes drawLine { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes spin { to { transform:rotate(360deg); } }
 
 /* ── scroll reveal ── */
 .reveal { opacity:0; transform:translateY(26px); transition:opacity .7s var(--out),transform .7s var(--out); }
@@ -73,7 +73,6 @@ a { color:inherit; text-decoration:none; }
 }
 .pill-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
 .pill-ocean  { background:rgba(26,58,47,.1); color:var(--ocean); }
-.pill-yellow { background:var(--yellow); color:var(--ocean); }
 .pill-indigo { background:rgba(4,169,167,.13); color:var(--indigo); }
 
 /* ── typography ── */
@@ -102,41 +101,22 @@ a { color:inherit; text-decoration:none; }
   -webkit-tap-highlight-color:transparent;
 }
 .btn:active { transform:scale(.96)!important; }
-.btn-primary {
-  background:var(--ocean); color:#fff;
-  padding:14px 26px; border-radius:var(--r-sm);
-  box-shadow:0 4px 16px rgba(26,58,47,.22);
-}
-.btn-primary:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(26,58,47,.32); }
-.btn-outline {
-  background:transparent; color:var(--ocean);
-  padding:13px 26px; border-radius:var(--r-sm);
-  border:1.5px solid rgba(26,58,47,.24);
-}
-.btn-outline:hover { background:var(--ocean); color:#fff; border-color:var(--ocean); transform:translateY(-2px); }
-.btn-yellow {
-  background:var(--yellow); color:var(--ocean);
-  padding:14px 26px; border-radius:var(--r-sm);
-  box-shadow:0 4px 16px rgba(4,169,167,.22);
-}
-.btn-yellow:hover { background:var(--cream-d); transform:translateY(-3px); box-shadow:0 8px 28px rgba(4,169,167,.35); }
 .btn-ripple {
   position:absolute; border-radius:50%; pointer-events:none;
   background:rgba(255,255,255,.26);
   transform:scale(0); animation:ripple .6s ease-out forwards;
 }
 
-/* ════════════════════════════════════════════
-   BOOKING PAGE — SPECIFIC STYLES
-════════════════════════════════════════════ */
-
-/* page background */
+/* ══════════════════════════════════════════════
+   PAGE LAYOUT
+══════════════════════════════════════════════ */
 .booking-page {
   min-height:100svh;
   background:var(--cream);
-  padding-top:80px; padding-bottom:80px;
+  padding-top:40px; padding-bottom:56px;
   position:relative; overflow:hidden;
 }
+@media(min-width:768px){ .booking-page{ padding-top:56px; } }
 .booking-page .glow {
   position:absolute; border-radius:50%; pointer-events:none;
 }
@@ -154,7 +134,7 @@ a { color:inherit; text-decoration:none; }
 /* ── step indicator ── */
 .steps-bar {
   display:flex; align-items:center; gap:0;
-  max-width:360px; margin:0 auto 48px;
+  max-width:360px; margin:0 auto 28px;
 }
 .step-node {
   display:flex; flex-direction:column; align-items:center; gap:6px;
@@ -163,34 +143,27 @@ a { color:inherit; text-decoration:none; }
 .step-node::after {
   content:''; position:absolute;
   top:15px; left:calc(50% + 15px); right:calc(-50% + 15px);
-  height:1.5px;
-  background:rgba(26,58,47,.15);
-  transition:background .4s;
+  height:1.5px; background:rgba(26,58,47,.15); transition:background .4s;
 }
 .step-node:last-child::after { display:none; }
 .step-node.done::after { background:var(--ocean); }
-
 .step-circle {
   width:30px; height:30px; border-radius:50%;
   border:2px solid rgba(26,58,47,.18);
   display:flex; align-items:center; justify-content:center;
   font-size:.72rem; font-weight:700; color:var(--muted);
-  background:#fff;
-  transition:all .3s var(--spring);
+  background:#fff; transition:all .3s var(--spring);
   position:relative; z-index:2;
 }
 .step-node.active .step-circle {
   border-color:var(--ocean); background:var(--ocean); color:#fff;
-  box-shadow:0 0 0 4px rgba(26,58,47,.1);
-  animation:pulse 2s infinite;
+  box-shadow:0 0 0 4px rgba(26,58,47,.1); animation:pulse 2s infinite;
 }
 .step-node.done .step-circle {
   border-color:var(--ocean); background:var(--ocean); color:#fff;
   animation:checkPop .4s var(--spring);
 }
-.step-node.done .step-circle::after {
-  content:'✓'; font-size:.75rem;
-}
+.step-node.done .step-circle::after { content:'✓'; font-size:.75rem; }
 .step-node.done .step-num { display:none; }
 .step-lbl {
   font-size:.62rem; font-weight:600;
@@ -201,8 +174,7 @@ a { color:inherit; text-decoration:none; }
 
 /* ── two-column layout ── */
 .booking-grid {
-  display:grid;
-  grid-template-columns:1fr;
+  display:grid; grid-template-columns:1fr;
   gap:24px; align-items:start;
   max-width:1000px; margin:0 auto;
 }
@@ -212,8 +184,7 @@ a { color:inherit; text-decoration:none; }
 
 /* ── form card ── */
 .form-card {
-  background:#fff;
-  border-radius:var(--r-xl);
+  background:#fff; border-radius:var(--r-xl);
   border:1px solid rgba(26,58,47,.08);
   box-shadow:0 24px 64px rgba(26,58,47,.1);
   padding:36px 32px;
@@ -240,77 +211,114 @@ a { color:inherit; text-decoration:none; }
 /* ── form fields ── */
 .field-group { display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
 .field-group:last-child { margin-bottom:0; }
-
-.field-label {
-  font-size:.8rem; font-weight:600;
-  color:var(--ocean); letter-spacing:.01em;
-}
+.field-label { font-size:.8rem; font-weight:600; color:var(--ocean); letter-spacing:.01em; }
 .field-label span { color:#c0392b; margin-left:2px; }
-
-.field-input,
-.field-select {
+.field-input, .field-select {
   width:100%; padding:13px 16px;
-  border:1.5px solid rgba(26,58,47,.14);
-  border-radius:var(--r-sm);
+  border:1.5px solid rgba(26,58,47,.14); border-radius:var(--r-sm);
   font-family:'Cabin',sans-serif; font-size:.93rem;
   color:var(--ocean); background:#fff;
   transition:border-color .2s, box-shadow .2s, background .2s;
-  appearance:none; -webkit-appearance:none;
-  outline:none;
+  appearance:none; -webkit-appearance:none; outline:none;
 }
 .field-input::placeholder { color:rgba(61,107,87,.38); }
-.field-input:focus,
-.field-select:focus {
-  border-color:var(--ocean);
-  box-shadow:0 0 0 3px rgba(26,58,47,.09);
-  background:#fafffe;
+.field-input:focus, .field-select:focus {
+  border-color:var(--ocean); box-shadow:0 0 0 3px rgba(26,58,47,.09); background:#fafffe;
 }
-.field-input.error,
-.field-select.error {
-  border-color:#e53935;
-  box-shadow:0 0 0 3px rgba(229,57,53,.1);
+.field-input.error, .field-select.error {
+  border-color:#e53935; box-shadow:0 0 0 3px rgba(229,57,53,.1);
 }
 .field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 @media(max-width:479px){ .field-row{ grid-template-columns:1fr; } }
-
-.select-wrap { position:relative; }
-.select-wrap::after {
-  content:'\F282'; font-family:'bootstrap-icons';
-  position:absolute; right:14px; top:50%; transform:translateY(-50%);
-  color:var(--muted); font-size:.9rem; pointer-events:none;
-}
-.field-hint {
-  font-size:.73rem; color:var(--muted); margin-top:3px;
-}
-
-/* section spacing */
+.field-hint { font-size:.73rem; color:var(--muted); margin-top:3px; }
 .form-section { margin-bottom:28px; }
 .form-section:last-of-type { margin-bottom:0; }
+.v-error { font-size:.75rem; color:#e53935; margin-top:4px; display:flex; align-items:center; gap:5px; }
+.v-error i { font-size:12px; }
+.field-success .field-input, .field-success .field-select { border-color:rgba(4,169,167,.5); }
 
-/* ── right column: plan summary + price reveal ── */
+/* ══════════════════════════════════════════════
+   PLAN SELECTOR
+══════════════════════════════════════════════ */
+.plan-selector { display:grid; grid-template-columns:1fr; gap:10px; }
+@media(min-width:560px){
+  .plan-selector { grid-template-columns:1fr 1fr; }
+}
+
+.plan-option {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:14px 16px;
+  border:1.5px solid rgba(26,58,47,.12);
+  border-radius:var(--r-md);
+  cursor:pointer;
+  transition:border-color .2s, background .2s, box-shadow .2s, transform .18s var(--spring);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  position:relative;
+}
+.plan-option:hover {
+  border-color:rgba(26,58,47,.28);
+  background:rgba(26,58,47,.02);
+}
+.plan-option.selected {
+  border-color:var(--ocean);
+  background:rgba(26,58,47,.04);
+  box-shadow:0 4px 16px rgba(26,58,47,.1);
+}
+.plan-option input[type="radio"] { display:none; }
+
+/* custom radio dot */
+.plan-radio {
+  width:20px; height:20px; flex-shrink:0; margin-top:2px;
+  border:2px solid rgba(26,58,47,.25); border-radius:50%;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s var(--spring);
+}
+.plan-option.selected .plan-radio {
+  border-color:var(--ocean); background:var(--ocean);
+  animation:checkPop .3s var(--spring);
+}
+.plan-radio::after {
+  content:''; width:7px; height:7px; border-radius:50%;
+  background:#fff; opacity:0; transition:opacity .15s;
+}
+.plan-option.selected .plan-radio::after { opacity:1; }
+
+.plan-info { flex:1; }
+.plan-name {
+  font-size:.93rem; font-weight:600; color:var(--ocean);
+  margin-bottom:3px; line-height:1.3;
+}
+.plan-desc {
+  font-size:.78rem; color:var(--muted);
+  line-height:1.55; margin-top:4px;
+  display:none; /* toggled by JS when selected, or always show if you prefer */
+}
+.plan-option.selected .plan-desc { display:block; }
+
+.plan-price-tag { display:none; } /* prices are calculated in the background and only revealed via "See My Price" */
+
+/* ══════════════════════════════════════════════
+   RIGHT COLUMN — PLAN SUMMARY CARD
+══════════════════════════════════════════════ */
 .summary-col {
   display:flex; flex-direction:column; gap:20px;
   animation:fadeUp .6s .25s var(--out) both;
 }
-
-/* plan card */
 .plan-summary {
-  background:var(--ocean);
-  border-radius:var(--r-xl);
-  padding:28px 26px;
-  position:relative; overflow:hidden;
+  background:var(--ocean); border-radius:var(--r-xl);
+  padding:28px 26px; position:relative; overflow:hidden;
   box-shadow:0 18px 48px rgba(26,58,47,.2);
 }
 .plan-summary::before {
-  content:''; position:absolute;
-  top:-40%; right:-30%;
+  content:''; position:absolute; top:-40%; right:-30%;
   width:260px; height:260px; border-radius:50%;
   background:radial-gradient(circle,rgba(4,169,167,.18) 0%,transparent 65%);
   pointer-events:none;
 }
 .plan-summary::after {
-  content:''; position:absolute;
-  bottom:-30%; left:-20%;
+  content:''; position:absolute; bottom:-30%; left:-20%;
   width:200px; height:200px; border-radius:50%;
   background:radial-gradient(circle,rgba(255,205,173,.1) 0%,transparent 65%);
   pointer-events:none;
@@ -322,12 +330,9 @@ a { color:inherit; text-decoration:none; }
 }
 .ps-name {
   font-family:'Nanum Myeongjo',serif; font-size:1.6rem;
-  font-weight:400; color:#fff; line-height:1.15;
-  margin-bottom:4px;
+  font-weight:400; color:#fff; line-height:1.15; margin-bottom:4px;
 }
-.ps-type {
-  font-size:.78rem; color:rgba(255,255,255,.55); margin-bottom:20px;
-}
+.ps-type { font-size:.78rem; color:rgba(255,255,255,.55); margin-bottom:20px; }
 .ps-feats { list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
 .ps-feat {
   display:flex; align-items:flex-start; gap:10px;
@@ -341,27 +346,14 @@ a { color:inherit; text-decoration:none; }
 .ps-check i { font-size:9px; color:var(--yellow); }
 .ps-divider { height:1px; background:rgba(255,255,255,.1); margin-bottom:20px; }
 
-/* ── PRICE REVEAL ── */
-.price-reveal-wrap {
-  position:relative;
-}
-/* state: locked (form not filled) */
+/* price reveal */
+.price-reveal-wrap { position:relative; }
 .price-locked {
   display:flex; align-items:center; gap:12px;
-  padding:18px 20px;
-  border-radius:var(--r-md);
+  padding:18px 20px; border-radius:var(--r-md);
   background:rgba(255,255,255,.07);
   border:1.5px dashed rgba(255,255,255,.18);
-  cursor:default;
   transition:all .3s var(--smooth);
-}
-.price-locked.shake {
-  animation:shake .4s var(--spring);
-}
-@keyframes shake {
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-5px)}
-  75%{transform:translateX(5px)}
 }
 .lock-icon {
   width:38px; height:38px; border-radius:10px;
@@ -371,26 +363,14 @@ a { color:inherit; text-decoration:none; }
 .lock-icon i { font-size:17px; color:rgba(255,255,255,.5); }
 .lock-text p { font-size:.82rem; color:rgba(255,255,255,.65); line-height:1.4; }
 .lock-text strong { color:rgba(255,255,255,.9); }
-
-/* shimmer loading bar */
 .price-shimmer {
-  display:none;
-  height:64px; border-radius:var(--r-md);
-  background: linear-gradient(90deg,
-    rgba(255,255,255,.05) 0%,
-    rgba(255,255,255,.14) 40%,
-    rgba(255,255,255,.05) 80%
-  );
-  background-size:200% 100%;
-  animation:shimmer 1.4s linear infinite;
+  display:none; height:64px; border-radius:var(--r-md);
+  background:linear-gradient(90deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.14) 40%,rgba(255,255,255,.05) 80%);
+  background-size:200% 100%; animation:shimmer 1.4s linear infinite;
 }
-
-/* revealed price */
 .price-revealed {
-  display:none;
-  flex-direction:column; gap:4px;
-  padding:20px 22px;
-  border-radius:var(--r-md);
+  display:none; flex-direction:column; gap:4px;
+  padding:20px 22px; border-radius:var(--r-md);
   background:rgba(255,255,255,.09);
   border:1.5px solid rgba(4,169,167,.4);
   box-shadow:0 4px 20px rgba(4,169,167,.15);
@@ -419,10 +399,8 @@ a { color:inherit; text-decoration:none; }
 }
 .pr-row.total { color:#fff; font-weight:600; font-size:.82rem; margin-top:4px; }
 
-/* ── trust badges ── */
-.trust-badges {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
-}
+/* trust badges */
+.trust-badges { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
 .tb {
   background:#fff; border-radius:var(--r-md);
   border:1px solid rgba(26,58,47,.07);
@@ -434,50 +412,52 @@ a { color:inherit; text-decoration:none; }
 .tb i { font-size:20px; color:var(--ocean); }
 .tb span { font-size:.68rem; font-weight:600; color:var(--muted); line-height:1.3; text-align:center; }
 
-/* ── add-ons section ── */
+/* add-ons */
 .addons-section { margin-bottom:28px; }
-.addons-intro {
-  font-size:.85rem; color:var(--muted);
-  line-height:1.65; margin-bottom:14px;
-}
+.addons-intro { font-size:.85rem; color:var(--muted); line-height:1.65; margin-bottom:14px; }
 .addons-intro strong { color:var(--ocean); }
-.addon-list { display:flex; flex-direction:column; gap:10px; }
+.addon-list { display:flex; flex-direction:column; gap:10px; overflow:hidden; max-height:0; transition:max-height .35s var(--out); }
+.addon-list.open { max-height:2000px; margin-top:14px; }
+.addons-toggle {
+  display:flex; align-items:center; justify-content:space-between;
+  width:100%; padding:13px 16px; cursor:pointer;
+  background:rgba(26,58,47,.04); border:1.5px solid rgba(26,58,47,.1);
+  border-radius:var(--r-md); font-family:'Cabin',sans-serif;
+  font-size:.88rem; font-weight:600; color:var(--ocean);
+}
+.addons-toggle i.chev { transition:transform .3s var(--out); }
+.addons-toggle.open i.chev { transform:rotate(180deg); }
+.addons-count {
+  font-size:.7rem; font-weight:700; color:#fff; background:var(--ocean);
+  border-radius:100px; padding:2px 8px; margin-left:8px; display:none;
+}
+.addons-count.show { display:inline-block; }
 .addon-item {
-  display:flex; align-items:center; gap:12px;
+  display:flex; align-items:flex-start; gap:12px;
   padding:13px 16px;
-  border:1.5px solid rgba(26,58,47,.1);
-  border-radius:var(--r-md);
+  border:1.5px solid rgba(26,58,47,.1); border-radius:var(--r-md);
   cursor:pointer;
   transition:border-color .2s, background .2s, transform .18s var(--spring);
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
+  -webkit-tap-highlight-color:transparent; user-select:none;
 }
 .addon-item:hover { border-color:rgba(26,58,47,.25); background:rgba(26,58,47,.03); }
-.addon-item.selected {
-  border-color:var(--ocean);
-  background:rgba(26,58,47,.05);
-}
+.addon-item.selected { border-color:var(--ocean); background:rgba(26,58,47,.05); }
 .addon-cb {
   width:20px; height:20px; flex-shrink:0;
-  border:2px solid rgba(26,58,47,.22);
-  border-radius:5px;
+  border:2px solid rgba(26,58,47,.22); border-radius:5px;
   display:flex; align-items:center; justify-content:center;
-  transition:all .2s var(--spring);
-  background:#fff;
+  transition:all .2s var(--spring); background:#fff; margin-top:1px;
 }
-.addon-item.selected .addon-cb {
-  background:var(--ocean); border-color:var(--ocean);
-  animation:checkPop .3s var(--spring);
-}
+.addon-item.selected .addon-cb { background:var(--ocean); border-color:var(--ocean); animation:checkPop .3s var(--spring); }
 .addon-cb i { font-size:11px; color:#fff; opacity:0; transition:opacity .15s; }
 .addon-item.selected .addon-cb i { opacity:1; }
-.addon-name {
-  font-size:.88rem; font-weight:500; color:var(--ocean); flex:1;
-}
-/* hidden checkbox — real input for form submission */
+.addon-text { flex:1; }
+.addon-name { font-size:.88rem; font-weight:500; color:var(--ocean); }
+.addon-desc { font-size:.75rem; color:var(--muted); margin-top:2px; line-height:1.45; }
+.addon-price-tag { display:none; } /* price stays hidden until total is revealed */
 .addon-hidden { display:none; }
 
-/* ── pay button ── */
+/* pay / reveal buttons */
 .pay-btn-wrap { margin-top:4px; }
 .pay-btn {
   width:100%; padding:17px 24px;
@@ -492,14 +472,11 @@ a { color:inherit; text-decoration:none; }
 .pay-btn:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(4,169,167,.45); background:var(--cream-d); }
 .pay-btn:active { transform:scale(.97)!important; }
 .pay-btn:disabled { opacity:.55; cursor:not-allowed; transform:none!important; }
-.pay-btn i { font-size:18px; }
 .pay-btn-hint {
   display:flex; align-items:center; justify-content:center; gap:6px;
   font-size:.72rem; color:var(--muted); margin-top:10px;
 }
 .pay-btn-hint i { font-size:13px; color:var(--ocean); }
-
-/* ── form submit in card ── */
 .form-submit-area { margin-top:28px; }
 .continue-btn {
   width:100%; padding:16px 24px;
@@ -514,44 +491,51 @@ a { color:inherit; text-decoration:none; }
 .continue-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(26,58,47,.3); }
 .continue-btn:disabled { opacity:.5; cursor:not-allowed; transform:none!important; }
 
-/* validation errors from Laravel */
-.v-error { font-size:.75rem; color:#e53935; margin-top:4px; display:flex; align-items:center; gap:5px; }
-.v-error i { font-size:12px; }
-
-/* success flash */
-.field-success .field-input,
-.field-success .field-select {
-  border-color:rgba(4,169,167,.5);
-}
-
-/* ── floating tip card ── */
+/* tip card */
 .tip-card {
-  background:#fff;
-  border-radius:var(--r-lg);
+  background:#fff; border-radius:var(--r-lg);
   border:1px solid rgba(26,58,47,.07);
   box-shadow:0 8px 24px rgba(26,58,47,.07);
-  padding:20px 22px;
-  display:flex; gap:14px; align-items:flex-start;
+  padding:20px 22px; display:flex; gap:14px; align-items:flex-start;
   animation:fadeUp .5s .4s var(--out) both;
 }
 .tip-ico {
   width:40px; height:40px; border-radius:12px; flex-shrink:0;
-  background:rgba(26,58,47,.06);
-  display:flex; align-items:center; justify-content:center;
+  background:rgba(26,58,47,.06); display:flex; align-items:center; justify-content:center;
 }
 .tip-ico i { font-size:18px; color:var(--ocean); }
 .tip-text p { font-size:.82rem; color:var(--muted); line-height:1.55; }
 .tip-text strong { color:var(--ocean); }
 
-/* ── mobile: summary comes after form ── */
+/* mobile */
 @media(max-width:899px){
   .booking-grid { grid-template-columns:1fr; }
   .summary-col { order:2; }
   .form-card   { order:1; }
+  .booking-page { padding-bottom:110px; } /* room for sticky bar */
 }
-
-/* ─── Paystack modal override (keep it on top) ─── */
 .paystack-backdrop { z-index:9999!important; }
+
+/* sticky mobile summary bar */
+.mobile-bar {
+  display:none;
+  position:fixed; left:0; right:0; bottom:0; z-index:500;
+  background:#fff; border-top:1px solid rgba(26,58,47,.1);
+  box-shadow:0 -8px 24px rgba(26,58,47,.1);
+  padding:12px 16px; align-items:center; gap:12px;
+  transform:translateY(100%); transition:transform .35s var(--out);
+}
+.mobile-bar.show { transform:translateY(0); }
+@media(max-width:899px){ .mobile-bar { display:flex; } }
+.mobile-bar-price { flex:1; min-width:0; }
+.mobile-bar-label { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+.mobile-bar-amount { font-family:'Nanum Myeongjo',serif; font-size:1.2rem; color:var(--ocean); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mobile-bar-btn {
+  flex-shrink:0; padding:12px 18px; border:none; border-radius:var(--r-sm);
+  background:var(--yellow); color:var(--ocean); font-weight:700; font-size:.85rem;
+  display:flex; align-items:center; gap:6px; cursor:pointer;
+}
+.mobile-bar-btn:disabled { opacity:.5; }
 </style>
 @endpush
 
@@ -563,22 +547,22 @@ a { color:inherit; text-decoration:none; }
 
   <div class="wrap">
 
-    {{-- ── PAGE HEADER ── --}}
-    <div style="text-align:center; margin-bottom:40px; animation:fadeUp .6s var(--out) both;">
+    {{-- PAGE HEADER --}}
+    <div style="text-align:center; margin-bottom:24px; animation:fadeUp .6s var(--out) both;">
       <span class="pill pill-indigo" style="margin-bottom:16px;">
         <span class="pill-dot"></span>
-        Begin Your Care Journey
+        {{ $careType->name }}
       </span>
       <h1 class="sec-title">
         You're moments away from<br>
         <em>compassionate care</em>
       </h1>
       <p style="font-size:1rem; color:var(--muted); margin-top:12px; max-width:440px; margin-left:auto; margin-right:auto; line-height:1.7;">
-        Fill in a few quick details, see your price instantly, and get started today.
+        Choose your preferred plan, fill in a few quick details, and get started today.
       </p>
     </div>
 
-    {{-- ── STEP INDICATOR ── --}}
+    {{-- STEP INDICATOR --}}
     <div class="steps-bar" role="list" aria-label="Booking steps">
       <div class="step-node active" id="stepNode1" role="listitem">
         <div class="step-circle"><span class="step-num">1</span></div>
@@ -594,14 +578,13 @@ a { color:inherit; text-decoration:none; }
       </div>
     </div>
 
-    {{-- ── MAIN GRID ── --}}
+    {{-- MAIN GRID --}}
     <div class="booking-grid">
 
-      {{-- ═══════════════ FORM CARD ═══════════════ --}}
+      {{-- ═══════════ FORM CARD ═══════════ --}}
       <div class="form-card">
         <form id="bookingForm" novalidate>
           @csrf
-          <input type="hidden" name="care_plan_id" value="{{ $carePlan->id }}">
 
           {{-- SECTION 1: Personal Info --}}
           <div class="form-section">
@@ -612,89 +595,64 @@ a { color:inherit; text-decoration:none; }
 
             <div class="field-group" id="fg-name">
               <label class="field-label" for="name">Full Name <span>*</span></label>
-              <input
-                type="text" id="name" name="name"
-                class="field-input" placeholder="e.g. Amina Okafor"
-                autocomplete="name" required
-              >
-              @error('name')<p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>@enderror
+              <input type="text" id="name" name="name" class="field-input"
+                placeholder="e.g. Amina Okafor" autocomplete="name" required>
             </div>
 
             <div class="field-row">
               <div class="field-group" id="fg-email">
                 <label class="field-label" for="email">Email Address <span>*</span></label>
-                <input
-                  type="email" id="email" name="email"
-                  class="field-input" placeholder="you@email.com"
-                  autocomplete="email" required
-                >
-                @error('email')<p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>@enderror
+                <input type="email" id="email" name="email" class="field-input"
+                  placeholder="you@email.com" autocomplete="email" required>
               </div>
               <div class="field-group" id="fg-phone">
                 <label class="field-label" for="phone">Phone Number <span>*</span></label>
-                <input
-                  type="tel" id="phone" name="phone"
-                  class="field-input" placeholder="+234 800 000 0000"
-                  autocomplete="tel" required
-                >
-                @error('phone')<p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>@enderror
+                <input type="tel" id="phone" name="phone" class="field-input"
+                  placeholder="+234 800 000 0000" autocomplete="tel" required>
               </div>
             </div>
           </div>
 
-          {{-- SECTION 2: Patient Info --}}
+          {{-- SECTION 2: Plan Selection --}}
           <div class="form-section">
             <div class="form-section-label">
-              <div class="fsl-ico"><i class="bi bi-heart-pulse"></i></div>
-              Patient Information
+              <div class="fsl-ico"><i class="bi bi-clipboard-heart"></i></div>
+              Choose Your Plan
             </div>
 
-            <div class="field-group" id="fg-patient_name">
-              <label class="field-label" for="patient_name">Patient's Full Name <span>*</span></label>
-              <input
-                type="text" id="patient_name" name="patient_name"
-                class="field-input" placeholder="Who will be receiving care?"
-                required
-              >
-              <p class="field-hint">Enter your own name if you are the patient.</p>
-              @error('patient_name')<p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>@enderror
-            </div>
+            <div class="plan-selector" id="planSelector">
+              @foreach($plans as $plan)
+              <label class="plan-option" id="plan-option-{{ $plan->id }}"
+                data-price="{{ $plan->price }}"
+                data-cycle="{{ $plan->billing_label }}"
+                data-name="{{ $plan->name }}"
+                data-slug="{{ $plan->slug }}">
 
-            <div class="field-row">
-              <div class="field-group" id="fg-patient_age">
-                <label class="field-label" for="patient_age">Patient Age <span>*</span></label>
-                <input
-                  type="number" id="patient_age" name="patient_age"
-                  class="field-input" placeholder="e.g. 72"
-                  min="1" max="120" required
-                >
-                @error('patient_age')<p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>@enderror
-              </div>
-              <div class="field-group" id="fg-care_type_id">
-                <label class="field-label" for="care_type_id">Care Type <span>*</span></label>
-                <div class="select-wrap">
-                  <select id="care_type_id" name="care_type_id" class="field-select" required>
-                    <option value="">Select type…</option>
-                    @foreach($careTypes as $type)
-                      <option value="{{ $type->id }}" data-price="{{ $type->price ?? 0 }}">
-                        {{ $type->name }}
-                      </option>
-                    @endforeach
-                  </select>
+                <input type="radio" name="care_plan_id" value="{{ $plan->id }}" required>
+
+                <div class="plan-radio"></div>
+
+                <div class="plan-info">
+                  <div class="plan-name">{{ $plan->name }}</div>
+                  @if($plan->description)
+                    <div class="plan-desc">{{ $plan->description }}</div>
+                  @endif
                 </div>
-                @error('care_type_id')<p class="v-error"><i class="bi bi-exclamation-circle"></i>{{ $message }}</p>@enderror
-              </div>
-            </div>
 
-            <div class="field-group" id="fg-notes">
-              <label class="field-label" for="notes">Special Notes <span style="font-weight:400; color:var(--muted); font-size:.75rem;">(optional)</span></label>
-              <textarea
-                id="notes" name="notes" rows="3"
-                class="field-input" placeholder="Any conditions, allergies or specific care requirements…"
-                style="resize:vertical; min-height:80px;"
-              ></textarea>
+                <div class="plan-price-tag">
+                  @if($plan->price_from ?? false)
+                    <div class="plan-price-amt">from ₦{{ number_format($plan->price) }}</div>
+                  @else
+                    <div class="plan-price-amt">₦{{ number_format($plan->price) }}</div>
+                  @endif
+                  <span class="plan-price-cycle">{{ $plan->billing_label }}</span>
+                </div>
+              </label>
+              @endforeach
             </div>
-
+            <p id="planError" class="v-error" style="display:none; margin-top:8px;">
+              <i class="bi bi-exclamation-circle"></i> Please select a plan to continue.
+            </p>
           </div>
 
           {{-- SECTION 3: Add-Ons --}}
@@ -702,35 +660,39 @@ a { color:inherit; text-decoration:none; }
           <div class="form-section addons-section">
             <div class="form-section-label">
               <div class="fsl-ico"><i class="bi bi-plus-circle"></i></div>
-              Additional Services
+              Additional Services <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:.75rem; color:var(--muted);">(optional)</span>
             </div>
 
             <p class="addons-intro">
-              Our healthcare professionals handle all of your loved one's core care needs.
-              <strong>Is there anything more you'd like them to take care of?</strong>
+              Our nurses handle all core care needs.
+              <strong>Would you like to add any specialist services?</strong>
             </p>
+
+            <button type="button" class="addons-toggle" id="addonsToggle" aria-expanded="false">
+              <span>Show optional add-ons <span class="addons-count" id="addonsCount">0</span></span>
+              <i class="bi bi-chevron-down chev"></i>
+            </button>
 
             <div class="addon-list" id="addonList">
               @foreach($addOns as $addOn)
               <label class="addon-item" id="addon-label-{{ $addOn->id }}" data-price="{{ $addOn->price }}">
-                <div class="addon-cb">
-                  <i class="bi bi-check"></i>
+                <div class="addon-cb"><i class="bi bi-check"></i></div>
+                <div class="addon-text">
+                  <div class="addon-name">{{ $addOn->name }}</div>
+                  @if($addOn->description)
+                    <div class="addon-desc">{{ $addOn->description }}</div>
+                  @endif
                 </div>
-                <span class="addon-name">{{ $addOn->name }}</span>
-                <input
-                  type="checkbox"
-                  class="addon-hidden"
-                  name="add_on_ids[]"
-                  value="{{ $addOn->id }}"
-                  data-price="{{ $addOn->price }}"
-                >
+                <div class="addon-price-tag">{{ $addOn->formatted_price }}</div>
+                <input type="checkbox" class="addon-hidden" name="add_on_ids[]"
+                  value="{{ $addOn->id }}" data-price="{{ $addOn->price }}">
               </label>
               @endforeach
             </div>
           </div>
           @endif
 
-          {{-- ── SUBMIT BUTTON (mobile: shows below form, above summary) ── --}}
+          {{-- REVEAL BUTTON --}}
           <div class="form-submit-area" id="formSubmitArea">
             <button type="button" id="revealBtn" class="continue-btn" disabled>
               <i class="bi bi-eye"></i>
@@ -744,84 +706,61 @@ a { color:inherit; text-decoration:none; }
 
         </form>
       </div>
+      {{-- end form card --}}
 
-      {{-- ═══════════════ RIGHT COLUMN: PLAN SUMMARY ═══════════════ --}}
+      {{-- ═══════════ RIGHT COLUMN ═══════════ --}}
       <div class="summary-col">
 
-        {{-- plan summary card --}}
         <div class="plan-summary">
-          <p class="ps-eyebrow">Selected Plan</p>
-          <h2 class="ps-name">{{ $carePlan->name }}</h2>
-          <p class="ps-type" id="selectedCareType">Choose a care type to continue</p>
+          <p class="ps-eyebrow">Care Category</p>
+          <h2 class="ps-name" id="summaryPlanName">Select a plan</h2>
+          <p class="ps-type">{{ $careType->name }}</p>
 
-          {{-- Plan features pulled from the care plan model --}}
-          @if($carePlan->features && count($carePlan->features))
-          <ul class="ps-feats">
-            @foreach(array_slice($carePlan->features, 0, 5) as $feat)
-            <li class="ps-feat">
-              <span class="ps-check"><i class="bi bi-check"></i></span>
-              {{ $feat }}
-            </li>
-            @endforeach
-          </ul>
-          @else
           <ul class="ps-feats">
             <li class="ps-feat"><span class="ps-check"><i class="bi bi-check"></i></span>Professional, licensed caregivers</li>
             <li class="ps-feat"><span class="ps-check"><i class="bi bi-check"></i></span>24/7 support line</li>
             <li class="ps-feat"><span class="ps-check"><i class="bi bi-check"></i></span>Personalised care schedule</li>
             <li class="ps-feat"><span class="ps-check"><i class="bi bi-check"></i></span>Weekly progress reports</li>
           </ul>
-          @endif
 
           <div class="ps-divider"></div>
 
-          {{-- PRICE REVEAL AREA --}}
+          {{-- PRICE REVEAL --}}
           <div class="price-reveal-wrap" id="priceRevealWrap">
-
-            {{-- locked state --}}
             <div class="price-locked" id="priceLocked">
-              <div class="lock-icon"><i class="bi bi-lock-fill" id="lockIcon"></i></div>
+              <div class="lock-icon"><i class="bi bi-lock-fill"></i></div>
               <div class="lock-text">
-                <p><strong>Your price is ready to reveal.</strong><br>Complete the form and click "See Price".</p>
+                <p><strong>Select a plan and fill your details</strong><br>to reveal your exact price.</p>
               </div>
             </div>
-
-            {{-- shimmer --}}
             <div class="price-shimmer" id="priceShimmer"></div>
-
-            {{-- revealed price --}}
             <div class="price-revealed" id="priceRevealed">
               <p class="pr-label">Your Quoted Price</p>
               <p class="pr-amount" id="priceAmount">₦0</p>
-              <p class="pr-cycle" id="priceCycle">per month</p>
+              <p class="pr-cycle" id="priceCycle"></p>
               <div class="pr-breakdown">
                 <div class="pr-row">
                   <span>Plan</span>
-                  <span>{{ $carePlan->name }}</span>
-                </div>
-                <div class="pr-row" id="brkCareType">
-                  <span>Care Type</span>
-                  <span id="brkCareTypeVal">—</span>
+                  <span id="brkPlanVal">—</span>
                 </div>
                 <div class="pr-row" id="brkAddOns" style="display:none;">
                   <span>Add-ons</span>
                   <span id="brkAddOnsVal">—</span>
                 </div>
-                <div class="pr-row total" id="brkTotal">
+                <div class="pr-row total">
                   <span>Total</span>
                   <span id="brkTotalVal">—</span>
                 </div>
               </div>
             </div>
-
           </div>
 
-          {{-- PAY BUTTON (shown after price reveal) --}}
+          {{-- PAY BUTTON --}}
           <div class="pay-btn-wrap" id="payBtnWrap" style="display:none; margin-top:16px;">
-            <!-- <button type="button" id="payBtn" class="pay-btn">
+            <button type="button" id="payBtn" class="pay-btn">
               <i class="bi bi-credit-card-2-front"></i>
-              Pay Now & Get Started
-            </button> -->
+              Pay Now &amp; Get Started
+            </button>
             <p class="pay-btn-hint">
               <i class="bi bi-shield-lock"></i>
               Secured by Paystack · SSL encrypted
@@ -831,25 +770,15 @@ a { color:inherit; text-decoration:none; }
 
         {{-- trust badges --}}
         <div class="trust-badges reveal">
-          <div class="tb">
-            <i class="bi bi-patch-check-fill"></i>
-            <span>Licensed &amp; Insured</span>
-          </div>
-          <div class="tb">
-            <i class="bi bi-people-fill"></i>
-            <span>Verified Caregivers</span>
-          </div>
-          <div class="tb">
-            <i class="bi bi-clock-fill"></i>
-            <span>24/7 Support</span>
-          </div>
+          <div class="tb"><i class="bi bi-patch-check-fill"></i><span>Licensed &amp; Insured</span></div>
+          <div class="tb"><i class="bi bi-people-fill"></i><span>Verified Caregivers</span></div>
+          <div class="tb"><i class="bi bi-clock-fill"></i><span>24/7 Support</span></div>
         </div>
 
-        {{-- tip card --}}
         <div class="tip-card">
           <div class="tip-ico"><i class="bi bi-stars"></i></div>
           <div class="tip-text">
-            <p><strong>After payment</strong> your CavalCare account is created automatically. You'll be guided through a short onboarding to schedule your first care visit.</p>
+            <p><strong>After payment</strong> you'll receive an email with a private link to complete your loved one's care details — this helps us match the perfect nurse.</p>
           </div>
         </div>
 
@@ -861,42 +790,50 @@ a { color:inherit; text-decoration:none; }
   </div>
 </div>
 
-{{-- No hidden form needed — submission is handled via fetch() --}}
+{{-- STICKY MOBILE ACTION BAR --}}
+<div class="mobile-bar" id="mobileBar">
+  <div class="mobile-bar-price">
+    <div class="mobile-bar-label" id="mobileBarLabel">Your price</div>
+    <div class="mobile-bar-amount" id="mobileBarAmount">Fill your details to see it</div>
+  </div>
+  <button type="button" class="mobile-bar-btn" id="mobileBarBtn" disabled>
+    <i class="bi bi-eye"></i> See My Price
+  </button>
+</div>
 
 @endsection
 
 @push('scripts')
-{{-- Paystack inline JS --}}
 <script src="https://js.paystack.co/v1/inline.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ── CONFIG ─────────────────────────────────────── */
+  /* ── CONFIG ──────────────────────────────────────── */
   const PAYSTACK_KEY = '{{ config("services.paystack.public_key", "pk_test_xxxxxxxxxxxxxxxxxxxxxxxx") }}';
-  const PLAN_BASE_PRICE = {{ (int) ($carePlan->price ?? 0) }};  // in kobo or naira – adjust as needed
 
-  /* ── DOM refs ──────────────────────────────────── */
-  const form        = document.getElementById('bookingForm');
-  const finalForm   = document.getElementById('finalForm');
-  const revealBtn   = document.getElementById('revealBtn');
-  const revealText  = document.getElementById('revealBtnText');
-  const payBtn      = document.getElementById('payBtn');
-  const payBtnWrap  = document.getElementById('payBtnWrap');
-
+  /* ── DOM refs ────────────────────────────────────── */
+  const revealBtn     = document.getElementById('revealBtn');
+  const revealText    = document.getElementById('revealBtnText');
+  const payBtn        = document.getElementById('payBtn');
+  const payBtnWrap    = document.getElementById('payBtnWrap');
   const priceLocked   = document.getElementById('priceLocked');
   const priceShimmer  = document.getElementById('priceShimmer');
   const priceRevealed = document.getElementById('priceRevealed');
   const priceAmount   = document.getElementById('priceAmount');
   const priceCycle    = document.getElementById('priceCycle');
-  const brkCareTypeVal= document.getElementById('brkCareTypeVal');
+  const brkPlanVal    = document.getElementById('brkPlanVal');
   const brkTotalVal   = document.getElementById('brkTotalVal');
   const brkAddOns     = document.getElementById('brkAddOns');
   const brkAddOnsVal  = document.getElementById('brkAddOnsVal');
-  const selectedType  = document.getElementById('selectedCareType');
+  const summaryName   = document.getElementById('summaryPlanName');
+  const planError     = document.getElementById('planError');
 
-  const csrfToken =
-    document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+  const mobileBar       = document.getElementById('mobileBar');
+  const mobileBarLabel  = document.getElementById('mobileBarLabel');
+  const mobileBarAmount = document.getElementById('mobileBarAmount');
+  const mobileBarBtn    = document.getElementById('mobileBarBtn');
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
   const stepNodes = [
     document.getElementById('stepNode1'),
@@ -904,25 +841,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('stepNode3'),
   ];
 
-  /* ── Required fields list ───────────────────────── */
-  const required = ['name', 'email', 'phone', 'patient_name', 'patient_age', 'care_type_id'];
-
-  /* ── Helpers ────────────────────────────────────── */
+  /* ── Helpers ─────────────────────────────────────── */
   const fmt = n => '₦' + Number(n).toLocaleString('en-NG');
+  const getVal = id => document.getElementById(id)?.value.trim() ?? '';
 
-  function getVal(id) {
-    return document.getElementById(id)?.value.trim() ?? '';
-  }
-
-  function isFormFilled() {
-    return required.every(id => getVal(id) !== '' && getVal(id) !== '0');
-  }
-
-  function getPrice() {
-    const sel = document.getElementById('care_type_id');
-    const opt = sel?.options[sel.selectedIndex];
-    const typePrice = parseInt(opt?.dataset.price ?? 0);
-    return PLAN_BASE_PRICE > 0 ? PLAN_BASE_PRICE : typePrice;
+  function getSelectedPlan() {
+    const radio = document.querySelector('input[name="care_plan_id"]:checked');
+    if (!radio) return null;
+    const label = radio.closest('.plan-option');
+    return {
+      id:    radio.value,
+      price: parseInt(label?.dataset.price ?? 0),
+      cycle: label?.dataset.cycle ?? '',
+      name:  label?.dataset.name ?? '',
+    };
   }
 
   function getAddOnsTotal() {
@@ -935,59 +867,18 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(cb => parseInt(cb.value));
   }
 
-  /* ── Validate a single field ────────────────────── */
-  function validateField(id) {
-    const el = document.getElementById(id);
-    if (!el) return true;
-    const fg = document.getElementById('fg-' + id);
-    const isValid = el.checkValidity() && el.value.trim() !== '';
-    el.classList.toggle('error', !isValid);
-    if (fg) fg.classList.toggle('field-success', isValid);
-    return isValid;
+  function isFormFilled() {
+    const plan = getSelectedPlan();
+    return (
+      plan !== null &&
+      getVal('name')  !== '' &&
+      getVal('email') !== '' &&
+      getVal('phone') !== ''
+    );
   }
 
-  /* ── Live validation ────────────────────────────── */
-  required.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('input',  () => { validateField(id); updateRevealBtn(); });
-    el.addEventListener('change', () => { validateField(id); updateRevealBtn(); updateTypeLabel(); });
-    el.addEventListener('blur',   () => validateField(id));
-  });
-
-  /* ── Add-on checkbox toggle ─────────────────────── */
-  document.querySelectorAll('.addon-item').forEach(label => {
-    label.addEventListener('click', () => {
-      const cb = label.querySelector('.addon-hidden');
-      cb.checked = !cb.checked;
-      label.classList.toggle('selected', cb.checked);
-      updateRevealBtn();
-    });
-  });
-
-  function updateTypeLabel() {
-    const sel = document.getElementById('care_type_id');
-    const opt = sel?.options[sel.selectedIndex];
-    if (opt?.value) {
-      selectedType.textContent = opt.text;
-    } else {
-      selectedType.textContent = 'Choose a care type to continue';
-    }
-  }
-
-  /* ── Reveal button state ────────────────────────── */
-  function updateRevealBtn() {
-    const filled = isFormFilled();
-    revealBtn.disabled = !filled;
-    revealText.textContent = filled ? 'See My Price' : 'Fill all fields to see your price';
-    if (filled) {
-      revealBtn.querySelector('i').className = 'bi bi-eye';
-    }
-  }
-
-  /* ── Step tracker ───────────────────────────────── */
+  /* ── Step tracker ────────────────────────────────── */
   function setStep(n) {
-    // n = 1-based step that is NOW active
     stepNodes.forEach((node, i) => {
       node.classList.remove('active', 'done');
       if (i + 1 < n) node.classList.add('done');
@@ -995,33 +886,141 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ── Reveal price flow ──────────────────────────── */
+  /* ── Reveal button state ─────────────────────────── */
+  function updateRevealBtn() {
+    const filled = isFormFilled();
+    revealBtn.disabled = !filled;
+    revealText.textContent = filled ? 'See My Price' : 'Fill all fields to see your price';
+    syncMobileBar();
+  }
+
+  /* ── Mobile sticky bar sync ──────────────────────── */
+  function syncMobileBar() {
+    if (!mobileBar) return;
+    const revealed = priceRevealed.classList.contains('show');
+
+    if (revealed) {
+      mobileBar.classList.add('show');
+      mobileBarLabel.textContent = 'Your total';
+      mobileBarAmount.textContent = priceAmount.textContent + ' ' + priceCycle.textContent;
+      mobileBarBtn.disabled = false;
+      mobileBarBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now';
+      return;
+    }
+
+    const filled = isFormFilled();
+    mobileBar.classList.toggle('show', filled);
+    mobileBarLabel.textContent = 'Your price';
+    mobileBarAmount.textContent = filled ? 'Tap to reveal your price' : 'Fill your details to see it';
+    mobileBarBtn.disabled = !filled;
+    mobileBarBtn.innerHTML = '<i class="bi bi-eye"></i> See My Price';
+  }
+
+  mobileBarBtn?.addEventListener('click', () => {
+    if (priceRevealed.classList.contains('show')) {
+      payBtn.click();
+    } else {
+      revealBtn.click();
+    }
+  });
+
+  /* ── Plan option selection ───────────────────────── */
+  document.querySelectorAll('.plan-option').forEach(label => {
+    label.addEventListener('click', () => {
+      // deselect all
+      document.querySelectorAll('.plan-option').forEach(l => l.classList.remove('selected'));
+      // select clicked
+      label.classList.add('selected');
+      label.querySelector('input[type="radio"]').checked = true;
+      // update summary name
+      summaryName.textContent = label.dataset.name;
+      planError.style.display = 'none';
+      updateRevealBtn();
+    });
+  });
+
+  /* ── Personal field live validation ─────────────── */
+  ['name', 'email', 'phone'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input',  updateRevealBtn);
+    el.addEventListener('change', updateRevealBtn);
+    el.addEventListener('blur', () => {
+      const fg = document.getElementById('fg-' + id);
+      const valid = el.checkValidity() && el.value.trim() !== '';
+      el.classList.toggle('error', !valid);
+      if (fg) fg.classList.toggle('field-success', valid);
+    });
+  });
+
+  /* ── Add-on toggle ───────────────────────────────── */
+  document.querySelectorAll('.addon-item').forEach(label => {
+    label.addEventListener('click', () => {
+      const cb = label.querySelector('.addon-hidden');
+      cb.checked = !cb.checked;
+      label.classList.toggle('selected', cb.checked);
+      updateRevealBtn();
+      updateAddonsCount();
+    });
+  });
+
+  /* ── Add-ons accordion (collapsed by default to cut down scrolling) ── */
+  const addonsToggle = document.getElementById('addonsToggle');
+  const addonList    = document.getElementById('addonList');
+  const addonsCount  = document.getElementById('addonsCount');
+
+  function updateAddonsCount() {
+    if (!addonsCount) return;
+    const n = document.querySelectorAll('.addon-hidden:checked').length;
+    addonsCount.textContent = n;
+    addonsCount.classList.toggle('show', n > 0);
+  }
+
+  if (addonsToggle && addonList) {
+    addonsToggle.addEventListener('click', () => {
+      const isOpen = addonList.classList.toggle('open');
+      addonsToggle.classList.toggle('open', isOpen);
+      addonsToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      addonsToggle.querySelector('span').firstChild.textContent = isOpen ? 'Hide optional add-ons ' : 'Show optional add-ons ';
+    });
+  }
+  updateAddonsCount();
+
+  /* ── Reveal price ────────────────────────────────── */
   revealBtn.addEventListener('click', () => {
     if (!isFormFilled()) return;
 
-    // Validate all before revealing
-    const allValid = required.every(id => validateField(id));
+    const plan = getSelectedPlan();
+    if (!plan) {
+      planError.style.display = 'flex';
+      return;
+    }
+
+    // Validate personal fields
+    let allValid = true;
+    ['name', 'email', 'phone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const valid = el.checkValidity() && el.value.trim() !== '';
+      el.classList.toggle('error', !valid);
+      if (!valid) allValid = false;
+    });
     if (!allValid) return;
 
     setStep(2);
 
-    // Show shimmer for realism
     priceLocked.style.display  = 'none';
     priceShimmer.style.display = 'block';
 
     setTimeout(() => {
-      const price      = getPrice();
       const addOnsTotal = getAddOnsTotal();
-      const total      = price + addOnsTotal;
-      const sel        = document.getElementById('care_type_id');
-      const careTypeName = sel?.options[sel.selectedIndex]?.text ?? '—';
+      const total       = plan.price + addOnsTotal;
 
-      priceAmount.textContent    = fmt(total);
-      brkCareTypeVal.textContent = careTypeName;
-      brkTotalVal.textContent    = fmt(total);
-      priceCycle.textContent     = 'per month · billed monthly';
+      priceAmount.textContent = fmt(total);
+      priceCycle.textContent  = plan.cycle;
+      brkPlanVal.textContent  = plan.name;
+      brkTotalVal.textContent = fmt(total);
 
-      // Show add-ons row in breakdown only if something was selected
       if (addOnsTotal > 0) {
         brkAddOnsVal.textContent = fmt(addOnsTotal);
         brkAddOns.style.display  = 'flex';
@@ -1033,33 +1032,33 @@ document.addEventListener('DOMContentLoaded', () => {
       priceRevealed.classList.add('show');
       payBtnWrap.style.display   = 'block';
 
-      // Scroll to price on mobile
       if (window.innerWidth < 900) {
-        document.querySelector('.plan-summary')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelector('.plan-summary')?.scrollIntoView({ behavior:'smooth', block:'start' });
       }
 
-      // Update reveal button
       revealBtn.innerHTML = '<i class="bi bi-check-circle"></i> Details Confirmed';
       revealBtn.style.background = 'rgba(26,58,47,.08)';
       revealBtn.style.color      = 'var(--ocean)';
       revealBtn.style.boxShadow  = 'none';
       revealBtn.disabled         = true;
 
+      syncMobileBar();
     }, 900);
   });
 
-  /* ── Paystack payment ───────────────────────────── */
+  /* ── Paystack payment ────────────────────────────── */
   let pbReference = null;
 
   payBtn.addEventListener('click', async () => {
-    const price       = getPrice();
+    const plan        = getSelectedPlan();
     const addOnsTotal = getAddOnsTotal();
-    const total       = price + addOnsTotal;
+    const total       = (plan?.price ?? 0) + addOnsTotal;
     const email       = getVal('email');
     const name        = getVal('name');
 
     payBtn.disabled = true;
     payBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Please wait…';
+    if (mobileBarBtn) { mobileBarBtn.disabled = true; mobileBarBtn.innerHTML = payBtn.innerHTML; }
 
     try {
       const initiateRes = await fetch('{{ route("booking.initiate") }}', {
@@ -1070,11 +1069,10 @@ document.addEventListener('DOMContentLoaded', () => {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          name:         getVal('name'),
-          email:        getVal('email'),
+          name:         name,
+          email:        email,
           phone:        getVal('phone'),
-          care_plan_id: getVal('care_plan_id') || '{{ $carePlan->id }}',
-          care_type_id: getVal('care_type_id'),
+          care_plan_id: plan?.id,
           add_on_ids:   getSelectedAddOnIds(),
         }),
       });
@@ -1099,13 +1097,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const handler = PaystackPop.setup({
       key:      PAYSTACK_KEY,
       email:    email,
-      amount:   total * 100,   // total includes add-ons, in kobo
+      amount:   total * 100,
       currency: 'NGN',
       ref:      'CC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase(),
       metadata: {
         custom_fields: [
           { display_name: 'Customer Name', variable_name: 'name',         value: name },
-          { display_name: 'Care Plan',     variable_name: 'care_plan',    value: '{{ $carePlan->name }}' },
+          { display_name: 'Care Plan',     variable_name: 'care_plan',    value: plan?.name ?? '' },
           { display_name: 'PB Reference',  variable_name: 'pb_reference', value: pbReference },
         ],
       },
@@ -1114,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setStep(2);
         payBtn.disabled = false;
         payBtn.innerHTML = '<i class="bi bi-credit-card-2-front"></i> Pay Now & Get Started';
+        syncMobileBar();
       },
 
       callback(response) {
@@ -1134,7 +1133,12 @@ document.addEventListener('DOMContentLoaded', () => {
               }),
             });
 
-            const storeData = await storeRes.json();
+            let storeData;
+            try {
+              storeData = await storeRes.json();
+            } catch (parseErr) {
+              throw new Error('The server took too long or returned an unexpected response. Please try again — if this keeps happening, contact us on WhatsApp.');
+            }
 
             if (storeRes.ok && storeData.success) {
               window.location.href = storeData.redirect;
@@ -1157,47 +1161,59 @@ document.addEventListener('DOMContentLoaded', () => {
     handler.openIframe();
   });
 
-  /* ── Ripple on buttons ──────────────────────────── */
+  /* ── Ripple ──────────────────────────────────────── */
   [revealBtn, payBtn].forEach(btn => {
+    if (!btn) return;
     btn.addEventListener('pointerdown', e => {
       const r    = document.createElement('span');
       const rect = btn.getBoundingClientRect();
       const sz   = Math.max(rect.width, rect.height) * 1.4;
       r.className = 'btn-ripple';
-      r.style.cssText = `
-        width:${sz}px; height:${sz}px;
-        left:${e.clientX - rect.left - sz/2}px;
-        top:${e.clientY - rect.top  - sz/2}px;
-      `;
+      r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px;`;
       btn.appendChild(r);
       r.addEventListener('animationend', () => r.remove());
     });
   });
 
-  /* ── Scroll reveal ──────────────────────────────── */
+  /* ── Scroll reveal ───────────────────────────────── */
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
   }, { threshold:.1 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* ── Parallax glows (desktop only) ─────────────── */
+  /* ── Parallax glows ──────────────────────────────── */
   if (window.matchMedia('(min-width:900px) and (hover:hover)').matches) {
     document.addEventListener('mousemove', e => {
       const cx = e.clientX / window.innerWidth - .5;
       const cy = e.clientY / window.innerHeight - .5;
       document.querySelectorAll('.booking-page .glow').forEach((g, i) => {
-        g.style.transform = `translate(${cx*(i+1)*14}px, ${cy*(i+1)*14}px)`;
+        g.style.transform = `translate(${cx*(i+1)*14}px,${cy*(i+1)*14}px)`;
       });
     }, { passive:true });
   }
 
-  /* ── Initialise ─────────────────────────────────── */
+  /* ── Preselect plan from ?plan= query param ──────── */
+  function preselectPlanFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    const planSlug = params.get('plan');
+    if (!planSlug) return;
+
+    const label = document.querySelector(`.plan-option[data-slug="${CSS.escape(planSlug)}"]`);
+    if (!label) return;
+
+    document.querySelectorAll('.plan-option').forEach(l => l.classList.remove('selected'));
+    label.classList.add('selected');
+    label.querySelector('input[type="radio"]').checked = true;
+    summaryName.textContent = label.dataset.name;
+    planError.style.display = 'none';
+
+    label.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  /* ── Init ────────────────────────────────────────── */
+  preselectPlanFromQuery();
   updateRevealBtn();
   setStep(1);
 });
 </script>
-
-<style>
-@keyframes spin { to { transform:rotate(360deg); } }
-</style>
 @endpush

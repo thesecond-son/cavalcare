@@ -8,13 +8,8 @@ use Filament\Forms\Components\{
     TextInput,
     Textarea,
     Repeater,
-    Select,
-    DatePicker,
-    FileUpload, 
-    CheckboxList,
-    Toggle
+    FileUpload
 };
-use Filament\Infolists\Components\ImageEntry;
 
 class CareTypeForm
 {
@@ -23,64 +18,71 @@ class CareTypeForm
         return $schema
             ->components([
 
-                // ── Core info ────────────────────────────────────────────
+                // ── Core Information ─────────────────────────────────────
                 Section::make('Care Type Information')
-                ->schema([
-                    TextInput::make('name')
-                        ->required()
-                        ->maxLength(255)
-                        ->columnSpanFull(),
+                    ->description('Basic information about this care service.')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Care Type Name')
+                            ->required()
+                            ->maxLength(255),
 
-                    TextInput::make('meta.icon')
-                        ->label('Bootstrap Icon Class')
-                        ->placeholder('e.g. bi-heart-pulse')
-                        ->helperText('Used on the homepage services card. Find icons at icons.getbootstrap.com.')
-                        ->columnSpanFull(),
+                        TextInput::make('slug')
+                            ->label('Slug')
+                            ->maxLength(255)
+                            ->helperText('Leave blank to generate automatically from the care type name.')
+                            ->unique(ignoreRecord: true),
+
+                        Textarea::make('description')
+                            ->label('Booking Page Description')
+                            ->helperText('Short introductory description shown on the booking page.')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
+                        TextInput::make('meta.icon')
+                            ->label('Bootstrap Icon Class')
+                            ->placeholder('e.g. bi-heart-pulse')
+                            ->helperText('Used on the homepage services card. Find icons at icons.getbootstrap.com.')
+                            ->columnSpanFull(),
 
                         FileUpload::make('meta.image_path')
-                        ->label('Service Image')
-                        ->image()
-                        ->disk('public')
-                        ->directory('care-types')
-                        ->visibility('public')
-                        ->imageEditor()
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->columnSpanFull(),
+                            ->label('Service Image')
+                            ->image()
+                            ->disk('public')
+                            ->directory('public')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
 
-                // ── Content shown on the Services page ───────────────────
+                // ── Services Page Content ─────────────────────────────────
                 Section::make('Service Page Content')
-                ->description('This content appears on the full Services listing page.')
-                ->schema([
-                    Textarea::make('meta.description')
-                        ->label('Short Description')
-                        ->helperText('One or two sentences shown at the top of the service entry and on the homepage card.')
-                        ->rows(3)
-                        ->columnSpanFull(),
+                    ->description('Content displayed on the full Services listing page.')
+                    ->schema([
+                        Textarea::make('meta.more_info')
+                            ->label('More Information')
+                            ->helperText('A longer paragraph shown in the highlighted information section beneath the description.')
+                            ->rows(5)
+                            ->columnSpanFull(),
 
-                    Textarea::make('meta.more_info')
-                        ->label('More Information')
-                        ->helperText('A longer paragraph shown in the highlighted callout block beneath the description.')
-                        ->rows(4)
-                        ->columnSpanFull(),
-
-                    // "What to expect" bullet list (shown as the bullet list under the service)
-                    Repeater::make('meta.tasks')
-                        ->label('What to Expect (bullet list)')
-                        ->helperText('Each entry becomes one bullet point in the "What to expect" section on the Services page.')
-                        ->schema([
-                            TextInput::make('task')
-                                ->label('Bullet point')
-                                ->placeholder('e.g. Vital signs monitoring (BP, temperature, pulse)')
-                                ->required(),
-                        ])
-                        ->addActionLabel('Add bullet point')
-                        ->reorderable()
-                        ->columnSpanFull(),
-                ])
-                ->columns(1)
-                ->columnSpanFull(),
+                        Repeater::make('meta.tasks')
+                            ->label('What to Expect')
+                            ->helperText('Each entry becomes one bullet point in the "What to expect" section.')
+                            ->schema([
+                                TextInput::make('task')
+                                    ->label('Bullet Point')
+                                    ->placeholder('e.g. Vital signs monitoring (BP, temperature, pulse)')
+                                    ->required(),
+                            ])
+                            ->addActionLabel('Add Bullet Point')
+                            ->reorderable()
+                            ->collapsible()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -10,25 +10,11 @@ class HomeController extends Controller
 {
     public function index()
 {
-    $carePlans = CarePlan::orderBy('price')->get();
+    // Care plans are no longer listed flat on the homepage — they now
+    // live grouped under each care type on the /services page.
+    $careTypes = CareType::orderBy('name')->get();
 
-    $plans = CarePlan::query()
-    ->get()
-    ->map(function ($plan) {
-        $plan->care_types = \App\Models\CareType::whereIn(
-            'id',
-            data_get($plan->meta, 'recommended_for', [])
-        )->pluck('name');
-
-        return $plan;
-    });
-
-    $careTypes = CareType::query()
-        ->whereNotNull('meta->description')
-        ->get();
-
-
-    return view('home', compact('carePlans', 'careTypes', 'plans'));
+    return view('home', compact('careTypes'));
 }
 
 }

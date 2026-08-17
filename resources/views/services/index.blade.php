@@ -1,4 +1,4 @@
-{{-- resources/views/services.blade.php --}}
+{{-- resources/views/services/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'In-Home Care Services in Nigeria — CavalCare')
@@ -1014,11 +1014,35 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
   @endif
 
-  <a href="{{ route('booking.create.service', $careType->slug) }}"
-          class="btn btn-primary">
-          Book {{ $careType->name }}
-          <i class="bi bi-arrow-right"></i>
-        </a>
+          @if($careType->carePlans->isNotEmpty())
+            <div class="what-to-expect" style="margin-top:24px;">
+              <div class="wte-heading">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Available plans
+              </div>
+              <ul class="svc-tasks" aria-label="Plans for {{ $careType->name }}" style="gap:14px;">
+                @foreach($careType->carePlans as $planIndex => $plan)
+                  <li class="svc-task reveal"
+                      style="transition-delay:{{ 0.04 + ($planIndex * 0.04) }}s; align-items:center; justify-content:space-between; gap:12px;">
+                    <span>
+                      <strong>{{ $plan->name }}</strong>
+                      — {{ $plan->formatted_price }}
+                    </span>
+                    <a href="{{ route('booking.create', ['careType' => $careType->slug, 'plan' => $plan->slug]) }}"
+                       class="plan-cta plan-cta-default" style="flex-shrink:0;">
+                      Book Now
+                    </a>
+                  </li>
+                @endforeach
+              </ul>
+            </div>
+          @else
+            <a href="{{ route('booking.create.service', $careType->slug) }}"
+                    class="btn btn-primary" style="margin-top:20px;">
+                    Book {{ $careType->name }}
+                    <i class="bi bi-arrow-right"></i>
+                  </a>
+          @endif
 
         </div>
 
