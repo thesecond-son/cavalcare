@@ -1084,7 +1084,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 </section>
 
 
-{{-- ── CARE GALLERY ──────────────────────────────────────── --}}
+<!-- {{-- ── CARE GALLERY ──────────────────────────────────────── --}}
 <section class="care-gallery dot-bg" aria-hidden="true">
   <div class="wrap">
     <div class="gallery-grid">
@@ -1102,7 +1102,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 
 {{-- ── FINAL CTA ──────────────────────────────────────────── --}}
