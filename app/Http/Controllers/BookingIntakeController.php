@@ -21,7 +21,7 @@ class BookingIntakeController extends Controller
         // If intake already done, the view handles the "already submitted" state
         $preBooking->load('carePlan', 'careType');
 
-        return view('bookings.intake', [
+        return view('bookings.intake-form', [
             'booking'  => $preBooking,   // the view uses $booking — PreBooking has the same fields it needs
             'carePlan' => $preBooking->carePlan,
             'careType' => $preBooking->careType,
