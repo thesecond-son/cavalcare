@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Bookings\Schemas;
 
 use Filament\Schemas\Schema;
-use Filament\Infolists\Infolist;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 
@@ -13,59 +12,186 @@ class BookingsInfolist
     {
         return $schema
             ->components([
-             Section::make('Booker Details')
-                ->components([
-                TextEntry::make('booker_details.name'),
-                TextEntry::make('booker_details.phone'),
-                TextEntry::make('booker_details.address'),
-                TextEntry::make('booker_details.emergency_number'),
-            ])
-            ->columns(2),
 
-            Section::make('Patient Details')
-            ->schema([
-                TextEntry::make('patient_details.full_name'),
-                TextEntry::make('patient_details.age'),
-                TextEntry::make('patient_details.gender'),
-                TextEntry::make('patient_details.mobility_level')
-                    ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'independent' => 'success',
-                        'assisted' => 'warning',
-                        'bedridden' => 'danger',
-                        default => 'gray',
-                    }),
-                TextEntry::make('patient_details.diagnosis'),
-                TextEntry::make('patient_details.daily_tasks'),
-                TextEntry::make('patient_details.medications'),
-                TextEntry::make('patient_details.allergies'),
-                TextEntry::make('patient_details.emergency_contact'),
-            ])
-            ->columns(2),
-            
-            Section::make('Booking Details')
-            ->schema([
-                TextEntry::make('booking_details.care_type'),
-                TextEntry::make('booking_details.care_plan'),
-                TextEntry::make('booking_details.start_date')->date(),
-                TextEntry::make('booking_details.notes'),
-            ])
-            ->columns(2),
+                // ─────────────────────────────────────────────
+                // BOOKER DETAILS
+                // ─────────────────────────────────────────────
+                Section::make('Booker Details')
+                    ->schema([
+                        TextEntry::make('booker_details.name')
+                            ->label('Name')
+                            ->placeholder('—'),
 
-            Section::make('Payment Details')
-            ->schema([
-                TextEntry::make('payment_details.amount_paid')
-                    ->money('NGN'),
+                        TextEntry::make('booker_details.phone')
+                            ->label('Phone')
+                            ->placeholder('—'),
 
-                TextEntry::make('payment_details.payment_method'),
-                TextEntry::make('payment_details.date_paid')->date(),
-            ])
-            ->columns(3),
+                        TextEntry::make('booker_details.state')
+                            ->label('State')
+                            ->placeholder('—'),
 
-            Section::make('Status')
-            ->schema([
-                TextEntry::make('status')->badge(),
-            ]),
+                        TextEntry::make('booker_details.address')
+                            ->label('Address')
+                            ->placeholder('—'),
+
+                        TextEntry::make('booker_details.emergency_number')
+                            ->label('Emergency Number')
+                            ->placeholder('—'),
+                    ])
+                    ->columns(2),
+
+
+                // ─────────────────────────────────────────────
+                // PATIENT DETAILS
+                // ─────────────────────────────────────────────
+                Section::make('Patient Details')
+                    ->schema([
+                        TextEntry::make('patient_details.full_name')
+                            ->label('Full Name')
+                            ->placeholder('—'),
+
+                        TextEntry::make('patient_details.age')
+                            ->label('Age')
+                            ->suffix(' years')
+                            ->placeholder('—'),
+
+                        TextEntry::make('patient_details.gender')
+                            ->label('Gender')
+                            ->placeholder('—'),
+
+                        TextEntry::make('patient_details.mobility_level')
+                            ->label('Mobility Level')
+                            ->badge()
+                            ->color(fn ($state) => match (strtolower((string) $state)) {
+                                'independent' => 'success',
+                                'assisted'    => 'warning',
+                                'bedridden'   => 'danger',
+                                default       => 'gray',
+                            }),
+
+                        TextEntry::make('patient_details.address')
+                            ->label('Patient Address')
+                            ->columnSpanFull()
+                            ->placeholder('—'),
+
+                        TextEntry::make('patient_details.diagnosis')
+                            ->label('Diagnosis')
+                            ->placeholder('None provided')
+                            ->columnSpanFull(),
+
+                        TextEntry::make('patient_details.emergency_contact')
+                            ->label('Emergency Contact')
+                            ->placeholder('None provided'),
+                    ])
+                    ->columns(2),
+
+
+                // ─────────────────────────────────────────────
+                // MEDICAL / CARE INFORMATION
+                // ─────────────────────────────────────────────
+                Section::make('Care Information')
+                    ->schema([
+                        TextEntry::make('patient_details.medications')
+                            ->label('Medications')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return 'None provided';
+                                }
+
+                                return collect($state)
+                                    ->pluck('medication')
+                                    ->filter()
+                                    ->implode(', ');
+                            })
+                            ->columnSpanFull(),
+
+                        TextEntry::make('patient_details.allergies')
+                            ->label('Allergies')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return 'None provided';
+                                }
+
+                                return collect($state)
+                                    ->pluck('allergy')
+                                    ->filter()
+                                    ->implode(', ');
+                            })
+                            ->columnSpanFull(),
+
+                        TextEntry::make('patient_details.daily_tasks')
+                            ->label('Daily Care Tasks')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return 'None provided';
+                                }
+
+                                return collect($state)
+                                    ->pluck('task')
+                                    ->filter()
+                                    ->implode(', ');
+                            })
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1),
+
+
+                // ─────────────────────────────────────────────
+                // BOOKING DETAILS
+                // ─────────────────────────────────────────────
+                Section::make('Booking Details')
+                    ->schema([
+                        TextEntry::make('reference')
+                            ->label('Booking Reference')
+                            ->weight('bold'),
+
+                        TextEntry::make('careType.name')
+                            ->label('Care Type')
+                            ->placeholder('—'),
+
+                        TextEntry::make('carePlan.name')
+                            ->label('Care Plan')
+                            ->placeholder('—'),
+
+                        TextEntry::make('booking_details.start_date')
+                            ->label('Start Date')
+                            ->date()
+                            ->placeholder('—'),
+
+                        TextEntry::make('booking_details.end_date')
+                            ->label('End Date')
+                            ->date()
+                            ->placeholder('—'),
+                    ])
+                    ->columns(2),
+
+
+                // ─────────────────────────────────────────────
+                // STATUS
+                // ─────────────────────────────────────────────
+                Section::make('Booking Status')
+                    ->schema([
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->color(fn ($state) => match ($state) {
+                                'intake_complete' => 'success',
+                                'confirmed'       => 'success',
+                                'pending_payment' => 'warning',
+                                'paid'             => 'success',
+                                'cancelled'        => 'danger',
+                                default            => 'gray',
+                            }),
+
+                        TextEntry::make('created_at')
+                            ->label('Created')
+                            ->dateTime(),
+
+                        TextEntry::make('updated_at')
+                            ->label('Last Updated')
+                            ->dateTime(),
+                    ])
+                    ->columns(3),
 
             ]);
     }

@@ -2,19 +2,21 @@
 
 namespace App\Filament\Resources\Bookings\Tables;
 
+use App\Models\Booking;
+use App\Services\Booking\PaymentConfirmationService;
+use App\Services\Booking\CustomerAccountCreator;
+
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Filament\Actions\Action;
-use App\Services\Booking\PaymentConfirmationService;
-use App\Services\Booking\CustomerAccountCreator;
 
 class BookingsTable
 {
@@ -22,65 +24,193 @@ class BookingsTable
     {
         return $table
             ->columns([
-            TextColumn::make('booker_details.name')
-                ->label('Booker')
-                ->searchable(),
 
-            TextColumn::make('patient_details.full_name')
-                ->label('Patient')
-                ->searchable(),
+                // ─────────────────────────────────────────────
+                // BOOKING REFERENCE
+                // ─────────────────────────────────────────────
+                TextColumn::make('reference')
+                    ->label('Reference')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
 
-            TextColumn::make('booking_details.care_type')
-                ->label('Care Type')
-                ->badge(),
 
-            TextColumn::make('booking_details.care_plan')
-                ->label('Plan')
-                ->badge(),
+                // ─────────────────────────────────────────────
+                // BOOKER
+                // ─────────────────────────────────────────────
+                TextColumn::make('booker_details.name')
+                    ->label('Booker')
+                    ->searchable()
+                    ->sortable(),
 
-            TextColumn::make('payment_details.amount_paid')
-                ->label('Amount Paid')
-                ->money('NGN'),
 
-            BadgeColumn::make('status')
-                ->colors([
-                    'warning' => 'pending',
-                    'success' => 'confirmed',
-                    'primary' => 'completed',
-                    'danger' => 'cancelled',
-                ]),
+                // ─────────────────────────────────────────────
+                // PATIENT
+                // ─────────────────────────────────────────────
+                TextColumn::make('patient_details.full_name')
+                    ->label('Patient')
+                    ->searchable()
+                    ->sortable(),
 
-            TextColumn::make('careType.name')
-                ->label('Care Type')
-                ->badge(),
 
-            TextColumn::make('carePlan.name')
-                ->label('Care Plan')
-                ->badge()
-                ->color('info'),
+                // ─────────────────────────────────────────────
+                // CARE TYPE
+                // ─────────────────────────────────────────────
+                TextColumn::make('careType.name')
+                    ->label('Care Type')
+                    ->badge()
+                    ->searchable(),
 
-            TextColumn::make('created_at')
-                ->dateTime()
-                ->label('Booked On'),
+
+                // ─────────────────────────────────────────────
+                // CARE PLAN
+                // ─────────────────────────────────────────────
+                TextColumn::make('carePlan.name')
+                    ->label('Care Plan')
+                    ->badge()
+                    ->color('info')
+                    ->searchable(),
+
+                
+                TextColumn::make('addons')
+                    ->label('Add-ons')
+                    ->state(function ($record) {
+                
+                        $addOns = $record->preBooking?->addOns;
+                
+                        if (! $addOns || $addOns->isEmpty()) {
+                            return 'None';
+                        }
+                
+                        return $addOns
+                            ->map(fn ($addOn) => $addOn->name)
+                            ->implode(', ');
+                    })
+                    ->wrap(),
+
+                
+                TextColumn::make('addon_total')
+                    ->label('Add-ons')
+                    ->state(function ($record) {
+                
+                        $addOns = $record->preBooking?->addOns;
+                
+                        if (! $addOns || $addOns->isEmpty()) {
+                            return '₦0.00';
+                        }
+                
+                        $total = $addOns->sum(
+                            fn ($addOn) => $addOn->pivot->price_at_booking
+                        );
+                
+                        return '₦' . number_format($total, 2);
+                    }),
+
+
+                // ─────────────────────────────────────────────
+                // START DATE
+                // ─────────────────────────────────────────────
+                TextColumn::make('booking_details.start_date')
+                    ->label('Start Date')
+                    ->date()
+                    ->sortable(),
+
+
+                // ─────────────────────────────────────────────
+                // STATUS
+                // ─────────────────────────────────────────────
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+
+                        'pending'         => 'warning',
+                        'pending_payment' => 'warning',
+
+                        'paid'            => 'success',
+                        'confirmed'       => 'success',
+
+                        'intake_complete' => 'info',
+
+                        'completed'       => 'primary',
+
+                        'cancelled'       => 'danger',
+
+                        default           => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+
+                        'pending'         => 'Pending',
+                        'pending_payment' => 'Pending Payment',
+                        'paid'            => 'Paid',
+                        'confirmed'       => 'Confirmed',
+                        'intake_complete' => 'Intake Complete',
+                        'completed'       => 'Completed',
+                        'cancelled'       => 'Cancelled',
+
+                        default           => ucfirst(str_replace('_', ' ', $state)),
+                    }),
+
+                
+                TextColumn::make('preBooking.amount_paid')
+                    ->label('Amount Paid')
+                    ->formatStateUsing(fn ($state) =>
+                        $state !== null
+                            ? '₦' . number_format($state / 100, 2)
+                            : '—'
+                    )
+                    ->sortable(),
+
+                
+                // ─────────────────────────────────────────────
+                // BOOKED ON
+                // ─────────────────────────────────────────────
+                TextColumn::make('created_at')
+                    ->label('Booked On')
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable()
+                    ->toggleable(),
             ])
+
             ->defaultSort('created_at', 'desc')
+
             ->filters([
                 TrashedFilter::make(),
             ])
+
             ->recordActions([
+
+                // View booking
                 ViewAction::make(),
+
+                // Edit booking
                 EditAction::make(),
+
+                // ─────────────────────────────────────────
+                // MANUALLY CONFIRM PAYMENT
+                // ─────────────────────────────────────────
                 Action::make('confirmPayment')
                     ->label('Confirm Payment')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn ($record) => $record->status === 'pending')
+
+                    ->visible(fn (Booking $record) =>
+                        $record->status === 'pending'
+                    )
+
                     ->requiresConfirmation()
-                    ->action(function ($record) {
+
+                    ->modalHeading('Confirm Payment')
+
+                    ->modalDescription(
+                        'Are you sure you want to manually confirm payment for this booking?'
+                    )
+
+                    ->action(function (Booking $record) {
 
                         app(PaymentConfirmationService::class)
                             ->confirm($record, [
-                                'method' => 'manual',
+                                'method'       => 'manual',
                                 'confirmed_by' => auth()->id(),
                             ]);
 
@@ -88,6 +218,7 @@ class BookingsTable
                             ->createFromBooking($record);
                     }),
             ])
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
