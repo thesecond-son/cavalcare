@@ -34,9 +34,13 @@ class PreBookingsTable
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn ($state) => match ($state) {
+                        'pending'        => 'warning',
                         'pending_payment' => 'warning',
-                        'paid'            => 'success',
-                        'converted'       => 'gray',
+                        'paid'           => 'success',
+                        'converted'      => 'gray',
+                        'intake_complete' => 'info',
+                        'failed'         => 'danger',
+                        default          => 'gray',
                     }),
 
                 TextColumn::make('created_at')

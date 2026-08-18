@@ -24,13 +24,13 @@ class PreBooking extends Model
         'payment_meta'   => 'array',
     ];
 
-     /**
-     * Use the private token for route model binding.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'token';
-    }
+    //  /**
+    //  * Use the private token for route model binding.
+    //  */
+    // public function getRouteKeyName()
+    // {
+    //     return 'id';
+    // }
 
     public function carePlan()
     {

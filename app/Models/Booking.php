@@ -14,6 +14,7 @@ class Booking extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'reference',
         'pre_booking_id',
         'care_plan_id',
         'care_type_id',

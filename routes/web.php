@@ -42,12 +42,12 @@ Route::get('/book/received/{reference}', [BookingController::class, 'received'])
 
 // Private intake form (link is sent inside BookingReceivedMail)
 // {preBooking} resolves by the token column via PreBooking::getRouteKeyName()
-Route::get('/intake/{preBooking}',  [BookingIntakeController::class, 'show'])
-     ->name('booking.intake');
- 
-Route::post('/intake/{preBooking}', [BookingIntakeController::class, 'submit'])
-     ->name('booking.intake.submit');
+Route::get('/intake/{preBooking:token}', [BookingIntakeController::class, 'show'])
+    ->name('booking.intake');
 
+Route::post('/intake/{preBooking:token}', [BookingIntakeController::class, 'submit'])
+    ->name('booking.intake.submit');
+    
 Route::get('/intake/confirmation/{booking}', [BookingIntakeController::class, 'confirmation'])
      ->name('booking.intake.confirmation');
 

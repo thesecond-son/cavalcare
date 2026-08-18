@@ -18,26 +18,26 @@ class BookingIntakeController extends Controller
      */
     public function show(PreBooking $preBooking)
 {
-    // Has this PreBooking already been converted into a Booking?
-    $existingBooking = $preBooking->booking;
+    $preBooking->load([
+        'carePlan',
+        'careType',
+        'booking',
+    ]);
 
-    if ($existingBooking) {
+    // If intake has already been submitted,
+    // show the already-submitted page instead of the form.
+    if ($preBooking->booking) {
         return view('bookings.intake-already-submitted', [
-            'booking' => $existingBooking,
+            'booking' => $preBooking->booking,
             'preBooking' => $preBooking,
         ]);
     }
 
-    $preBooking->load('carePlan', 'careType');
-
-    $durationDays = $preBooking->carePlan?->meta['duration_days'] ?? null;
-
-    return view('bookings.intake-form', [
+    return view('bookings.intake', [
         'booking' => $preBooking,
         'carePlan' => $preBooking->carePlan,
         'careType' => $preBooking->careType,
         'token' => $preBooking->token,
-        'durationDays' => $durationDays,
         'alreadySubmitted' => false,
     ]);
 }

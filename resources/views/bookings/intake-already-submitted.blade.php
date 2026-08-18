@@ -262,8 +262,8 @@ body{
     </a>
 
     <div class="reference">
-      Booking reference:
-      <strong>{{ $booking->reference }}</strong>
+        Booking reference:
+        <strong>{{ $booking->reference }}</strong>
     </div>
 
   </div>
