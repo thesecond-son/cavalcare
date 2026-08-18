@@ -84,12 +84,12 @@ class Booking extends Model
         return route('booking.intake', $this->token);
     }
  
-    // ── Route model binding by token ───────────────────────
+    // // ── Route model binding by token ───────────────────────
  
-    public function getRouteKeyName(): string
-    {
-        return 'token';
-    }
+    // public function getRouteKeyName(): string
+    // {
+    //     return 'token';
+    // }
 
     protected static function booted()
     {
