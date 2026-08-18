@@ -33,7 +33,7 @@ class BookingIntakeController extends Controller
         ]);
     }
 
-    return view('bookings.intake', [
+    return view('bookings.intake-form', [
         'booking' => $preBooking,
         'carePlan' => $preBooking->carePlan,
         'careType' => $preBooking->careType,
