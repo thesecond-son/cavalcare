@@ -942,81 +942,27 @@ img[loading="lazy"].img-loaded {
 
   {{-- ── NAV ─────────────────────────────────── --}}
   <nav class="nav-wrap" id="mainNav">
-    <div class="nav-inner">
+  <div class="nav-inner">
 
-        <a href="/" class="nav-logo" aria-label="CavalCare home">
-            <img
-                src="/images/caval-care-logo.png"
-                alt="CavalCare logo"
-                class="nav-logo-img"
-            >
-        </a>
+  <a href="/" class="nav-logo" aria-label="CavalCare home">
+      <img src="/images/caval-care-logo.png" alt="CavalCare logo" class="nav-logo-img h-10">
+    </a>
 
-        {{-- Desktop navigation --}}
-        <ul class="nav-links">
-            <li>
-                <a href="{{ route('about') }}">About</a>
-            </li>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="{{ route('about') }}">About</a></li>
+      <li><a href="{{ route('services') }}">Services</a></li>
+      <li><a href="#care-plans">Plans</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#care-plans" class="nav-cta">Get Started</a></li>
+    </ul>
 
-            <li>
-                <a href="{{ route('services') }}">Services</a>
-            </li>
+    <button class="nav-mob-btn" id="mobBtn" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
 
-            <li>
-                <a href="#care-plans">Plans</a>
-            </li>
-
-            <li>
-                <a href="#contact">Contact</a>
-            </li>
-
-            <li>
-                <a href="#care-plans" class="nav-cta">
-                    Get Started
-                </a>
-            </li>
-        </ul>
-
-        {{-- Mobile button --}}
-        <button
-            class="nav-mob"
-            id="mobBtn"
-            type="button"
-            aria-label="Toggle navigation"
-            aria-expanded="false"
-            aria-controls="navDrawer"
-        >
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-    </div>
-
-    {{-- Mobile drawer --}}
-    <div class="nav-drawer" id="navDrawer">
-
-        <a href="{{ route('about') }}">
-            About
-        </a>
-
-        <a href="{{ route('services') }}">
-            Services
-        </a>
-
-        <a href="#care-plans">
-            Plans
-        </a>
-
-        <a href="#contact">
-            Contact
-        </a>
-
-        <a href="#care-plans" class="nav-drawer-cta">
-            Get Started
-        </a>
-
-    </div>
+  </div>
 </nav>
 
   {{-- Main Content --}}
