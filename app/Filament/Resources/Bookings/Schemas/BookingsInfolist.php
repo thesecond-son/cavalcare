@@ -24,21 +24,54 @@ class BookingsInfolist
                             ->weight('bold')
                             ->copyable(),
 
-                        TextEntry::make('status')
+                            TextEntry::make('status')
                             ->label('Status')
                             ->badge()
-                            ->formatStateUsing(fn ($state) =>
-                                match ($state) {
+                            ->formatStateUsing(function ($state) {
+                
+                                // BookingStatus is a backed enum.
+                                $value = $state instanceof \BackedEnum
+                                    ? $state->value
+                                    : (string) $state;
+                
+                                return match ($value) {
                                     'intake_complete' => 'Intake Complete',
                                     'confirmed'       => 'Confirmed',
-                                    'pending_payment' => 'Pending Payment',
-                                    'paid'             => 'Paid',
-                                    'cancelled'        => 'Cancelled',
-                                    default => ucfirst(str_replace('_', ' ', $state ?? 'Unknown')),
-                                }
-                            ),
+                                    'completed'       => 'Completed',
+                                    'cancelled'       => 'Cancelled',
+                
+                                    default => ucfirst(
+                                        str_replace('_', ' ', $value)
+                                    ),
+                                };
+                            })
+                            
+                            ->color(function ($state) {
+                
+                                $value = $state instanceof \BackedEnum
+                                    ? $state->value
+                                    : (string) $state;
+                
+                                return match ($value) {
+                                    'intake_complete',
+                                    'confirmed',
+                                    'completed' => 'success',
+                
+                                    'cancelled' => 'danger',
+                
+                                    default => 'gray',
+                                };
+                            }),
+
+                            TextEntry::make('created_at')
+                                ->label('Created')
+                                ->dateTime('D, d M Y · h:i A'),
+
+                            TextEntry::make('updated_at')
+                                ->label('Last Updated')
+                                ->dateTime('D, d M Y · h:i A'),
                     ])
-                    ->columns(2),
+                    ->columns(3),
 
                 // ═══════════════════════════════════════════════
                 // BOOKER DETAILS
@@ -319,64 +352,6 @@ class BookingsInfolist
 
                     ])
                     ->columns(2),
-
-
-                // ═══════════════════════════════════════════════
-                // STATUS
-                // ═══════════════════════════════════════════════
-
-                Section::make('Booking Status')
-                    ->icon('heroicon-o-information-circle')
-                    ->schema([
-
-                        TextEntry::make('status')
-                            ->label('Status')
-                            ->badge()
-                            ->formatStateUsing(function ($state) {
-                                $value = $state instanceof \BackedEnum
-                                    ? $state->value
-                                    : (string) $state;
-                            
-                                return match ($value) {
-                                    'intake_complete' => 'Intake Complete',
-                                    'confirmed'       => 'Confirmed',
-                                    'pending_payment' => 'Pending Payment',
-                                    'paid'            => 'Paid',
-                                    'cancelled'       => 'Cancelled',
-                            
-                                    default => ucfirst(
-                                        str_replace('_', ' ', $value)
-                                    ),
-                                };
-                            })
-                            ->color(function ($state) {
-                                $value = $state instanceof \BackedEnum
-                                    ? $state->value
-                                    : (string) $state;
-                            
-                                return match ($value) {
-                                    'intake_complete',
-                                    'confirmed',
-                                    'paid'          => 'success',
-                            
-                                    'pending_payment' => 'warning',
-                            
-                                    'cancelled' => 'danger',
-                            
-                                    default => 'gray',
-                                };
-                            }),
-
-                        TextEntry::make('created_at')
-                            ->label('Created')
-                            ->dateTime('D, d M Y · h:i A'),
-
-                        TextEntry::make('updated_at')
-                            ->label('Last Updated')
-                            ->dateTime('D, d M Y · h:i A'),
-
-                    ])
-                    ->columns(3),
 
             ]);
     }
