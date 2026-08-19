@@ -13,18 +13,55 @@ class BookingsInfolist
         return $schema
             ->components([
 
-                // ─────────────────────────────────────────────
-                // BOOKER DETAILS
-                // ─────────────────────────────────────────────
-                Section::make('Booker Details')
+                // ═══════════════════════════════════════════════
+                // BOOKING DETAILS
+                // ═══════════════════════════════════════════════
+
+                Section::make('Booking')
                     ->schema([
+                        TextEntry::make('reference')
+                            ->label('Booking Reference')
+                            ->weight('bold')
+                            ->copyable(),
+
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->formatStateUsing(fn ($state) =>
+                                match ($state) {
+                                    'intake_complete' => 'Intake Complete',
+                                    'confirmed'       => 'Confirmed',
+                                    'pending_payment' => 'Pending Payment',
+                                    'paid'             => 'Paid',
+                                    'cancelled'        => 'Cancelled',
+                                    default => ucfirst(str_replace('_', ' ', $state ?? 'Unknown')),
+                                }
+                            ),
+                    ])
+                    ->columns(2),
+
+                // ═══════════════════════════════════════════════
+                // BOOKER DETAILS
+                // ═══════════════════════════════════════════════
+
+                Section::make('Booker Details')
+                    ->description('Information provided by the person making the booking.')
+                    ->icon('heroicon-o-user')
+                    ->schema([
+
                         TextEntry::make('booker_details.name')
-                            ->label('Name')
+                            ->label('Full Name')
                             ->placeholder('—'),
+
+                        TextEntry::make('booker_details.email')
+                            ->label('Email')
+                            ->placeholder('Not provided')
+                            ->copyable(),
 
                         TextEntry::make('booker_details.phone')
                             ->label('Phone')
-                            ->placeholder('—'),
+                            ->placeholder('—')
+                            ->copyable(),
 
                         TextEntry::make('booker_details.state')
                             ->label('State')
@@ -32,20 +69,27 @@ class BookingsInfolist
 
                         TextEntry::make('booker_details.address')
                             ->label('Address')
-                            ->placeholder('—'),
+                            ->placeholder('—')
+                            ->columnSpanFull(),
 
                         TextEntry::make('booker_details.emergency_number')
                             ->label('Emergency Number')
-                            ->placeholder('—'),
+                            ->placeholder('Not provided')
+                            ->copyable(),
+
                     ])
                     ->columns(2),
 
 
-                // ─────────────────────────────────────────────
+                // ═══════════════════════════════════════════════
                 // PATIENT DETAILS
-                // ─────────────────────────────────────────────
+                // ═══════════════════════════════════════════════
+
                 Section::make('Patient Details')
+                    ->description('Personal and medical information about the person receiving care.')
+                    ->icon('heroicon-o-heart')
                     ->schema([
+
                         TextEntry::make('patient_details.full_name')
                             ->label('Full Name')
                             ->placeholder('—'),
@@ -70,80 +114,190 @@ class BookingsInfolist
                             }),
 
                         TextEntry::make('patient_details.address')
-                            ->label('Patient Address')
-                            ->columnSpanFull()
-                            ->placeholder('—'),
+                            ->label('Care Address')
+                            ->placeholder('—')
+                            ->columnSpanFull(),
 
                         TextEntry::make('patient_details.diagnosis')
-                            ->label('Diagnosis')
+                            ->label('Diagnosis / Condition')
                             ->placeholder('None provided')
                             ->columnSpanFull(),
 
                         TextEntry::make('patient_details.emergency_contact')
-                            ->label('Emergency Contact')
-                            ->placeholder('None provided'),
+                            ->label('Patient Emergency Contact')
+                            ->placeholder('Not provided')
+                            ->copyable(),
+
                     ])
                     ->columns(2),
 
 
-                // ─────────────────────────────────────────────
-                // MEDICAL / CARE INFORMATION
-                // ─────────────────────────────────────────────
-                Section::make('Care Information')
+                // ═══════════════════════════════════════════════
+                // MEDICATIONS
+                // ═══════════════════════════════════════════════
+
+                Section::make('Medications')
+                    ->description('Medications reported for the patient.')
+                    ->icon('heroicon-o-beaker')
                     ->schema([
+
                         TextEntry::make('patient_details.medications')
-                            ->label('Medications')
+                            ->label('')
                             ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return 'None provided';
+
+                                if (blank($state)) {
+                                    return 'No medications provided.';
                                 }
 
-                                return collect($state)
+                                if (is_string($state)) {
+                                    $state = json_decode($state, true);
+                                }
+
+                                if (!is_array($state)) {
+                                    return 'No medications provided.';
+                                }
+
+                                $medications = collect($state)
                                     ->pluck('medication')
-                                    ->filter()
-                                    ->implode(', ');
+                                    ->filter(fn ($item) =>
+                                        filled($item) &&
+                                        strtolower(trim($item)) !== 'none'
+                                    )
+                                    ->values();
+
+                                if ($medications->isEmpty()) {
+                                    return 'No medications provided.';
+                                }
+
+                                return $medications
+                                    ->map(fn ($medication, $index) =>
+                                        ($index + 1) . '. ' . e($medication)
+                                    )
+                                    ->implode('<br>');
+
                             })
+                            ->html()
                             ->columnSpanFull(),
+
+                    ])
+                    ->collapsible(),
+
+
+                // ═══════════════════════════════════════════════
+                // ALLERGIES
+                // ═══════════════════════════════════════════════
+
+                Section::make('Allergies')
+                    ->description('Known allergies reported for the patient.')
+                    ->icon('heroicon-o-exclamation-triangle')
+                    ->schema([
 
                         TextEntry::make('patient_details.allergies')
-                            ->label('Allergies')
+                            ->label('')
                             ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return 'None provided';
+
+                                if (blank($state)) {
+                                    return 'No allergies provided.';
                                 }
 
-                                return collect($state)
+                                if (is_string($state)) {
+                                    $state = json_decode($state, true);
+                                }
+
+                                if (!is_array($state)) {
+                                    return 'No allergies provided.';
+                                }
+
+                                $allergies = collect($state)
                                     ->pluck('allergy')
-                                    ->filter()
-                                    ->implode(', ');
+                                    ->filter(fn ($item) =>
+                                        filled($item) &&
+                                        strtolower(trim($item)) !== 'none'
+                                    )
+                                    ->values();
+
+                                if ($allergies->isEmpty()) {
+                                    return 'No allergies provided.';
+                                }
+
+                                return $allergies
+                                    ->map(fn ($allergy, $index) =>
+                                        ($index + 1) . '. ' . e($allergy)
+                                    )
+                                    ->implode('<br>');
+
                             })
+                            ->html()
                             ->columnSpanFull(),
+
+                    ])
+                    ->collapsible(),
+
+
+                // ═══════════════════════════════════════════════
+                // DAILY CARE TASKS
+                // ═══════════════════════════════════════════════
+
+                Section::make('Daily Care Tasks')
+                    ->description('Daily activities and care tasks requested for the patient.')
+                    ->icon('heroicon-o-clipboard-document-list')
+                    ->schema([
 
                         TextEntry::make('patient_details.daily_tasks')
-                            ->label('Daily Care Tasks')
+                            ->label('')
                             ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return 'None provided';
+
+                                if (blank($state)) {
+                                    return 'No daily care tasks provided.';
                                 }
 
-                                return collect($state)
+                                if (is_string($state)) {
+                                    $state = json_decode($state, true);
+                                }
+
+                                if (!is_array($state)) {
+                                    return 'No daily care tasks provided.';
+                                }
+
+                                $tasks = collect($state)
                                     ->pluck('task')
-                                    ->filter()
-                                    ->implode(', ');
+                                    ->filter(fn ($item) =>
+                                        filled($item) &&
+                                        strtolower(trim($item)) !== 'none'
+                                    )
+                                    ->values();
+
+                                if ($tasks->isEmpty()) {
+                                    return 'No daily care tasks provided.';
+                                }
+
+                                return $tasks
+                                    ->map(fn ($task, $index) =>
+                                        ($index + 1) . '. ' . e($task)
+                                    )
+                                    ->implode('<br>');
+
                             })
+                            ->html()
                             ->columnSpanFull(),
+
                     ])
-                    ->columns(1),
+                    ->collapsible(),
 
 
-                // ─────────────────────────────────────────────
+                // ═══════════════════════════════════════════════
                 // BOOKING DETAILS
-                // ─────────────────────────────────────────────
+                // ═══════════════════════════════════════════════
+
                 Section::make('Booking Details')
+                    ->description('Care service and scheduling information.')
+                    ->icon('heroicon-o-calendar-days')
                     ->schema([
+
                         TextEntry::make('reference')
                             ->label('Booking Reference')
-                            ->weight('bold'),
+                            ->weight('bold')
+                            ->copyable(),
 
                         TextEntry::make('careType.name')
                             ->label('Care Type')
@@ -154,42 +308,58 @@ class BookingsInfolist
                             ->placeholder('—'),
 
                         TextEntry::make('booking_details.start_date')
-                            ->label('Start Date')
-                            ->date()
+                            ->label('Care Start Date')
+                            ->date('D, d M Y')
                             ->placeholder('—'),
 
                         TextEntry::make('booking_details.end_date')
-                            ->label('End Date')
-                            ->date()
-                            ->placeholder('—'),
+                            ->label('Care End Date')
+                            ->date('D, d M Y')
+                            ->placeholder('Not specified'),
+
                     ])
                     ->columns(2),
 
 
-                // ─────────────────────────────────────────────
+                // ═══════════════════════════════════════════════
                 // STATUS
-                // ─────────────────────────────────────────────
+                // ═══════════════════════════════════════════════
+
                 Section::make('Booking Status')
+                    ->icon('heroicon-o-information-circle')
                     ->schema([
+
                         TextEntry::make('status')
                             ->label('Status')
                             ->badge()
+                            ->formatStateUsing(fn ($state) => match ($state) {
+                                'intake_complete' => 'Intake Complete',
+                                'confirmed'       => 'Confirmed',
+                                'pending_payment' => 'Pending Payment',
+                                'paid'             => 'Paid',
+                                'cancelled'        => 'Cancelled',
+                                default            => ucfirst(str_replace('_', ' ', $state ?? 'Unknown')),
+                            })
                             ->color(fn ($state) => match ($state) {
-                                'intake_complete' => 'success',
-                                'confirmed'       => 'success',
-                                'pending_payment' => 'warning',
+                                'intake_complete',
+                                'confirmed',
                                 'paid'             => 'success',
-                                'cancelled'        => 'danger',
-                                default            => 'gray',
+
+                                'pending_payment' => 'warning',
+
+                                'cancelled'       => 'danger',
+
+                                default           => 'gray',
                             }),
 
                         TextEntry::make('created_at')
                             ->label('Created')
-                            ->dateTime(),
+                            ->dateTime('D, d M Y · h:i A'),
 
                         TextEntry::make('updated_at')
                             ->label('Last Updated')
-                            ->dateTime(),
+                            ->dateTime('D, d M Y · h:i A'),
+
                     ])
                     ->columns(3),
 
