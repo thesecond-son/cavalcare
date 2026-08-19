@@ -61,7 +61,7 @@ body{
   border-radius:24px;
   border:1px solid rgba(26,58,47,.08);
   box-shadow:0 16px 56px rgba(26,58,47,.1);
-  max-width:500px;
+  max-width:540px;
   width:100%;
   padding:52px 40px;
   text-align:center;
@@ -103,7 +103,7 @@ body{
   font-size:.96rem;
   color:var(--muted);
   line-height:1.72;
-  max-width:360px;
+  max-width:390px;
   margin:0 auto 28px;
 }
 
@@ -111,7 +111,7 @@ body{
   background:var(--cream);
   border-radius:10px;
   padding:14px 18px;
-  margin-bottom:28px;
+  margin-bottom:20px;
   font-size:.9rem;
   color:var(--ocean);
   overflow-wrap:anywhere;
@@ -121,6 +121,59 @@ body{
   display:block;
   font-size:1rem;
   margin-top:3px;
+}
+
+/* ─────────────────────────────
+   BOOKING SUMMARY
+───────────────────────────── */
+
+.booking-summary{
+  border:1px solid rgba(26,58,47,.09);
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:28px;
+  text-align:left;
+  background:#fff;
+}
+
+.booking-summary-title{
+  background:var(--ocean);
+  color:#fff;
+  padding:13px 18px;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.booking-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:13px 18px;
+  border-bottom:1px solid rgba(26,58,47,.07);
+}
+
+.booking-row:last-child{
+  border-bottom:0;
+}
+
+.booking-label{
+  color:var(--muted);
+  font-size:.84rem;
+}
+
+.booking-value{
+  color:var(--ocean);
+  font-size:.88rem;
+  font-weight:600;
+  text-align:right;
+}
+
+.booking-reference{
+  font-size:1rem;
+  letter-spacing:.04em;
 }
 
 .conf-steps{
@@ -166,6 +219,7 @@ body{
 .conf-wa{
   display:inline-flex;
   align-items:center;
+  justify-content:center;
   gap:9px;
   background:var(--ocean);
   color:#fff;
@@ -185,14 +239,17 @@ body{
 @endpush
 
 @section('content')
+
 <div class="conf-page">
 
   <div class="conf-card">
 
+    {{-- Success Icon --}}
     <div class="conf-ico">
       <i class="bi bi-check-lg"></i>
     </div>
 
+    {{-- Heading --}}
     <h1 class="conf-h1">
       Care details received.<br>
       You're all set.
@@ -204,17 +261,83 @@ body{
       so we can prepare the right care arrangement for you and your loved one.
     </p>
 
+
+    {{-- Booking Summary --}}
+    <div class="booking-summary">
+
+      <div class="booking-summary-title">
+        Booking Summary
+      </div>
+
+      {{-- Booking Reference --}}
+      <div class="booking-row">
+        <span class="booking-label">
+          Booking reference
+        </span>
+
+        <span class="booking-value booking-reference">
+        {{ $booking->preBooking?->reference ?? '—' }}
+    </span>
+      </div>
+
+      {{-- Care Plan --}}
+      <div class="booking-row">
+        <span class="booking-label">
+          Care plan
+        </span>
+
+        <span class="booking-value">
+          {{ $booking->carePlan?->name ?? '—' }}
+        </span>
+      </div>
+
+      {{-- Care Type --}}
+      <div class="booking-row">
+        <span class="booking-label">
+          Care type
+        </span>
+
+        <span class="booking-value">
+          {{ $booking->careType?->name ?? '—' }}
+        </span>
+      </div>
+
+      {{-- Start Date --}}
+      <div class="booking-row">
+        <span class="booking-label">
+          Start date
+        </span>
+
+        <span class="booking-value">
+          @php
+              $startDate = data_get($booking->booking_details, 'start_date');
+          @endphp
+
+          {{ $startDate ? \Carbon\Carbon::parse($startDate)->format('d F Y') : '—' }}
+        </span>
+      </div>
+
+    </div>
+
+
+    {{-- Email --}}
     <div class="conf-email-box">
+
       Your booking email:
+
       <strong>
         {{ $booking->booker_details['email'] ?? 'your email address' }}
       </strong>
+
     </div>
 
+
+    {{-- Next Steps --}}
     <ul class="conf-steps">
 
       <li class="cs">
         <span class="cs-num">1</span>
+
         <span class="cs-text">
           <strong>We've received your details.</strong>
           Your care information has been securely submitted to our team.
@@ -223,6 +346,7 @@ body{
 
       <li class="cs">
         <span class="cs-num">2</span>
+
         <span class="cs-text">
           Our team will <strong>review your care requirements</strong>
           and determine the appropriate care arrangement.
@@ -231,6 +355,7 @@ body{
 
       <li class="cs">
         <span class="cs-num">3</span>
+
         <span class="cs-text">
           We'll <strong>contact you within 24–48 hours</strong>
           with the next steps regarding your care.
@@ -239,6 +364,8 @@ body{
 
     </ul>
 
+
+    {{-- WhatsApp --}}
     <a
       href="https://wa.me/{{ config('app.whatsapp_number') }}"
       class="conf-wa"
@@ -250,4 +377,5 @@ body{
   </div>
 
 </div>
+
 @endsection
