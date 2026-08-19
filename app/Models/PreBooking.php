@@ -24,6 +24,7 @@ class PreBooking extends Model
         'booker_details' => 'array',
         'payment_meta'   => 'array',
         'status'         => PreBookingStatus::class,
+        'amount_paid'    => 'integer',
     ];
 
     //  /**

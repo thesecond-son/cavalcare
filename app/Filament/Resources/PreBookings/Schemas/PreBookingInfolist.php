@@ -101,47 +101,81 @@ class PreBookingInfolist
 
                         TextEntry::make('amount_paid')
                             ->label('Amount Paid')
+                            ->state(fn ($record) =>
+                                '₦' . number_format(((float) $record->amount_paid) / 100, 2)
+                            )
+                            ->weight('bold'),
+
+                            TextEntry::make('payment_meta.transaction_id')
+                            ->label('Transaction ID')
+                            ->placeholder('—'),
+                        
+                        TextEntry::make('payment_meta.status')
+                            ->label('Payment Status')
+                            ->badge(),
+                        
+                        TextEntry::make('payment_meta.currency')
+                            ->label('Currency')
+                            ->placeholder('—'),
+                        
+                        TextEntry::make('payment_meta.channel')
+                            ->label('Payment Channel')
+                            ->placeholder('—'),
+                        
+                        TextEntry::make('payment_meta.fees')
+                            ->label('Paystack Fees')
                             ->money('NGN')
-                            ->placeholder('-'),
-
-                        TextEntry::make('payment_meta')
-                            ->label('Payment Metadata')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return '-';
-                                }
-
-                                return collect($state)
-                                    ->map(fn ($value, $key) => ucfirst(str_replace('_', ' ', $key)) . ': ' . (is_array($value) ? json_encode($value) : $value))
-                                    ->join("\n");
-                            })
-                            ->columnSpanFull(),
+                            ->placeholder('—'),
+                        
+                        TextEntry::make('payment_meta.paid_at')
+                            ->label('Paid At')
+                            ->dateTime()
+                            ->placeholder('—'),
+                        
+                        TextEntry::make('payment_meta.customer.email')
+                            ->label('Customer Email')
+                            ->copyable()
+                            ->placeholder('—'),
                     ])
                     ->columns(2),
 
                 // ─────────────────────────────────────────────
-                // SELECTED ADD-ONS
-                // ─────────────────────────────────────────────
-                Section::make('Selected Add-ons')
-                    ->schema([
-                        TextEntry::make('addOns')
-                            ->label('')
-                            ->formatStateUsing(function ($record) {
-                                if ($record->addOns->isEmpty()) {
-                                    return 'No add-ons selected.';
-                                }
+// SELECTED ADD-ONS
+// ─────────────────────────────────────────────
 
-                                return $record->addOns
-                                    ->map(function ($addOn) {
-                                        $price = $addOn->pivot->price_at_booking ?? $addOn->price;
+Section::make('Selected Add-ons')
+->schema([
 
-                                        return $addOn->name . ' — ₦' . number_format($price, 2);
-                                    })
-                                    ->join("\n");
-                            })
-                            ->columnSpanFull(),
-                    ])
-                    ->visible(fn ($record) => $record->addOns()->exists()),
+    TextEntry::make('selected_addons_display')
+        ->label('Add-ons')
+        ->state(function ($record) {
+
+            $addOns = $record->addOns;
+
+            if ($addOns->isEmpty()) {
+                return 'No add-ons selected.';
+            }
+
+            return $addOns
+                ->unique('id')
+                ->map(function ($addOn) {
+
+                    $price = $addOn->pivot?->price_at_booking
+                        ?? $addOn->price;
+
+                    return e($addOn->name)
+                        . ' — ₦'
+                        . number_format((float) $price, 2);
+                })
+                ->implode('<br>');
+
+        })
+        ->html()
+        ->columnSpanFull(),
+
+])
+->visible(fn ($record) => $record->addOns->isNotEmpty()),
+
 
                 // ─────────────────────────────────────────────
                 // TIMESTAMPS

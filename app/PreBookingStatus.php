@@ -7,4 +7,5 @@ enum PreBookingStatus: string
     case PENDING_PAYMENT = 'pending_payment';
     case PAID = 'paid';
     case CONVERTED = 'converted';
+    case FAILED = 'failed';
 }

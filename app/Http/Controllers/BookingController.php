@@ -108,6 +108,25 @@ class BookingController extends Controller
            
             // Generate the private intake token
             $preBooking->generateToken();
+
+             /*
+            |--------------------------------------------------------------------------
+            | Payment metadata
+            |--------------------------------------------------------------------------
+            */
+
+            $paymentData = $verification['data'] ?? [];
+
+            $paymentMeta = [
+                'transaction_id' => $paymentData['id'] ?? null,
+                'status'         => $paymentData['status'] ?? null,
+                'currency'       => $paymentData['currency'] ?? null,
+                'channel'        => $paymentData['channel'] ?? null,
+                'fees'           => $paymentData['fees'] ?? null,
+                'paid_at'        => $paymentData['paid_at'] ?? null,
+                'customer'       => $paymentData['customer'] ?? null,
+            ];
+
             $preBooking->save();
 
             // Mark payment as successful
@@ -115,6 +134,7 @@ class BookingController extends Controller
                 'status'             => PreBookingStatus::PAID,
                 'paystack_reference' => $data['paystack_reference'],
                 'amount_paid'        => $verification['amount'],
+                'payment_meta'       => $paymentMeta,
             ]);
 
             // Send the intake form email
@@ -133,7 +153,10 @@ class BookingController extends Controller
 
         } else {
             $preBooking->update([
-                'status'             => $verification['error'] === 'connection' ? PreBookingStatus::PENDING_PAYMENT : 'failed',
+                'status' => $verification['error'] === 'connection'
+                    ? PreBookingStatus::PENDING_PAYMENT
+                    : PreBookingStatus::FAILED,
+    
                 'paystack_reference' => $data['paystack_reference'],
             ]);
 
@@ -221,18 +244,19 @@ class BookingController extends Controller
                 return [
                     'status' => 'paid',
                     'amount' => $response->json('data.amount'),
+                    'data' => $response->json('data'),
                     'error'  => null,
                 ];
             }
 
-            return ['status' => 'failed', 'amount' => 0, 'error' => null];
+            return ['status' => 'failed', 'amount' => 0, 'data' => [], 'error' => null];
 
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             // Covers the SSL/cURL error 60 case and any other network failure.
             // We log it and tell the caller verification failed, instead of
             // letting a 500 bubble up and leave the frontend hanging forever.
             report($e);
-            return ['status' => 'failed', 'amount' => 0, 'error' => 'connection'];
+            return ['status' => 'failed', 'amount' => 0, 'data' => [], 'error' => 'connection'];
         }
     }
 }
