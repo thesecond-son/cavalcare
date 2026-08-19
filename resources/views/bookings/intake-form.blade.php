@@ -4,6 +4,7 @@
            POST /intake/{token}    → BookingIntakeController@submit
   $booking is a PreBooking resolved by token.
 --}}
+@extends('layouts.intake')
 
 @section('title', 'Complete Your Care Details — CavalCare')
 
