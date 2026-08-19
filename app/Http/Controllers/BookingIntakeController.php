@@ -59,7 +59,7 @@ public function submit(Request $request, PreBooking $preBooking)
 
     if ($preBooking->booking()->exists()) {
         return redirect()->route(
-            'bookings.intake.already-submitted',
+            'booking.intake.already-submitted',
             $preBooking
         );
     }
@@ -230,7 +230,7 @@ public function submit(Request $request, PreBooking $preBooking)
     */
 
     return redirect()->route(
-        'bookings.intake-confirmation',
+        'booking.intake.confirmation',
         $booking
     );
 }

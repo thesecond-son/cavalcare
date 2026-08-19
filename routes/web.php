@@ -52,8 +52,8 @@ Route::post('/intake/{preBooking:token}', [BookingIntakeController::class, 'subm
     ->name('booking.intake.submit');
 
 // Already submitted
-Route::get('/intake/{preBooking}/already-submitted', [BookingIntakeController::class, 'alreadySubmitted'])
-->name('bookings.intake.already-submitted');
+Route::get('/intake/{preBooking:token}/already-submitted', [BookingIntakeController::class, 'alreadySubmitted'])
+    ->name('booking.intake.already-submitted');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
