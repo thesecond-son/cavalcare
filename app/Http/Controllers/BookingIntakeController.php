@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Mail\IntakeConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\NewBookingIntakeCompletedMail;
 use Illuminate\Support\Facades\DB;
 use App\PreBookingStatus;
 use App\BookingStatus;
@@ -221,6 +222,13 @@ public function submit(Request $request, PreBooking $preBooking)
         Mail::to($email)->send(
             new IntakeConfirmation($booking, $preBooking)
         );
+    }
+
+    try {
+        Mail::to('cavalcareteam@gmail.com')
+            ->send(new NewBookingIntakeCompletedMail($booking));
+    } catch (\Throwable $e) {
+        report($e);
     }
 
     /*

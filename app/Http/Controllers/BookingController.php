@@ -12,6 +12,7 @@ use App\Models\PreBooking;
 use App\Models\AddOn;
 use App\Mail\BookingReceivedMail;
 use App\Mail\IntakeFormLinkMail;
+use App\Mail\NewPreBookingPaymentMail;
 use App\PreBookingStatus;
 use App\BookingStatus;
 
@@ -137,11 +138,19 @@ class BookingController extends Controller
                 'payment_meta'       => $paymentMeta,
             ]);
 
-            // Send the intake form email
+            // Send the intake form email to the customer
             try {
                 Mail::to($preBooking->booker_details['email'])
-                ->send(new IntakeFormLinkMail($preBooking)
-                );
+                    ->send(new IntakeFormLinkMail($preBooking));
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+
+            // Send payment notification to CavalCare admin
+            try {
+                Mail::to('cavalcareteam@gmail.com')
+                    ->send(new NewPreBookingPaymentMail($preBooking));
             } catch (\Throwable $e) {
                 report($e);
             }
