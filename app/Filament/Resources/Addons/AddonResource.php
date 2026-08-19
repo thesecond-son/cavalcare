@@ -9,7 +9,7 @@ use App\Filament\Resources\Addons\Pages\ViewAddon;
 use App\Filament\Resources\Addons\Schemas\AddonForm;
 use App\Filament\Resources\Addons\Schemas\AddonInfolist;
 use App\Filament\Resources\Addons\Tables\AddonsTable;
-use App\Models\Addon;
+use App\Models\AddOn;
 use BackedEnum;
 use UnitEnum;
 use Filament\Resources\Resource;
@@ -19,7 +19,7 @@ use Filament\Tables\Table;
 
 class AddonResource extends Resource
 {
-    protected static ?string $model = Addon::class;
+    protected static ?string $model = AddOn::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
