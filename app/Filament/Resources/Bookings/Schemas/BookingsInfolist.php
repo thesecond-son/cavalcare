@@ -332,24 +332,39 @@ class BookingsInfolist
                         TextEntry::make('status')
                             ->label('Status')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => match ($state) {
-                                'intake_complete' => 'Intake Complete',
-                                'confirmed'       => 'Confirmed',
-                                'pending_payment' => 'Pending Payment',
-                                'paid'             => 'Paid',
-                                'cancelled'        => 'Cancelled',
-                                default            => ucfirst(str_replace('_', ' ', $state ?? 'Unknown')),
+                            ->formatStateUsing(function ($state) {
+                                $value = $state instanceof \BackedEnum
+                                    ? $state->value
+                                    : (string) $state;
+                            
+                                return match ($value) {
+                                    'intake_complete' => 'Intake Complete',
+                                    'confirmed'       => 'Confirmed',
+                                    'pending_payment' => 'Pending Payment',
+                                    'paid'            => 'Paid',
+                                    'cancelled'       => 'Cancelled',
+                            
+                                    default => ucfirst(
+                                        str_replace('_', ' ', $value)
+                                    ),
+                                };
                             })
-                            ->color(fn ($state) => match ($state) {
-                                'intake_complete',
-                                'confirmed',
-                                'paid'             => 'success',
-
-                                'pending_payment' => 'warning',
-
-                                'cancelled'       => 'danger',
-
-                                default           => 'gray',
+                            ->color(function ($state) {
+                                $value = $state instanceof \BackedEnum
+                                    ? $state->value
+                                    : (string) $state;
+                            
+                                return match ($value) {
+                                    'intake_complete',
+                                    'confirmed',
+                                    'paid'          => 'success',
+                            
+                                    'pending_payment' => 'warning',
+                            
+                                    'cancelled' => 'danger',
+                            
+                                    default => 'gray',
+                                };
                             }),
 
                         TextEntry::make('created_at')
