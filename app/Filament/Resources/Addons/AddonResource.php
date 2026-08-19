@@ -11,6 +11,7 @@ use App\Filament\Resources\Addons\Schemas\AddonInfolist;
 use App\Filament\Resources\Addons\Tables\AddonsTable;
 use App\Models\Addon;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,6 +24,8 @@ class AddonResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string | UnitEnum | null $navigationGroup = 'Care Management';
 
     public static function form(Schema $schema): Schema
     {

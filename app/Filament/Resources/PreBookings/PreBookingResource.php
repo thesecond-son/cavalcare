@@ -11,6 +11,7 @@ use App\Filament\Resources\PreBookings\Schemas\PreBookingInfolist;
 use App\Filament\Resources\PreBookings\Tables\PreBookingsTable;
 use App\Models\PreBooking;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,6 +24,8 @@ class PreBookingResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string | UnitEnum | null $navigationGroup = 'Booking Management';
 
     public static function form(Schema $schema): Schema
     {

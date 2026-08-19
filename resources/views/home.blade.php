@@ -1636,8 +1636,8 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
     <div class="svc-scroll" id="svcScroll">
       @foreach ($careTypes as $index => $careType)
         @php
-          $meta = $careType->meta ?? [];
-          $icon = $meta['icon'] ?? ($svcIcons[$index % count($svcIcons)]);
+          
+        $icon = $svcIcons[$index % count($svcIcons)];
           $description = $careType->description ?? 'Professional care tailored to your family\'s needs.';
           $col = $svcColors[$index % count($svcColors)];
         @endphp
