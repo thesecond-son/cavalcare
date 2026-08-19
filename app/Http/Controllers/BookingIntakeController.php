@@ -144,7 +144,11 @@ public function submit(Request $request, PreBooking $preBooking)
 
     $bookerDetails = $data['booker_details'];
 
+    // Always take the email from the original PreBooking.
+    // The intake form does not need to ask for it again.
     $bookerDetails['email'] = $preBooking->booker_details['email'] ?? null;
+
+    $data['booker_details'] = $bookerDetails;
 
     /*
     |--------------------------------------------------------------------------
@@ -208,7 +212,7 @@ public function submit(Request $request, PreBooking $preBooking)
     |--------------------------------------------------------------------------
     */
 
-    $email = $bookerDetails['email'] ?? null;
+    $email = $booking->booker_details['email'] ?? null;
 
     if ($email) {
         Mail::to($email)->send(

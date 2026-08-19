@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Booking;
 use App\Models\PreBooking;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -12,13 +13,13 @@ use Illuminate\Queue\SerializesModels;
 
 class IntakeConfirmation extends Mailable
 {
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
     public function __construct(
-        public readonly Booking    $booking,
+        public readonly Booking $booking,
         public readonly PreBooking $preBooking,
     ) {}
 
@@ -28,7 +29,7 @@ class IntakeConfirmation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'We\'ve received your care details — CavalCare',
+            subject: 'Your care details have been received — CavalCare',
         );
     }
 
@@ -37,23 +38,29 @@ class IntakeConfirmation extends Mailable
      */
     public function content(): Content
     {
+        $bookerName = $this->preBooking->booker_details['name'] ?? 'there';
+
+        $firstName = trim(
+            explode(' ', $bookerName)[0] ?? 'there'
+        );
+
+        $startDate = $this->booking->booking_details['start_date'] ?? null;
+
         return new Content(
             view: 'emails.intake-confirmation',
             with: [
                 'booking'    => $this->booking,
                 'preBooking' => $this->preBooking,
-                'firstName'  => explode(' ', $this->preBooking->booker_details['name'])[0],
-                'startDate'  => \Carbon\Carbon::parse(
-                    $this->booking->booking_details['start_date'] ?? null
-                )->format('D, d M Y'),
+                'firstName'  => $firstName,
+                'startDate'  => $startDate
+                    ? Carbon::parse($startDate)->format('D, d M Y')
+                    : null,
             ],
         );
     }
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {
