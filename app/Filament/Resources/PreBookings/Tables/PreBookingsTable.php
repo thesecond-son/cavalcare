@@ -61,7 +61,7 @@ class PreBookingsTable
                     ->icon(Heroicon::CheckCircle)
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn (PreBooking $record) => $record->status === 'pending_payment')
+                    ->visible(fn (PreBooking $record) => $record->status === PreBookingStatus::PENDING_PAYMENT)
                     ->action(function (PreBooking $record) {
                         app(PreBookingConfirmationService::class)
                             ->confirm($record);
