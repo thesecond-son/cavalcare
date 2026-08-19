@@ -97,10 +97,16 @@ class Booking extends Model
     {
         static::creating(function (Booking $booking) {
             if (empty($booking->reference)) {
-                $booking->reference = 'BK-' . strtoupper(Str::random(8));
+                do {
+                    $reference = 'BK-' . strtoupper(Str::random(8));
+                } while (
+                    static::where('reference', $reference)->exists()
+                );
+    
+                $booking->reference = $reference;
             }
         });
-        
+
         static::saving(function ($booking) {
 
             $startDate = data_get($booking->booking_details, 'start_date');
