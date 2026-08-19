@@ -25,12 +25,16 @@ class Booking extends Model
         'booking_details',
     ];
 
-    protected $casts = [
+    protected function casts(): array
+{
+    return [
         'booker_details'  => 'array',
         'patient_details' => 'array',
         'booking_details' => 'array',
         'status' => BookingStatus::class,
     ];
+
+}
     
         public function getCareTypeAttribute()
     {

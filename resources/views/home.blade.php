@@ -1734,7 +1734,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
             @foreach($ctPlans as $plan)
               <li class="plan-feat">
                 <span class="plan-check"><i class="bi bi-check"></i></span>
-                <span>{{ $plan->name }} — {{ $plan->formatted_price }}</span>
+                <span>{{ $plan->name }}</span>
               </li>
             @endforeach
           </ul>
