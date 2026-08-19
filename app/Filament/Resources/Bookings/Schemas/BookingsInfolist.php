@@ -45,7 +45,7 @@ class BookingsInfolist
                                     ),
                                 };
                             })
-                            
+
                             ->color(function ($state) {
                 
                                 $value = $state instanceof \BackedEnum
@@ -165,158 +165,174 @@ class BookingsInfolist
                     ->columns(2),
 
 
+               // ═══════════════════════════════════════════════
+// MEDICATIONS
+// ═══════════════════════════════════════════════
+
+Section::make('Medications')
+    ->description('Medications reported for the patient.')
+    ->icon('heroicon-o-beaker')
+    ->schema([
+
+        TextEntry::make('medications_display')
+            ->label('Medications')
+            ->state(function ($record) {
+
+                $medications = data_get(
+                    $record->patient_details ?? [],
+                    'medications',
+                    []
+                );
+
+                if (is_string($medications)) {
+                    $medications = json_decode($medications, true) ?? [];
+                }
+
+                if (!is_array($medications)) {
+                    return 'No medications provided.';
+                }
+
+                $medications = collect($medications)
+                    ->map(function ($item) {
+                        return is_array($item)
+                            ? ($item['medication'] ?? null)
+                            : $item;
+                    })
+                    ->filter(fn ($item) =>
+                        filled($item) &&
+                        strtolower(trim((string) $item)) !== 'none'
+                    )
+                    ->values();
+
+                if ($medications->isEmpty()) {
+                    return 'No medications provided.';
+                }
+
+                return $medications
+                    ->map(fn ($medication, $index) =>
+                        '<strong>' . ($index + 1) . '.</strong> ' . e($medication)
+                    )
+                    ->implode('<br>');
+
+            })
+            ->html()
+            ->columnSpanFull(),
+
+    ])
+    ->collapsible(),
+
+               // ═══════════════════════════════════════════════
+// ALLERGIES
+// ═══════════════════════════════════════════════
+
+Section::make('Allergies')
+->description('Known allergies reported for the patient.')
+->icon('heroicon-o-exclamation-triangle')
+->schema([
+
+    TextEntry::make('allergies_display')
+        ->label('Allergies')
+        ->state(function ($record) {
+
+            $allergies = data_get(
+                $record->patient_details ?? [],
+                'allergies',
+                []
+            );
+
+            if (is_string($allergies)) {
+                $allergies = json_decode($allergies, true) ?? [];
+            }
+
+            if (!is_array($allergies)) {
+                return 'No allergies provided.';
+            }
+
+            $allergies = collect($allergies)
+                ->map(function ($item) {
+                    return is_array($item)
+                        ? ($item['allergy'] ?? null)
+                        : $item;
+                })
+                ->filter(fn ($item) =>
+                    filled($item) &&
+                    strtolower(trim((string) $item)) !== 'none'
+                )
+                ->values();
+
+            if ($allergies->isEmpty()) {
+                return 'No allergies provided.';
+            }
+
+            return $allergies
+                ->map(fn ($allergy, $index) =>
+                    '<strong>' . ($index + 1) . '.</strong> ' . e($allergy)
+                )
+                ->implode('<br>');
+
+        })
+        ->html()
+        ->columnSpanFull(),
+
+])
+->collapsible(),
+
+
                 // ═══════════════════════════════════════════════
-                // MEDICATIONS
-                // ═══════════════════════════════════════════════
+// DAILY CARE TASKS
+// ═══════════════════════════════════════════════
 
-                Section::make('Medications')
-                    ->description('Medications reported for the patient.')
-                    ->icon('heroicon-o-beaker')
-                    ->schema([
+Section::make('Daily Care Tasks')
+->description('Daily activities and care tasks requested for the patient.')
+->icon('heroicon-o-clipboard-document-list')
+->schema([
 
-                        TextEntry::make('patient_details.medications')
-                            ->label('')
-                            ->formatStateUsing(function ($state) {
+    TextEntry::make('daily_tasks_display')
+        ->label('Daily Care Tasks')
+        ->state(function ($record) {
 
-                                if (blank($state)) {
-                                    return 'No medications provided.';
-                                }
+            $tasks = data_get(
+                $record->patient_details ?? [],
+                'daily_tasks',
+                []
+            );
 
-                                if (is_string($state)) {
-                                    $state = json_decode($state, true);
-                                }
+            if (is_string($tasks)) {
+                $tasks = json_decode($tasks, true) ?? [];
+            }
 
-                                if (!is_array($state)) {
-                                    return 'No medications provided.';
-                                }
+            if (!is_array($tasks)) {
+                return 'No daily care tasks provided.';
+            }
 
-                                $medications = collect($state)
-                                    ->pluck('medication')
-                                    ->filter(fn ($item) =>
-                                        filled($item) &&
-                                        strtolower(trim($item)) !== 'none'
-                                    )
-                                    ->values();
+            $tasks = collect($tasks)
+                ->map(function ($item) {
+                    return is_array($item)
+                        ? ($item['task'] ?? null)
+                        : $item;
+                })
+                ->filter(fn ($item) =>
+                    filled($item) &&
+                    strtolower(trim((string) $item)) !== 'none'
+                )
+                ->values();
 
-                                if ($medications->isEmpty()) {
-                                    return 'No medications provided.';
-                                }
+            if ($tasks->isEmpty()) {
+                return 'No daily care tasks provided.';
+            }
 
-                                return $medications
-                                    ->map(fn ($medication, $index) =>
-                                        ($index + 1) . '. ' . e($medication)
-                                    )
-                                    ->implode('<br>');
+            return $tasks
+                ->map(fn ($task, $index) =>
+                    '<strong>' . ($index + 1) . '.</strong> ' . e($task)
+                )
+                ->implode('<br>');
 
-                            })
-                            ->html()
-                            ->columnSpanFull(),
+        })
+        ->html()
+        ->columnSpanFull(),
 
-                    ])
-                    ->collapsible(),
-
-
-                // ═══════════════════════════════════════════════
-                // ALLERGIES
-                // ═══════════════════════════════════════════════
-
-                Section::make('Allergies')
-                    ->description('Known allergies reported for the patient.')
-                    ->icon('heroicon-o-exclamation-triangle')
-                    ->schema([
-
-                        TextEntry::make('patient_details.allergies')
-                            ->label('')
-                            ->formatStateUsing(function ($state) {
-
-                                if (blank($state)) {
-                                    return 'No allergies provided.';
-                                }
-
-                                if (is_string($state)) {
-                                    $state = json_decode($state, true);
-                                }
-
-                                if (!is_array($state)) {
-                                    return 'No allergies provided.';
-                                }
-
-                                $allergies = collect($state)
-                                    ->pluck('allergy')
-                                    ->filter(fn ($item) =>
-                                        filled($item) &&
-                                        strtolower(trim($item)) !== 'none'
-                                    )
-                                    ->values();
-
-                                if ($allergies->isEmpty()) {
-                                    return 'No allergies provided.';
-                                }
-
-                                return $allergies
-                                    ->map(fn ($allergy, $index) =>
-                                        ($index + 1) . '. ' . e($allergy)
-                                    )
-                                    ->implode('<br>');
-
-                            })
-                            ->html()
-                            ->columnSpanFull(),
-
-                    ])
-                    ->collapsible(),
-
-
-                // ═══════════════════════════════════════════════
-                // DAILY CARE TASKS
-                // ═══════════════════════════════════════════════
-
-                Section::make('Daily Care Tasks')
-                    ->description('Daily activities and care tasks requested for the patient.')
-                    ->icon('heroicon-o-clipboard-document-list')
-                    ->schema([
-
-                        TextEntry::make('patient_details.daily_tasks')
-                            ->label('')
-                            ->formatStateUsing(function ($state) {
-
-                                if (blank($state)) {
-                                    return 'No daily care tasks provided.';
-                                }
-
-                                if (is_string($state)) {
-                                    $state = json_decode($state, true);
-                                }
-
-                                if (!is_array($state)) {
-                                    return 'No daily care tasks provided.';
-                                }
-
-                                $tasks = collect($state)
-                                    ->pluck('task')
-                                    ->filter(fn ($item) =>
-                                        filled($item) &&
-                                        strtolower(trim($item)) !== 'none'
-                                    )
-                                    ->values();
-
-                                if ($tasks->isEmpty()) {
-                                    return 'No daily care tasks provided.';
-                                }
-
-                                return $tasks
-                                    ->map(fn ($task, $index) =>
-                                        ($index + 1) . '. ' . e($task)
-                                    )
-                                    ->implode('<br>');
-
-                            })
-                            ->html()
-                            ->columnSpanFull(),
-
-                    ])
-                    ->collapsible(),
-
+])
+->collapsible(),
 
                 // ═══════════════════════════════════════════════
                 // BOOKING DETAILS
