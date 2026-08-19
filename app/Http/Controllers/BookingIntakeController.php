@@ -223,7 +223,7 @@ public function submit(Request $request, PreBooking $preBooking)
     */
 
     return redirect()->route(
-        'booking.intake.confirmation',
+        'booking.intake-confirmation',
         $booking
     );
 }
