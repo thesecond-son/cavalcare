@@ -82,7 +82,7 @@ a{color:inherit;}
   height:60px;display:flex;align-items:center;justify-content:space-between;
 }
 .intake-nav-logo{display:flex;align-items:center;text-decoration:none;}
-.intake-nav-logo img{height:48px;width:auto;object-fit:contain;}
+.intake-nav-logo img{height:36px;width:auto;object-fit:contain;}
 .intake-nav-secure{
   display:flex;align-items:center;gap:6px;
   font-size:.72rem;font-weight:600;color:var(--muted);
