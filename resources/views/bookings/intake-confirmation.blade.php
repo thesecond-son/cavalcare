@@ -53,7 +53,20 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:40px 20px;
+  padding:120px 20px 60px;
+}
+
+@media(max-width:767px){
+  .conf-page{
+    padding:100px 16px 40px;
+    align-items:flex-start;
+  }
+}
+
+@media(max-width:479px){
+  .conf-page{
+    padding:90px 14px 32px;
+  }
 }
 
 .conf-card{
@@ -61,16 +74,23 @@ body{
   border-radius:24px;
   border:1px solid rgba(26,58,47,.08);
   box-shadow:0 16px 56px rgba(26,58,47,.1);
-  max-width:540px;
+  max-width:600px;
   width:100%;
-  padding:52px 40px;
+  padding:56px 48px;
   text-align:center;
   animation:fadeUp .6s var(--out) both;
 }
 
+@media(max-width:767px){
+  .conf-card{
+    padding:44px 28px;
+  }
+}
+
 @media(max-width:479px){
   .conf-card{
-    padding:36px 24px;
+    padding:36px 20px;
+    border-radius:20px;
   }
 }
 
