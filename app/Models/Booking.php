@@ -95,6 +95,12 @@ class Booking extends Model
 
     protected static function booted()
     {
+        static::creating(function (Booking $booking) {
+            if (empty($booking->reference)) {
+                $booking->reference = 'BK-' . strtoupper(Str::random(8));
+            }
+        });
+        
         static::saving(function ($booking) {
 
             $startDate = data_get($booking->booking_details, 'start_date');

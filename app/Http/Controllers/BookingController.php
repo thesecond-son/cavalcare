@@ -156,25 +156,39 @@ class BookingController extends Controller
     public function received(string $reference)
     {
         $preBooking = PreBooking::where('reference', $reference)
-            ->with(['carePlan', 'careType'])
+            ->with([
+                'carePlan',
+                'careType',
+                'booking.carePlan',
+                'booking.careType',
+            ])
             ->firstOrFail();
 
-            return match ($preBooking->status) {
+        return match ($preBooking->status) {
 
-                PreBookingStatus::PENDING_PAYMENT =>
-                    response()->view(
-                        'bookings.payment-not-completed',
-                        compact('preBooking'),
-                        400
-                    ),
-        
-                PreBookingStatus::PAID =>
-                    view('bookings.received', compact('preBooking')),
-        
-                PreBookingStatus::CONVERTED =>
-                    view('bookings.intake-already-submitted', compact('preBooking')),
-        
-            };
+            PreBookingStatus::PENDING_PAYMENT =>
+                response()->view(
+                    'bookings.payment-not-completed',
+                    compact('preBooking'),
+                    400
+                ),
+
+            PreBookingStatus::PAID =>
+                view(
+                    'bookings.received',
+                    compact('preBooking')
+                ),
+
+            PreBookingStatus::CONVERTED =>
+                view(
+                    'bookings.intake-already-submitted',
+                    [
+                        'preBooking' => $preBooking,
+                        'booking' => $preBooking->booking,
+                    ]
+                ),
+
+        };
     }
 
     // ── Private helper ────────────────────────────────────────────────────

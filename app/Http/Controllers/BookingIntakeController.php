@@ -58,7 +58,10 @@ public function submit(Request $request, PreBooking $preBooking)
     */
 
     if ($preBooking->booking()->exists()) {
-        return redirect()->route('booking.intake', $preBooking);
+        return redirect()->route(
+            'booking.intake-already-submitted',
+            $preBooking
+        );
     }
 
     /*
@@ -245,20 +248,21 @@ public function submit(Request $request, PreBooking $preBooking)
         ]);
     }
 
-    public function alreadySubmitted(PreBooking $preBooking, Booking $booking)
+    public function alreadySubmitted(PreBooking $preBooking)
     {
         $preBooking->load([
             'carePlan',
             'careType',
-            'booking',
+            'booking.carePlan',
+            'booking.careType',
         ]);
-
-        $booking->load([
-            'carePlan',
-            'careType',
-            'preBooking',
-        ]);
-
+    
+        $booking = $preBooking->booking;
+    
+        if (!$booking) {
+            abort(404);
+        }
+    
         return view('bookings.intake-already-submitted', [
             'booking'    => $booking,
             'preBooking' => $preBooking,
