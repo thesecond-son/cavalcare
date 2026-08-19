@@ -454,7 +454,7 @@ a{color:inherit;}
 <nav class="intake-nav" id="intakeNav" aria-label="Page navigation">
   <div class="intake-nav-inner">
     <a href="{{ url('/') }}" class="intake-nav-logo" aria-label="CavalCare home">
-      <img src="{{ asset('images/logo.png') }}" alt="CavalCare">
+      <img src="{{ asset('images/caval-care-logo.png') }}" alt="CavalCare">
     </a>
     <div class="intake-nav-secure" role="status" aria-label="Secure page">
       <i class="bi bi-shield-lock-fill"></i>
