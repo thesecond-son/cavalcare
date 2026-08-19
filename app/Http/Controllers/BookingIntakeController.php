@@ -245,7 +245,7 @@ public function submit(Request $request, PreBooking $preBooking)
         ]);
     }
 
-    public function alreadySubmitted(PreBooking $preBooking)
+    public function alreadySubmitted(PreBooking $preBooking, Booking $booking)
     {
         $preBooking->load([
             'carePlan',
@@ -253,8 +253,14 @@ public function submit(Request $request, PreBooking $preBooking)
             'booking',
         ]);
 
+        $booking->load([
+            'carePlan',
+            'careType',
+            'preBooking',
+        ]);
+
         return view('bookings.intake-already-submitted', [
-            'booking'    => $preBooking->booking,
+            'booking'    => $booking,
             'preBooking' => $preBooking,
         ]);
     }
