@@ -895,6 +895,156 @@ button {
 }
 
 
+.site-footer{
+  background: var(--cream); /* 🔥 match your sections */
+  border-top: 1px solid rgba(6,58,71,.08);
+  padding: clamp(56px, 6vw, 80px) 0 clamp(20px, 3vw, 32px);
+  position: relative;
+}
+
+.site-footer .container{
+  max-width: 1200px; 
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.site-footer::before{
+  content:'';
+  position:absolute;
+  top:24px;
+  left:0;
+  right:0;
+  height:24px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--cream)
+  );
+}
+
+/* Grid */
+.footer-grid{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: clamp(20px, 2.5vw, 32px);
+  margin-bottom: 36px;
+}
+
+/* Brand */
+.footer-brand p{
+  font-size: 0.9rem;
+  color: rgba(6,58,71,0.65);
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+/* Logo */
+.footer-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  color: var(--navy);
+}
+
+.footer-logo img{
+  height: 36px;
+}
+
+/* Headings */
+.footer-grid h4{
+  font-family: 'Fraunces', serif; /* 🔥 match headings */
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+/* Links */
+.footer-grid ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+.footer-grid li{
+  margin-bottom:10px;
+}
+
+.footer-grid a{
+  font-size: 0.9rem;
+  color: rgba(6,58,71,0.65);
+}
+
+.footer-grid a:hover{
+  color: var(--ink);
+}
+
+/* Socials */
+.footer-socials{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+}
+
+.footer-socials a{
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid rgba(6,58,71,.08);
+  color: var(--ink);
+  transition: all .25s ease;
+}
+
+.footer-socials a:hover{
+  background: var(--ocean);
+  color:#fff;
+  transform: translateY(-3px);
+}
+
+/* Contact */
+.footer-contact li{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.footer-contact i{
+  color: var(--gold);
+  margin-top: 3px;
+}
+
+.footer-contact span{
+  display:block;
+  font-size: 0.8rem;
+  color: rgba(6,58,71,0.65);
+}
+
+/* Bottom */
+.footer-bottom{
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding-top: 20px;
+  text-align:center;
+  font-size: 0.85rem;
+  color: rgba(6,58,71,0.65);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .footer-grid{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px){
+  .footer-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ═══════════════════════════════════════════════
    REDUCED MOTION
 ═══════════════════════════════════════════════ */
