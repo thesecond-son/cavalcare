@@ -17,6 +17,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use App\BookingStatus;
 
 class BookingsTable
 {
@@ -124,17 +125,10 @@ class BookingsTable
                     ->badge()
                     ->color(fn ($state) => match ($state) {
 
-                        'pending'         => 'warning',
-                        'pending_payment' => 'warning',
-
-                        'paid'            => 'success',
-                        'confirmed'       => 'success',
-
-                        'intake_complete' => 'info',
-
-                        'completed'       => 'primary',
-
-                        'cancelled'       => 'danger',
+                        BookingStatus::INTAKE_COMPLETE => 'warning',
+                        BookingStatus::CONFIRMED       => 'success',
+                        BookingStatus::COMPLETED       => 'gray',
+                        BookingStatus::CANCELLED       => 'failed',
 
                         default           => 'gray',
                     })
@@ -143,10 +137,10 @@ class BookingsTable
                         'pending'         => 'Pending',
                         'pending_payment' => 'Pending Payment',
                         'paid'            => 'Paid',
-                        'confirmed'       => 'Confirmed',
-                        'intake_complete' => 'Intake Complete',
-                        'completed'       => 'Completed',
-                        'cancelled'       => 'Cancelled',
+                        BookingStatus::CONFIRMED        => 'Confirmed',
+                        BookingStatus::INTAKE_COMPLETE => 'Intake Complete',
+                        BookingStatus::COMPLETED       => 'Completed',
+                        BookingStatus::CANCELLED       => 'Cancelled',
 
                         default           => ucfirst(str_replace('_', ' ', $state)),
                     }),

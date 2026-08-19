@@ -8,6 +8,7 @@ use App\Models\CarePlan;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\BookingStatus;
 
 class Booking extends Model
 {
@@ -28,6 +29,7 @@ class Booking extends Model
         'booker_details'  => 'array',
         'patient_details' => 'array',
         'booking_details' => 'array',
+        'status' => BookingStatus::class,
     ];
     
         public function getCareTypeAttribute()

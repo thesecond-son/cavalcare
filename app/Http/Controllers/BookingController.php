@@ -12,6 +12,8 @@ use App\Models\PreBooking;
 use App\Models\AddOn;
 use App\Mail\BookingReceivedMail;
 use App\Mail\IntakeFormLinkMail;
+use App\PreBookingStatus;
+use App\BookingStatus;
 
 class BookingController extends Controller
 {
@@ -60,7 +62,7 @@ class BookingController extends Controller
             'reference'     => 'PB-' . strtoupper(Str::random(8)),
             'care_plan_id'  => $carePlan->id,
             'care_type_id'  => $carePlan->care_type_id, // derived — no separate input needed
-            'status'        => 'pending',
+            'status'        => PreBookingStatus::PENDING_PAYMENT,
             'booker_details' => [
                 'name'  => $data['name'],
                 'email' => $data['email'],
@@ -110,7 +112,7 @@ class BookingController extends Controller
 
             // Mark payment as successful
             $preBooking->update([
-                'status'             => 'paid',
+                'status'             => PreBookingStatus::PAID,
                 'paystack_reference' => $data['paystack_reference'],
                 'amount_paid'        => $verification['amount'],
             ]);
@@ -131,7 +133,7 @@ class BookingController extends Controller
 
         } else {
             $preBooking->update([
-                'status'             => $verification['error'] === 'connection' ? 'pending' : 'failed',
+                'status'             => $verification['error'] === 'connection' ? PreBookingStatus::PENDING_PAYMENT : 'failed',
                 'paystack_reference' => $data['paystack_reference'],
             ]);
 
@@ -157,8 +159,32 @@ class BookingController extends Controller
             ->with(['carePlan', 'careType'])
             ->firstOrFail();
 
-        abort_if($preBooking->status !== 'paid', 403, 'Payment not completed.');
+        // Payment has not been completed
+        if ($preBooking->status === PreBookingStatus::PENDING_PAYMENT) {
+            return response()->view(
+                'bookings.payment-not-completed',
+                [
+                    'preBooking' => $preBooking,
+                ],
+                400
+            );
+        }
 
+        // Intake has already been completed and the PreBooking converted
+        if ($preBooking->status === PreBookingStatus::CONVERTED) {
+
+            if ($preBooking->booking) {
+                return view('bookings.intake-already-submitted', [
+                    'booking' => $preBooking->booking,
+                    'preBooking' => $preBooking,
+                ]);
+            }
+        
+            // Data inconsistency: converted but no Booking exists.
+            abort(500, 'This booking has been converted but no Booking record exists.');
+        }
+
+        // Payment completed, but intake has not yet been submitted
         return view('bookings.received', compact('preBooking'));
     }
 

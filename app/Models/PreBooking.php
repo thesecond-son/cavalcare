@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\PreBookingStatus;
 
 class PreBooking extends Model
 {
@@ -22,6 +23,7 @@ class PreBooking extends Model
     protected $casts = [
         'booker_details' => 'array',
         'payment_meta'   => 'array',
+        'status'         => PreBookingStatus::class,
     ];
 
     //  /**

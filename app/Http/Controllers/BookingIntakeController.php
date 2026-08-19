@@ -9,6 +9,9 @@ use App\Models\Booking;
 use App\Mail\IntakeConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use App\PreBookingStatus;
+use App\BookingStatus;
 
 class BookingIntakeController extends Controller
 {
@@ -60,11 +63,9 @@ public function submit(Request $request, PreBooking $preBooking)
     */
     $existingBooking = $preBooking->booking;
 
-    if ($existingBooking) {
-        return redirect()->route(
-            'booking.intake.already-submitted',
-            $preBooking
-        );
+    // Prevent double submission
+    if ($preBooking->booking()->exists()) {
+        return redirect()->route('booking.intake', $preBooking);
     }
 
     /*
@@ -78,9 +79,9 @@ public function submit(Request $request, PreBooking $preBooking)
         'booker_details.name'             => ['required', 'string', 'max:255'],
         'booker_details.phone'            => ['required', 'string', 'max:30'],
         'booker_details.state'            => ['required', 'string', 'max:100'],
+        'booker_details.email'            => ['required', 'email', 'max:100'],
         'booker_details.address'          => ['required', 'string', 'max:500'],
         'booker_details.emergency_number' => ['nullable', 'string', 'max:30'],
-        'booker_details.email'            => ['required', 'email', 'max:100'],
 
         // Patient
         'patient_details.full_name'         => ['required', 'string', 'max:255'],
@@ -131,21 +132,23 @@ public function submit(Request $request, PreBooking $preBooking)
         }
     }
 
-    /*
+     /*
     |--------------------------------------------------------------------------
-    | Create Booking
+    | Database transaction to create booking and mark preBooking
     |--------------------------------------------------------------------------
     */
 
-    $booking = Booking::create([
-        'pre_booking_id'  => $preBooking->id,
-        'care_plan_id'    => $preBooking->care_plan_id,
-        'care_type_id'    => $preBooking->care_type_id,
-        'status'          => 'intake_complete',
-        'booker_details'  => $data['booker_details'],
-        'patient_details' => $data['patient_details'],
-        'booking_details' => $data['booking_details'],
-    ]);
+    $booking = DB::transaction(function () use ($preBooking, $data) {
+
+        $booking = Booking::create([
+            'pre_booking_id'  => $preBooking->id,
+            'care_plan_id'    => $preBooking->care_plan_id,
+            'care_type_id'    => $preBooking->care_type_id,
+            'status'          => 'intake_complete',
+            'booker_details'  => $data['booker_details'],
+            'patient_details' => $data['patient_details'],
+            'booking_details' => $data['booking_details'],
+        ]);
 
     /*
     |--------------------------------------------------------------------------
@@ -153,9 +156,12 @@ public function submit(Request $request, PreBooking $preBooking)
     |--------------------------------------------------------------------------
     */
 
-    $preBooking->update([
-        'status' => 'converted',
-    ]);
+        $preBooking->update([
+            'status' => PreBookingStatus::CONVERTED,
+        ]);
+
+        return $booking;
+    });
 
     /*
     |--------------------------------------------------------------------------

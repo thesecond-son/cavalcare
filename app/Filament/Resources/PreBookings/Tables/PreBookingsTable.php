@@ -13,6 +13,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
 use App\Services\Booking\PreBookingConfirmationService;
 use App\Models\PreBooking;
+use App\PreBookingStatus;
 
 
 class PreBookingsTable
@@ -34,13 +35,10 @@ class PreBookingsTable
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn ($state) => match ($state) {
-                        'pending'        => 'warning',
-                        'pending_payment' => 'warning',
-                        'paid'           => 'success',
-                        'converted'      => 'gray',
-                        'intake_complete' => 'info',
-                        'failed'         => 'danger',
-                        default          => 'gray',
+                        PreBookingStatus::PENDING_PAYMENT => 'warning',
+                        PreBookingStatus::PAID            => 'success',
+                        PreBookingStatus::CONVERTED       => 'gray',
+                        default                            => 'gray',
                     }),
 
                 TextColumn::make('created_at')
