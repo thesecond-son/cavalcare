@@ -83,6 +83,16 @@ class CareTypeForm
                     ])
                     ->columns(1)
                     ->columnSpanFull(),
+
+                    TextInput::make('sort_order')
+                    ->label('Display Order')
+                    ->numeric()
+                    ->integer()
+                    ->minValue(1)
+                    ->default(1)
+                    ->required()
+                    ->helperText('Lower numbers appear first. For example, 1 appears before 2.'),
+                    
             ]);
     }
 }

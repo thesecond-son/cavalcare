@@ -15,10 +15,12 @@ class CareType extends Model
         'slug',
         'description', // optional intro shown on the booking page
         'meta',
+        'sort_order',
     ];
 
     protected $casts = [
         'meta' => 'array',
+        'sort_order' => 'integer',
     ];
 
     // ─── Auto-generate slug on create ────────────────────────────────────
