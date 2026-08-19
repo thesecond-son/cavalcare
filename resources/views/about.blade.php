@@ -458,16 +458,32 @@ a    { color:inherit; }
   margin-top:6px; line-height:1.55;
 }
 .origin-photo {
-  border-radius:var(--r-lg); overflow:hidden;
-  height:220px;
-  transition:box-shadow .28s;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    height: 440px;
+    transition: box-shadow .28s;
 }
-.origin-photo:hover { box-shadow:0 12px 36px rgba(26,58,47,.12); }
+
+.origin-photo:hover {
+    box-shadow: 0 12px 36px rgba(26,58,47,.12);
+}
+
 .origin-photo img {
-  width:100%; height:100%; object-fit:cover;
-  transition:transform 5s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 5s ease;
 }
-.origin-photo:hover img { transform:scale(1.04); }
+
+.origin-photo:hover img {
+    transform: scale(1.04);
+}
+
+@media (max-width: 767px) {
+    .origin-photo {
+        height: 300px;
+    }
+}
 
 /* ═══════════════════════════════════════════════
    WHAT WE DO
@@ -1232,22 +1248,13 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
         </div>
       </div>
 
-      {{-- Aside stats --}}
+      {{-- Aside image --}}
       <div class="origin-aside">
-        <div class="origin-stat-card reveal" style="transition-delay:.1s;">
-          <div class="origin-stat-num" data-count="500" data-suffix="+">500+</div>
-          <div class="origin-stat-lbl">Families supported with professional in-home care across Nigeria</div>
-        </div>
-
-        <div class="origin-stat-card reveal" style="transition-delay:.18s;">
-          <div class="origin-stat-num" data-count="98" data-suffix="%">98%</div>
-          <div class="origin-stat-lbl">Family satisfaction rate, measured after every care cycle</div>
-        </div>
-
-        <div class="origin-photo reveal" style="transition-delay:.26s;">
-          <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&h=440&fit=crop"
-               alt="CavalCare nurse with elderly patient" loading="lazy">
-        </div>
+          <div class="origin-photo reveal" style="transition-delay:.1s;">
+              <img src="{{ asset('images/careplans/elderly-care.png') }}"
+                  alt="CavalCare nurse with elderly patient"
+                  loading="lazy">
+          </div>
       </div>
 
     </div>
