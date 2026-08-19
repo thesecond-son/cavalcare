@@ -159,33 +159,22 @@ class BookingController extends Controller
             ->with(['carePlan', 'careType'])
             ->firstOrFail();
 
-        // Payment has not been completed
-        if ($preBooking->status === PreBookingStatus::PENDING_PAYMENT) {
-            return response()->view(
-                'bookings.payment-not-completed',
-                [
-                    'preBooking' => $preBooking,
-                ],
-                400
-            );
-        }
+            return match ($preBooking->status) {
 
-        // Intake has already been completed and the PreBooking converted
-        if ($preBooking->status === PreBookingStatus::CONVERTED) {
-
-            if ($preBooking->booking) {
-                return view('bookings.intake-already-submitted', [
-                    'booking' => $preBooking->booking,
-                    'preBooking' => $preBooking,
-                ]);
-            }
+                PreBookingStatus::PENDING_PAYMENT =>
+                    response()->view(
+                        'bookings.payment-not-completed',
+                        compact('preBooking'),
+                        400
+                    ),
         
-            // Data inconsistency: converted but no Booking exists.
-            abort(500, 'This booking has been converted but no Booking record exists.');
-        }
-
-        // Payment completed, but intake has not yet been submitted
-        return view('bookings.received', compact('preBooking'));
+                PreBookingStatus::PAID =>
+                    view('bookings.received', compact('preBooking')),
+        
+                PreBookingStatus::CONVERTED =>
+                    view('bookings.intake-already-submitted', compact('preBooking')),
+        
+            };
     }
 
     // ── Private helper ────────────────────────────────────────────────────

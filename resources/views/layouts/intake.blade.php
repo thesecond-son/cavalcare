@@ -1096,15 +1096,6 @@ img[loading="lazy"].img-loaded {
     @yield('content')
   </main>
 
-  {{-- Floating Contact --}}
-  <a 
-  href="https://wa.me/message/4PNWSMS5KTZUB1"
-  target="_blank"
-  class="fixed bottom-8 right-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary shadow-2xl flex items-center justify-center text-white text-xl md:text-2xl hover:scale-110 transition-transform z-50 animate-float"
->
-  <i class="bi bi-whatsapp"></i>
-</a>
-
   {{-- Scroll Top --}}
   <button id="scrollTop" class="fixed bottom-8 left-8 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-primary opacity-0 invisible transition-all hover:shadow-xl hover:-translate-y-1 z-50">
     <i class="bi bi-arrow-up text-xl"></i>

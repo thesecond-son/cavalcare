@@ -635,6 +635,26 @@ a{color:inherit;}
               </div>
             </div>
 
+            <div class="field-group">
+                <label class="field-label">
+                    Email Address
+                </label>
+
+                <div style="
+                    padding:13px 16px;
+                    border:1.5px solid rgba(26,58,47,.10);
+                    border-radius:var(--r-sm);
+                    background:rgba(26,58,47,.04);
+                    color:var(--muted);
+                ">
+                    {{ $booking->booker_details['email'] ?? '—' }}
+                </div>
+
+                <p class="field-hint">
+                    This is the email address provided when your booking was made.
+                </p>
+            </div>
+
             <div class="field-row">
               <div class="field-group">
                 <label class="field-label" for="booker_state">
@@ -1295,49 +1315,37 @@ saveDraft?.addEventListener('click', () => {
 });
 
 /* ── Form submission ───────────────────────────────── */
-form?.addEventListener('submit', async e => {
-  e.preventDefault();
+form?.addEventListener('submit', e => {
 
-  let allOk = true;
-  requiredFields.forEach(id => {
+let allOk = true;
+
+requiredFields.forEach(id => {
     const el = document.getElementById(id);
-    if (!validateField(el)) allOk = false;
-  });
 
-  if (!allOk) {
-    form.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
+    if (!validateField(el)) {
+        allOk = false;
+    }
+});
 
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Submitting…';
+if (!allOk) {
+    e.preventDefault();
 
-  try {
-    const res = await fetch(form.action, {
-      method: 'POST',
-      body: new FormData(form),
-      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    form.querySelector('.has-error')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
     });
 
-    if (res.ok) {
-      localStorage.removeItem(DRAFT_KEY);
-      document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-      document.querySelector('.intake-hero').style.display  = 'none';
-      document.querySelector('.progress-wrap').style.display = 'none';
-      if (footer) footer.style.display = 'none';
-      successEl.style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (fill) fill.style.setProperty('--prog-w', '100%');
-    } else {
-      const html = await res.text();
-      document.open(); document.write(html); document.close();
-    }
+    return;
+}
 
-  } catch(err) {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="bi bi-send"></i> Submit Details';
-    alert('Something went wrong. Please try again or contact us on WhatsApp.');
-  }
+submitBtn.disabled = true;
+
+submitBtn.innerHTML =
+    '<i class="bi bi-arrow-clockwise" style="animation:spin .8s linear infinite;display:inline-block;"></i> Submitting…';
+
+// IMPORTANT:
+// Do not preventDefault().
+// Laravel will handle the POST normally.
 });
 
 /* ── Haptic on submit (Android) ────────────────────── */
