@@ -42,9 +42,18 @@ body{
   overflow-x:hidden;
 }
 a{color:inherit;}
-:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius:4px;
-  box-shadow:0 0 0 4px rgba(4,169,167,.15);}
+:focus-visible{
+  outline:2px solid var(--yellow);
+  outline-offset:3px;
+  border-radius:4px;
+  box-shadow:0 0 0 4px rgba(4,169,167,.15);
+}
 
+/* Prevent focus artifacts from appearing outside the intended element */
+.intake-page,
+.intake-page *{
+  outline-offset:2px;
+}
 /* ── keyframes ── */
 @keyframes fadeUp  {from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 @keyframes fadeIn  {from{opacity:0}to{opacity:1}}
@@ -95,9 +104,25 @@ a{color:inherit;}
 .intake-page{
   min-height:100svh;
   background:var(--cream);
-  padding-top:60px;
-  position:relative;overflow:hidden;
+  padding-top:88px;
+  padding-bottom: 110px;
+  position:relative;
+  overflow:hidden;
 }
+
+:focus-visible{
+  outline:2px solid var(--yellow);
+  outline-offset:3px;
+  border-radius:4px;
+  box-shadow:0 0 0 4px rgba(4,169,167,.15);
+}
+
+/* Prevent focus artifacts from appearing outside the intended element */
+.intake-page,
+.intake-page *{
+  outline-offset:2px;
+}
+
 .intake-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .ig1{width:min(500px,110vw);height:min(500px,110vw);
   background:radial-gradient(circle,rgba(4,169,167,.18) 0%,transparent 65%);
