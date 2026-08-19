@@ -7,27 +7,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
-:root{
-  --cream:#F0FFDB;
-  --yellow:#04A9A7;
-  --ocean:#1A3A2F;
-  --muted:#3d6b57;
-  --spring:cubic-bezier(.34,1.56,.64,1);
-  --out:cubic-bezier(0,0,.2,1);
-}
-
-*,*::before,*::after{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:'Cabin',system-ui,sans-serif;
-  background:var(--cream);
-  color:var(--ocean);
-  -webkit-font-smoothing:antialiased;
-}
 
 @keyframes iconPop{
   0%{
