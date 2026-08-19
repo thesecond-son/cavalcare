@@ -1451,7 +1451,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
 
           <p class="hero-p">
           Caval Care sends Verified licensed healthcare professionals to your loved one's home 
-          for elderly care, post-surgery recovery, post-natal support, 
+          for elderly care, post-surgery recovery, terminal illness support, 
           and we would keep you updated.
           </p>
 
