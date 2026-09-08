@@ -40,4 +40,9 @@ return [
         'public_key' => env('PAYSTACK_PUBLIC_KEY'),
     ],
 
+    'meta' => [
+    'pixel_id'   => env('META_PIXEL_ID', '1111010055204698'),
+    'capi_token' => env('META_CAPI_TOKEN'),
+    ],
+
 ];

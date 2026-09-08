@@ -11,6 +11,51 @@
 
 <meta name="robots" content="noindex, nofollow">
 
+@php
+  // Advanced matching — hashed so raw PII never touches the pixel script.
+  $fbEmailHash = isset($preBooking->booker_details['email'])
+      ? hash('sha256', strtolower(trim($preBooking->booker_details['email'])))
+      : null;
+  $fbPhoneHash = isset($preBooking->booker_details['phone'])
+      ? hash('sha256', preg_replace('/\D+/', '', $preBooking->booker_details['phone']))
+      : null;
+@endphp
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', '1111010055204698', {
+  @if($fbEmailHash) em: '{{ $fbEmailHash }}', @endif
+  @if($fbPhoneHash) ph: '{{ $fbPhoneHash }}', @endif
+});
+fbq('track', 'PageView');
+
+// Purchase — event_id matches the server-side CAPI call fired from
+// BookingController@store for the same pre-booking, so Meta deduplicates
+// the browser and server events instead of double-counting.
+fbq('track', 'Purchase', {
+  content_name: @json($preBooking->carePlan->name ?? 'CavalCare Booking'),
+  content_type: 'product',
+  currency:     'NGN',
+  value:        {{ $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0 }}
+}, {
+  eventID: '{{ $preBooking->reference }}'
+});
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none"
+       src="https://www.facebook.com/tr?id=1111010055204698&ev=PageView&noscript=1" />
+</noscript>
+<!-- End Meta Pixel Code -->
+
 <style>
 :root{
   --cream:#F0FFDB; --yellow:#04A9A7; --ocean:#1A3A2F;

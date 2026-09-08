@@ -155,6 +155,15 @@ class BookingController extends Controller
                 report($e);
             }
 
+            // Meta Conversions API — server-side Purchase event, mirroring the
+            // browser-side pixel fired on bookings.received. Same event_id
+            // (the pre-booking reference) so Meta deduplicates the two.
+            try {
+                $this->sendMetaPurchaseEvent($preBooking, $request);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return response()->json([
                 'success'  => true,
                 'redirect' => route('booking.received', $preBooking->reference),
@@ -224,6 +233,61 @@ class BookingController extends Controller
     }
 
     // ── Private helper ────────────────────────────────────────────────────
+
+    /**
+     * Send a server-side "Purchase" event to Meta's Conversions API.
+     *
+     * Uses the same event_id (pre-booking reference) as the browser-side
+     * pixel call on bookings.received.blade.php so Meta deduplicates the
+     * two instead of double-counting the conversion. PII is SHA-256 hashed
+     * before it ever leaves the server, per Meta's requirements.
+     */
+    private function sendMetaPurchaseEvent(PreBooking $preBooking, Request $request): void
+    {
+        $pixelId     = config('services.meta.pixel_id', '1111010055204698');
+        $accessToken = config('services.meta.capi_token');
+
+        if (empty($accessToken)) {
+            // No CAPI token configured — skip silently, browser pixel still fires.
+            return;
+        }
+
+        $email = $preBooking->booker_details['email'] ?? null;
+        $phone = $preBooking->booker_details['phone'] ?? null;
+
+        $userData = array_filter([
+            'em' => $email ? [hash('sha256', strtolower(trim($email)))] : null,
+            'ph' => $phone ? [hash('sha256', preg_replace('/\D+/', '', $phone))] : null,
+            'client_ip_address' => $request->ip(),
+            'client_user_agent' => $request->userAgent(),
+            'fbc' => $request->cookie('_fbc'),
+            'fbp' => $request->cookie('_fbp'),
+        ]);
+
+        $payload = [
+            'data' => [[
+                'event_name'       => 'Purchase',
+                'event_time'       => now()->timestamp,
+                'event_id'         => $preBooking->reference, // matches pixel eventID
+                'event_source_url' => route('booking.received', $preBooking->reference),
+                'action_source'    => 'website',
+                'user_data'        => $userData,
+                'custom_data'      => [
+                    'currency' => 'NGN',
+                    'value'    => $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0,
+                    'content_name' => $preBooking->carePlan->name ?? 'CavalCare Booking',
+                    'content_type' => 'product',
+                ],
+            ]],
+        ];
+
+        Http::asJson()
+            ->timeout(10)
+            ->post("https://graph.facebook.com/v20.0/{$pixelId}/events", array_merge(
+                $payload,
+                ['access_token' => $accessToken]
+            ));
+    }
 
     /**
      * Hit the Paystack verify endpoint and return a normalised result.
