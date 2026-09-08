@@ -9,35 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1111010055204698');
-fbq('track', 'PageView');
-
-// InitiateCheckout — fired as soon as the booking page for this care type loads.
-// No plan is selected yet, so we report the care type's cheapest plan as the
-// starting value/context; the actual Purchase value is set later at received.blade.php.
-fbq('track', 'InitiateCheckout', {
-  content_name:  @json($careType->name),
-  content_type:  'product',
-  currency:      'NGN',
-  value:         {{ $careType->carePlans->min('price') ?? 0 }}
-});
-</script>
-<noscript>
-  <img height="1" width="1" style="display:none"
-       src="https://www.facebook.com/tr?id=1111010055204698&ev=PageView&noscript=1" />
-</noscript>
-<!-- End Meta Pixel Code -->
-
 <style>
 /* ═══════════════════════════════════════════════
    TOKENS
