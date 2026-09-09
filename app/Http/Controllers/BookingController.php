@@ -244,78 +244,110 @@ class BookingController extends Controller
      */
     private function sendMetaPurchaseEvent(PreBooking $preBooking, Request $request): void
     {
-        $pixelId     = config('services.meta.pixel_id', '1111010055204698');
-        $accessToken = config('services.meta.capi_token');
-
-        if (empty($accessToken)) {
-            // No CAPI token configured — this is a likely reason for total
-            // silence in Meta's Test Events tab, so log it loudly rather
-            // than skip quietly.
-            \Illuminate\Support\Facades\Log::warning(
-                'Meta CAPI Purchase event skipped — META_CAPI_TOKEN is not set.',
-                ['reference' => $preBooking->reference]
-            );
-            return;
-        }
-
-        $email = $preBooking->booker_details['email'] ?? null;
-        $phone = $preBooking->booker_details['phone'] ?? null;
-
-        $userData = array_filter([
-            'em' => $email ? [hash('sha256', strtolower(trim($email)))] : null,
-            'ph' => $phone ? [hash('sha256', preg_replace('/\D+/', '', $phone))] : null,
-            'client_ip_address' => $request->ip(),
-            'client_user_agent' => $request->userAgent(),
-            'fbc' => $request->cookie('_fbc'),
-            'fbp' => $request->cookie('_fbp'),
+        // Unconditional, level-agnostic entry marker. Uses error() on
+        // purpose (not info/warning) so it can never be silently dropped by
+        // a stricter LOG_LEVEL in .env or config/logging.php. If this line
+        // alone doesn't show up in the log after a payment, this method is
+        // not being reached at all — the problem is upstream in store(),
+        // not in this method.
+        \Illuminate\Support\Facades\Log::error('[MetaCAPI] sendMetaPurchaseEvent() invoked', [
+            'reference' => $preBooking->reference,
         ]);
 
-        $payload = [
-            'data' => [[
-                'event_name'       => 'Purchase',
-                'event_time'       => now()->timestamp,
-                'event_id'         => $preBooking->reference, // matches pixel eventID
-                'event_source_url' => route('booking.received', $preBooking->reference),
-                'action_source'    => 'website',
-                'user_data'        => $userData,
-                'custom_data'      => [
-                    'currency' => 'NGN',
-                    'value'    => $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0,
-                    'content_name' => $preBooking->carePlan->name ?? 'CavalCare Booking',
-                    'content_type' => 'product',
-                ],
-            ]],
-        ];
+        try {
+            $pixelId     = config('services.meta.pixel_id', '1111010055204698');
+            $accessToken = config('services.meta.capi_token');
 
-        // Only present in Meta's Test Events tab if this is included — a real
-        // successful call WITHOUT this still lands in Events Manager as a
-        // production event, it just won't show in the Test Events panel.
-        // Set META_CAPI_TEST_EVENT_CODE in .env while testing; leave unset in
-        // production so real events aren't tagged as test traffic.
-        $testEventCode = config('services.meta.test_event_code');
-        if (!empty($testEventCode)) {
-            $payload['test_event_code'] = $testEventCode;
-        }
-
-        $response = Http::asJson()
-            ->timeout(10)
-            ->post("https://graph.facebook.com/v20.0/{$pixelId}/events", array_merge(
-                $payload,
-                ['access_token' => $accessToken]
-            ));
-
-        // Swallowing this before meant a bad token or malformed payload would
-        // fail completely silently. Log it so it's actually diagnosable.
-        if (!$response->successful()) {
-            \Illuminate\Support\Facades\Log::warning('Meta CAPI Purchase event failed', [
-                'reference' => $preBooking->reference,
-                'status'    => $response->status(),
-                'body'      => $response->json(),
+            \Illuminate\Support\Facades\Log::error('[MetaCAPI] config resolved', [
+                'pixel_id_present'  => !empty($pixelId),
+                'token_present'     => !empty($accessToken),
+                'test_code_present' => !empty(config('services.meta.test_event_code')),
             ]);
-        } else {
-            \Illuminate\Support\Facades\Log::info('Meta CAPI Purchase event sent', [
+
+            if (empty($accessToken)) {
+                \Illuminate\Support\Facades\Log::error(
+                    '[MetaCAPI] Skipped — META_CAPI_TOKEN resolved empty. Check .env and run php artisan config:clear.',
+                    ['reference' => $preBooking->reference]
+                );
+                return;
+            }
+
+            $email = $preBooking->booker_details['email'] ?? null;
+            $phone = $preBooking->booker_details['phone'] ?? null;
+
+            $userData = array_filter([
+                'em' => $email ? [hash('sha256', strtolower(trim($email)))] : null,
+                'ph' => $phone ? [hash('sha256', preg_replace('/\D+/', '', $phone))] : null,
+                'client_ip_address' => $request->ip(),
+                'client_user_agent' => $request->userAgent(),
+                'fbc' => $request->cookie('_fbc'),
+                'fbp' => $request->cookie('_fbp'),
+            ]);
+
+            $payload = [
+                'data' => [[
+                    'event_name'       => 'Purchase',
+                    'event_time'       => now()->timestamp,
+                    'event_id'         => $preBooking->reference, // matches pixel eventID
+                    'event_source_url' => route('booking.received', $preBooking->reference),
+                    'action_source'    => 'website',
+                    'user_data'        => $userData,
+                    'custom_data'      => [
+                        'currency'     => 'NGN',
+                        'value'        => $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0,
+                        'content_name' => $preBooking->carePlan->name ?? 'CavalCare Booking',
+                        'content_type' => 'product',
+                    ],
+                ]],
+            ];
+
+            // Only present in Meta's Test Events tab if this is included — a
+            // real successful call WITHOUT this still lands in Events
+            // Manager as a production event, it just won't show in the Test
+            // Events panel. Set META_CAPI_TEST_EVENT_CODE in .env while
+            // testing; leave unset in production.
+            $testEventCode = config('services.meta.test_event_code');
+            if (!empty($testEventCode)) {
+                $payload['test_event_code'] = $testEventCode;
+            }
+
+            \Illuminate\Support\Facades\Log::error('[MetaCAPI] Sending request to Meta', [
                 'reference' => $preBooking->reference,
-                'response'  => $response->json(),
+                'url'       => "https://graph.facebook.com/v20.0/{$pixelId}/events",
+                'payload'   => $payload, // hashed PII only — safe to log
+            ]);
+
+            $response = Http::asJson()
+                ->timeout(10)
+                ->post("https://graph.facebook.com/v20.0/{$pixelId}/events", array_merge(
+                    $payload,
+                    ['access_token' => $accessToken]
+                ));
+
+            if (!$response->successful()) {
+                \Illuminate\Support\Facades\Log::error('[MetaCAPI] Request failed', [
+                    'reference' => $preBooking->reference,
+                    'status'    => $response->status(),
+                    'body'      => $response->body(),
+                ]);
+            } else {
+                \Illuminate\Support\Facades\Log::error('[MetaCAPI] Request succeeded', [
+                    'reference' => $preBooking->reference,
+                    'response'  => $response->json(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Deliberately caught and logged HERE, inside the method itself,
+            // rather than relying on the caller's catch block. This is the
+            // fix for the "no log at all" symptom: if the exception was
+            // being caught upstream by report($e) and that channel/level
+            // wasn't visible to you, this guarantees an error-level entry
+            // regardless of where else it's reported.
+            \Illuminate\Support\Facades\Log::error('[MetaCAPI] Exception thrown', [
+                'reference' => $preBooking->reference,
+                'message'   => $e->getMessage(),
+                'file'      => $e->getFile(),
+                'line'      => $e->getLine(),
             ]);
         }
     }
