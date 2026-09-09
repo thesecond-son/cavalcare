@@ -248,7 +248,13 @@ class BookingController extends Controller
         $accessToken = config('services.meta.capi_token');
 
         if (empty($accessToken)) {
-            // No CAPI token configured — skip silently, browser pixel still fires.
+            // No CAPI token configured — this is a likely reason for total
+            // silence in Meta's Test Events tab, so log it loudly rather
+            // than skip quietly.
+            \Illuminate\Support\Facades\Log::warning(
+                'Meta CAPI Purchase event skipped — META_CAPI_TOKEN is not set.',
+                ['reference' => $preBooking->reference]
+            );
             return;
         }
 
@@ -281,12 +287,37 @@ class BookingController extends Controller
             ]],
         ];
 
-        Http::asJson()
+        // Only present in Meta's Test Events tab if this is included — a real
+        // successful call WITHOUT this still lands in Events Manager as a
+        // production event, it just won't show in the Test Events panel.
+        // Set META_CAPI_TEST_EVENT_CODE in .env while testing; leave unset in
+        // production so real events aren't tagged as test traffic.
+        $testEventCode = config('services.meta.test_event_code');
+        if (!empty($testEventCode)) {
+            $payload['test_event_code'] = $testEventCode;
+        }
+
+        $response = Http::asJson()
             ->timeout(10)
             ->post("https://graph.facebook.com/v20.0/{$pixelId}/events", array_merge(
                 $payload,
                 ['access_token' => $accessToken]
             ));
+
+        // Swallowing this before meant a bad token or malformed payload would
+        // fail completely silently. Log it so it's actually diagnosable.
+        if (!$response->successful()) {
+            \Illuminate\Support\Facades\Log::warning('Meta CAPI Purchase event failed', [
+                'reference' => $preBooking->reference,
+                'status'    => $response->status(),
+                'body'      => $response->json(),
+            ]);
+        } else {
+            \Illuminate\Support\Facades\Log::info('Meta CAPI Purchase event sent', [
+                'reference' => $preBooking->reference,
+                'response'  => $response->json(),
+            ]);
+        }
     }
 
     /**
