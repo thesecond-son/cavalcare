@@ -11,32 +11,44 @@
 
 <meta name="robots" content="noindex, nofollow">
 
-<!--
-  Purchase event — this page only ever renders after BookingController@received
-  has confirmed the pre-booking status is PAID (see the match() in the
-  controller), so this fires exactly once, only after Paystack has confirmed
-  payment and the unique booking reference has been generated. It does NOT
-  fire on button click or when the Paystack modal opens.
+{{--
+  This page needs its own fbq init: the base pixel snippet only loads on
+  bookings.create.blade.php now, and a user can land here directly (email
+  link, page refresh, new tab) without that page having run in this
+  session. No PageView fires here on init — only Purchase below — since
+  PageView is scoped to the booking-start page by design.
 
-  eventID matches the server-side Conversions API call sent from
-  BookingController@store, so Meta deduplicates the browser + server events
-  into a single conversion instead of double-counting.
+  Purchase only fires here because this page only ever renders after
+  BookingController@received confirms status PAID -- i.e. only after
+  Paystack verification, never on button click or modal open.
 
-  The base Pixel snippet (fbq init + PageView) is already loaded sitewide,
-  so we only call fbq('track', ...) here — no re-init.
--->
+  eventID matches the server-side CAPI call from BookingController@store,
+  so Meta deduplicates the two into a single conversion.
+--}}
+@php($fbPixelId = config('services.meta.pixel_id'))
+@if($fbPixelId)
 <script>
-  if (typeof fbq === 'function') {
-    fbq('track', 'Purchase', {
-      content_name: @json($preBooking->carePlan->name ?? 'CavalCare Booking'),
-      content_type: 'product',
-      currency:     'NGN',
-      value:        {{ $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0 }}
-    }, {
-      eventID: '{{ $preBooking->reference }}'
-    });
-  }
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', '{{ $fbPixelId }}');
+
+fbq('track', 'Purchase', {
+  content_name: @json($preBooking->carePlan->name ?? 'CavalCare Booking'),
+  content_type: 'product',
+  currency:     'NGN',
+  value:        {{ $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0 }}
+}, {
+  eventID: '{{ $preBooking->reference }}'
+});
 </script>
+@endif
 
 <style>
 :root{
