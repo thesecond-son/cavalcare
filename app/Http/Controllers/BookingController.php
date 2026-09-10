@@ -164,9 +164,15 @@ class BookingController extends Controller
                 report($e);
             }
 
+            // Reference is stashed in session, NOT the URL, so the
+            // thank-you page below is a single static path
+            // (/book/received) that Meta can reliably track as a
+            // fixed conversion URL.
+            $request->session()->put('pre_booking_reference', $preBooking->reference);
+
             return response()->json([
                 'success'  => true,
-                'redirect' => route('booking.received', $preBooking->reference),
+                'redirect' => route('booking.received'),
             ]);
 
         } else {
@@ -190,12 +196,27 @@ class BookingController extends Controller
     }
 
     /**
-     * GET /book/received/{reference}
+     * GET /book/received
      *
      * "Check your email" confirmation page shown after a successful payment.
+     * Deliberately a static URL — no reference in the path — so Meta can
+     * track it as a fixed Purchase-conversion destination. The reference
+     * is read from session (set in store() right after Paystack
+     * verification) instead of a route parameter.
      */
-    public function received(string $reference)
+    public function received(Request $request)
     {
+        $reference = $request->session()->get('pre_booking_reference');
+
+        if (!$reference) {
+            // No active booking in this session — either the page was
+            // bookmarked/reloaded after the session expired, or someone
+            // hit the URL directly without going through checkout.
+            return redirect()
+                ->route('home')
+                ->with('notice', 'We could not find an active booking for this session. If you just paid, please check your email for confirmation.');
+        }
+
         $preBooking = PreBooking::where('reference', $reference)
             ->with([
                 'carePlan',

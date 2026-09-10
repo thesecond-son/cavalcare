@@ -38,7 +38,10 @@ Route::post('/book/initiate', [BookingController::class, 'initiate'])->name('boo
 Route::post('/book/store', [BookingController::class, 'store'])
      ->name('booking.store');
 
-Route::get('/book/received/{reference}', [BookingController::class, 'received'])->name('booking.received');
+// Static thank-you URL for Meta Pixel tracking — no reference in the path.
+// The reference is stashed in session by BookingController@store right
+// after Paystack verification and read back out here.
+Route::get('/book/received', [BookingController::class, 'received'])->name('booking.received');
 
 Route::get('/intake/confirmation/{booking}', [BookingIntakeController::class, 'confirmation'])
      ->name('booking.intake.confirmation');
