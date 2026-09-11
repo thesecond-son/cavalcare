@@ -22,7 +22,21 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 // {carePlan} now resolves by the `slug` column (see CarePlan::getRouteKeyName).
 // URLs look like /book/full-care-plan-abc12 instead of /book/3.
 // Laravel still returns 404 automatically when the slug isn't found.
- 
+//
+// IMPORTANT: /book/received MUST be defined before /book/{careType:slug}
+// below. Laravel matches routes in definition order, and {careType:slug}
+// matches any single segment after /book/ — including the literal word
+// "received". If it came first, a request to /book/received would be
+// treated as careType slug "received", fail to resolve via implicit model
+// binding, and 404 before ever reaching BookingController@received. This
+// bit us once already when /book/received/{reference} (two segments) was
+// collapsed to /book/received (one segment) for static Meta Pixel tracking.
+
+// Static thank-you URL for Meta Pixel tracking — no reference in the path.
+// The reference is stashed in session by BookingController@store right
+// after Paystack verification and read back out here.
+Route::get('/book/received', [BookingController::class, 'received'])->name('booking.received');
+
 Route::get('/book/{careType:slug}', [BookingController::class, 'create'])
      ->name('booking.create');
 
@@ -38,10 +52,6 @@ Route::post('/book/initiate', [BookingController::class, 'initiate'])->name('boo
 Route::post('/book/store', [BookingController::class, 'store'])
      ->name('booking.store');
 
-// Static thank-you URL for Meta Pixel tracking — no reference in the path.
-// The reference is stashed in session by BookingController@store right
-// after Paystack verification and read back out here.
-Route::get('/book/received', [BookingController::class, 'received'])->name('booking.received');
 
 Route::get('/intake/confirmation/{booking}', [BookingIntakeController::class, 'confirmation'])
      ->name('booking.intake.confirmation');
