@@ -310,7 +310,7 @@ class BookingController extends Controller
                     'event_name'       => 'Purchase',
                     'event_time'       => now()->timestamp,
                     'event_id'         => $preBooking->reference, // matches pixel eventID
-                    'event_source_url' => route('booking.received', $preBooking->reference),
+                    'event_source_url' => route('booking.received'),
                     'action_source'    => 'website',
                     'user_data'        => $userData,
                     'custom_data'      => [
