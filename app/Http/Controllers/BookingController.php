@@ -198,59 +198,39 @@ class BookingController extends Controller
     /**
      * GET /book/received
      *
-     * "Check your email" confirmation page shown after a successful payment.
-     * Deliberately a static URL — no reference in the path — so Meta can
-     * track it as a fixed Purchase-conversion destination. The reference
-     * is read from session (set in store() right after Paystack
-     * verification) instead of a route parameter.
+     * Static, generic "thank you" page. Anyone can open this URL at any
+     * time — it carries NO customer data (no reference, no email, no
+     * plan, no amount) and requires no session or token to render.
+     *
+     * If (and only if) this request is the one immediately following a
+     * successful payment, store() will have left a one-time reference in
+     * session. We pull() it — read AND remove in the same call — so:
+     *   - the Purchase pixel/CAPI-matching eventID fires exactly once,
+     *     for the paying customer, right after their payment
+     *   - a page refresh, a bookmark revisit, or literally anyone else
+     *     loading /book/received gets the same generic page with NO
+     *     tracking fired, since the session flag is already gone
+     *
+     * $preBooking (when present) is passed to the view ONLY to build the
+     * background tracking payload — it is never displayed on the page.
      */
     public function received(Request $request)
     {
-        $reference = $request->session()->get('pre_booking_reference');
+        $reference = $request->session()->pull('pre_booking_reference');
 
-        if (!$reference) {
-            // No active booking in this session — either the page was
-            // bookmarked/reloaded after the session expired, or someone
-            // hit the URL directly without going through checkout.
-            return redirect()
-                ->route('home')
-                ->with('notice', 'We could not find an active booking for this session. If you just paid, please check your email for confirmation.');
+        $preBooking = null;
+
+        if ($reference) {
+            // Defensive re-check: only ever treat this as a completed
+            // purchase for tracking purposes if the booking is genuinely
+            // marked PAID. Prevents a stale/tampered session value from
+            // firing a false conversion.
+            $preBooking = PreBooking::where('reference', $reference)
+                ->where('status', PreBookingStatus::PAID)
+                ->first();
         }
 
-        $preBooking = PreBooking::where('reference', $reference)
-            ->with([
-                'carePlan',
-                'careType',
-                'booking.carePlan',
-                'booking.careType',
-            ])
-            ->firstOrFail();
-
-        return match ($preBooking->status) {
-
-            PreBookingStatus::PENDING_PAYMENT =>
-                response()->view(
-                    'bookings.payment-not-completed',
-                    compact('preBooking'),
-                    400
-                ),
-
-            PreBookingStatus::PAID =>
-                view(
-                    'bookings.received',
-                    compact('preBooking')
-                ),
-
-            PreBookingStatus::CONVERTED =>
-                view(
-                    'bookings.intake-already-submitted',
-                    [
-                        'preBooking' => $preBooking,
-                        'booking' => $preBooking->booking,
-                    ]
-                ),
-
-        };
+        return view('bookings.received', compact('preBooking'));
     }
 
     // ── Private helper ────────────────────────────────────────────────────

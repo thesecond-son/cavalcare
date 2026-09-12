@@ -12,19 +12,21 @@
 <meta name="robots" content="noindex, nofollow">
 
 {{--
-  This page needs its own fbq init: the base pixel snippet only loads on
-  bookings.create.blade.php now, and a user can land here directly (email
-  link, page refresh, new tab) without that page having run in this
-  session. No PageView fires here on init — only Purchase below — since
-  PageView is scoped to the booking-start page by design.
+  This page is static and generic — safe for anyone to open at any time,
+  with no reference/token required. $preBooking is only ever set (once,
+  by BookingController@received pulling a one-time session flag) for the
+  specific browser that just completed payment. When present, we fire
+  the Purchase pixel quietly in the background — nothing derived from it
+  is ever displayed in the page body below.
 
-  Purchase only fires here because this page only ever renders after
-  BookingController@received confirms status PAID -- i.e. only after
-  Paystack verification, never on button click or modal open.
+  fbq init happens here (not sitewide) since the base pixel snippet only
+  loads on bookings.create.blade.php, and this page can now be reached
+  without that page having run in the session at all.
 
   eventID matches the server-side CAPI call from BookingController@store,
   so Meta deduplicates the two into a single conversion.
 --}}
+@if($preBooking)
 @php($fbPixelId = config('services.meta.pixel_id'))
 @if($fbPixelId)
 <script>
@@ -48,6 +50,7 @@ fbq('track', 'Purchase', {
   eventID: '{{ $preBooking->reference }}'
 });
 </script>
+@endif
 @endif
 
 <style>
@@ -249,70 +252,12 @@ body{
       </p>
     </div>
 
-    {{-- Booking details --}}
-    <div class="booking-details">
-      <div class="bd-row">
-        <div class="bd-ico"><i class="bi bi-receipt"></i></div>
-        <div>
-          <div class="bd-label">Reference</div>
-          <div class="bd-value">{{ $preBooking->reference }}</div>
-        </div>
-      </div>
-
-      <div class="bd-divider"></div>
-
-      <div class="bd-row">
-        <div class="bd-ico"><i class="bi bi-heart-pulse"></i></div>
-        <div>
-          <div class="bd-label">Care Type</div>
-          <div class="bd-value">{{ $preBooking->careType->name ?? '—' }}</div>
-        </div>
-      </div>
-
-      <div class="bd-row">
-        <div class="bd-ico"><i class="bi bi-clipboard-pulse"></i></div>
-        <div>
-          <div class="bd-label">Plan Selected</div>
-          <div class="bd-value">{{ $preBooking->carePlan->name ?? '—' }}</div>
-        </div>
-      </div>
-
-      <div class="bd-divider"></div>
-
-      <div class="bd-row">
-        <div class="bd-ico"><i class="bi bi-person"></i></div>
-        <div>
-          <div class="bd-label">Booked By</div>
-          <div class="bd-value">{{ $preBooking->booker_details['name'] ?? '—' }}</div>
-        </div>
-      </div>
-
-      <div class="bd-row">
-        <div class="bd-ico"><i class="bi bi-envelope"></i></div>
-        <div>
-          <div class="bd-label">Email</div>
-          <div class="bd-value">{{ $preBooking->booker_details['email'] ?? '—' }}</div>
-        </div>
-      </div>
-    </div>
-
-    {{-- Price paid --}}
-    @if($preBooking->amount_paid)
-    <div class="price-highlight">
-      <div>
-        <div class="ph-label">Amount Paid</div>
-        <div class="ph-cycle">{{ $preBooking->carePlan->billing_label ?? '' }}</div>
-      </div>
-      <div class="ph-amount">₦{{ number_format($preBooking->amount_paid / 100) }}</div>
-    </div>
-    @endif
-
     {{-- Next steps --}}
     <div class="next-steps-title">What happens next</div>
     <div class="next-steps">
       <div class="ns-item">
         <div class="ns-num">1</div>
-        <span>Check your email — we've sent you a private link to complete your loved one's care details.</span>
+        <span>Check your email - we've sent you a private link to complete your loved one's care details.</span>
       </div>
       <div class="ns-item">
         <div class="ns-num">2</div>
@@ -320,12 +265,13 @@ body{
       </div>
       <div class="ns-item">
         <div class="ns-num">3</div>
-        <span>You'll receive a call or WhatsApp message within 24–48 hours to confirm your start date.</span>
+        <span>You'll receive a call or WhatsApp message within 24-48 hours to confirm your start date.</span>
       </div>
     </div>
 
-    {{-- WhatsApp CTA --}}
-    <a href="https://wa.me/{{ config('app.whatsapp_number') }}?text={{ urlencode('Hello CavalCare, I just completed my booking. My reference is: ' . $preBooking->reference) }}"
+    {{-- WhatsApp CTA — generic, no booking reference in the link since
+         this page is now public and carries no customer data --}}
+    <a href="https://wa.me/{{ config('app.whatsapp_number') }}?text={{ urlencode('Hello CavalCare, I just completed a booking and have a question.') }}"
        class="wa-btn" target="_blank" rel="noopener">
       <i class="bi bi-whatsapp"></i>
       Message Us on WhatsApp
