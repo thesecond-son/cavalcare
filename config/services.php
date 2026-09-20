@@ -41,7 +41,7 @@ return [
     ],
 
    'meta' => [
-    'pixel_id'        => env('META_PIXEL_ID', '1401990134593963'),
+    'pixel_id'        => env('META_PIXEL_ID', '1051351614377871'),
     'capi_token'      => env('META_CAPI_TOKEN'),
     'test_event_code' => env('META_CAPI_TEST_EVENT_CODE'),
     ],
