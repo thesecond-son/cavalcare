@@ -1203,7 +1203,7 @@ img[loading="lazy"].img-loaded {
 
   {{-- Floating Contact --}}
   <a 
-  href="https://wa.me/message/4PNWSMS5KTZUB1"
+  href="https://wa.me/message/GU4KWPIY6QKTB1"
   target="_blank"
   class="fixed bottom-8 right-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary shadow-2xl flex items-center justify-center text-white text-xl md:text-2xl hover:scale-110 transition-transform z-50 animate-float"
 >
