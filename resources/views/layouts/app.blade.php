@@ -1179,7 +1179,7 @@ img[loading="lazy"].img-loaded {
           <li>
             <i class="bi bi-telephone-fill"></i>
             <div>
-              <a href="https://wa.me/message/4PNWSMS5KTZUB1">+234 706 311 2134</a>
+              <a href="https://wa.me/message/GU4KWPIY6QKTB1">+234 706 311 2134</a>
               <span>24/7 Support</span>
             </div>
           </li>
