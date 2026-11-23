@@ -74,7 +74,7 @@ class CarePlan extends Model
         return self::SERVICE_LEVELS[$this->service_level] ?? ucfirst((string) $this->service_level);
     }
 
-    /** e.g. "Nursing – Day Care" — use wherever the plan is shown on its own. */
+    /** e.g. "Licensed Nurse – Day Care". Use wherever the plan is shown on its own. */
     public function getDisplayNameAttribute(): string
     {
         return $this->service_level

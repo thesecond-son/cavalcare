@@ -1049,7 +1049,7 @@ document.addEventListener('DOMContentLoaded', () => {
     planSelectorEl.classList.remove('awaiting-level');
     document.getElementById('levelPlaceholder').style.display = 'none';
     const heading = document.getElementById('levelHeading');
-    heading.textContent = chosen.querySelector('.level-card-title').textContent.trim() + ' plans — select one:';
+    heading.textContent = chosen.querySelector('.level-card-title').textContent.trim() + ' plans: select one';
     heading.style.display = 'block';
     document.querySelectorAll('.plan-option').forEach(l => {
       const hide = l.dataset.level !== level;
