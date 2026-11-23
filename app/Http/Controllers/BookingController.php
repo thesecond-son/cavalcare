@@ -32,6 +32,7 @@ class BookingController extends Controller
         return view('bookings.create', [
             'careType' => $careType,
             'plans'    => $careType->carePlans,
+            'levels'   => $careType->carePlans->pluck('service_level')->unique()->values(), // caretaker / nursing
             'addOns'   => AddOn::where('is_active', true)->orderBy('price')->get(),
         ]);
     }
@@ -296,7 +297,7 @@ class BookingController extends Controller
                     'custom_data'      => [
                         'currency'     => 'NGN',
                         'value'        => $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0,
-                        'content_name' => $preBooking->carePlan->name ?? 'CavalCare Booking',
+                        'content_name' => $preBooking->carePlan->display_name ?? 'CavalCare Booking',
                         'content_type' => 'product',
                     ],
                 ]],

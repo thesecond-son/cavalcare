@@ -34,6 +34,14 @@ class CarePlanForm
                             ->preload()
                             ->required(),
 
+                        Select::make('service_level')
+                            ->label('Service Level')
+                            ->options(\App\Models\CarePlan::SERVICE_LEVELS)
+                            ->default('caretaker')
+                            ->helperText('Caretaker = trained caregiver; Nursing = licensed nurse.')
+                            ->required()
+                            ->native(false),
+
                         TextInput::make('name')
                             ->label('Plan Name')
                             ->required()
@@ -59,6 +67,7 @@ class CarePlanForm
                                 'per_24h'   => 'Per 24 Hours',
                                 'per_week'  => 'Per Week',
                                 'per_month' => 'Per Month',
+                                'per_10_visits' => '10 Visits / Month (Flexible)',
                                 'flat'      => 'One-Time / Flat Fee',
                             ])
                             ->required()

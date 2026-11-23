@@ -47,7 +47,7 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '{{ $fbPixelId }}');
 
 fbq('track', 'Purchase', {
-  content_name: @json($preBooking->carePlan->name ?? 'CavalCare Booking'),
+  content_name: @json($preBooking->carePlan->display_name ?? 'CavalCare Booking'),
   content_type: 'product',
   currency:     'NGN',
   value:        {{ $preBooking->amount_paid ? $preBooking->amount_paid / 100 : 0 }}

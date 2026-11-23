@@ -1025,7 +1025,7 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
                   <li class="svc-task reveal"
                       style="transition-delay:{{ 0.04 + ($planIndex * 0.04) }}s; align-items:center; justify-content:space-between; gap:12px;">
                     <span>
-                      <strong>{{ $plan->name }}</strong>
+                      <strong>{{ $plan->display_name }}</strong>
                     </span>
                     <a href="{{ route('booking.create', ['careType' => $careType->slug, 'plan' => $plan->slug]) }}"
                        class="plan-cta plan-cta-default" style="flex-shrink:0;">

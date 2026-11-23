@@ -311,7 +311,7 @@
             <div class="detail-row">
                 <span class="detail-label">Care Plan:</span><br>
                 <span class="detail-value">
-                    {{ $preBooking->carePlan->name ?? '—' }}
+                    {{ $preBooking->carePlan->display_name ?? '—' }}
                 </span>
             </div>
 

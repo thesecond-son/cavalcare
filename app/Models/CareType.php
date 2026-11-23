@@ -49,7 +49,9 @@ class CareType extends Model
      */
     public function carePlans()
     {
-        return $this->hasMany(CarePlan::class)->orderBy('price');
+        return $this->hasMany(CarePlan::class)
+            ->orderByRaw("CASE service_level WHEN 'caretaker' THEN 0 ELSE 1 END")
+            ->orderBy('id'); // creation order = price-list order (day → live-in → flexible)
     }
 
     public function caregivers()

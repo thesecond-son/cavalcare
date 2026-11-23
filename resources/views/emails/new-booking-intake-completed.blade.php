@@ -370,7 +370,7 @@
                 <br>
 
                 <span class="detail-value">
-                    {{ $booking->carePlan->name ?? '—' }}
+                    {{ $booking->carePlan->display_name ?? '—' }}
                 </span>
 
             </div>

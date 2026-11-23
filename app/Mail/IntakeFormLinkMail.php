@@ -42,7 +42,7 @@ class IntakeFormLinkMail extends Mailable
                     $this->preBooking->booker_details['name'] ?? 'Customer'
                 )[0],
 
-                'planName' => $this->preBooking->carePlan?->name ?? 'Care Plan',
+                'planName' => $this->preBooking->carePlan?->display_name ?? 'Care Plan',
 
                 'careType' => $this->preBooking->careType?->name ?? 'Care',
 

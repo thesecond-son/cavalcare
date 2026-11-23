@@ -538,7 +538,7 @@ a{color:inherit;}
         <div class="br-sep"></div>
         <div class="br-item">
           <i class="bi bi-clipboard-pulse"></i>
-          <span>Plan: <strong>{{ $booking->carePlan->name ?? '—' }}</strong></span>
+          <span>Plan: <strong>{{ $booking->carePlan->display_name ?? '—' }}</strong></span>
         </div>
         @if($booking->carePlan)
         <div class="br-sep"></div>

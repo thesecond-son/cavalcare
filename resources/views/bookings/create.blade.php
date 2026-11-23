@@ -325,7 +325,50 @@ a { color:inherit; text-decoration:none; }
 }
 .plan-option.selected .plan-desc { display:block; }
 
-.plan-price-tag { display:none; } /* prices are calculated in the background and only revealed via "See My Price" */
+/* ── Caretaker / Licensed Nurse chooser ── */
+.level-q { font-size:.95rem; font-weight:600; color:var(--ocean); margin:0 0 10px; }
+.level-choice { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:16px; }
+@media (min-width:520px) { .level-choice { grid-template-columns:1fr 1fr; } }
+.level-card {
+  position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  text-align:left; padding:18px 18px 16px;
+  border:2px solid rgba(26,58,47,.14); border-radius:var(--r-md);
+  background:#fff; cursor:pointer; font:inherit; color:var(--ocean);
+  transition:border-color .2s, background .2s, box-shadow .2s, transform .18s;
+}
+.level-card:hover { border-color:rgba(26,58,47,.35); transform:translateY(-1px); }
+.level-card.active {
+  border-color:var(--ocean); background:rgba(26,58,47,.05);
+  box-shadow:0 6px 20px rgba(26,58,47,.12);
+}
+.level-card-ico {
+  width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:rgba(26,58,47,.08); font-size:1.35rem;
+}
+.level-card.active .level-card-ico { background:var(--ocean); color:#fff; }
+.level-card-title { font-size:1.05rem; font-weight:700; }
+.level-card-desc { font-size:.8rem; color:var(--muted); line-height:1.5; }
+.level-card-from { font-size:.82rem; margin-top:4px; }
+.level-card-from strong { font-size:1rem; }
+.level-card-check {
+  position:absolute; top:12px; right:12px; width:22px; height:22px; border-radius:50%;
+  border:2px solid rgba(26,58,47,.25); display:flex; align-items:center; justify-content:center;
+  font-size:.75rem; color:transparent; transition:all .2s;
+}
+.level-card.active .level-card-check { background:var(--ocean); border-color:var(--ocean); color:#fff; }
+.level-placeholder {
+  font-size:.85rem; color:var(--muted); padding:14px 16px; margin:0;
+  border:1.5px dashed rgba(26,58,47,.2); border-radius:var(--r-md); text-align:center;
+}
+.level-heading { font-size:.85rem; font-weight:600; color:var(--muted); margin:0 0 10px; }
+.plan-option.level-hidden { display:none !important; }
+.plan-selector.awaiting-level { display:none; }
+.plan-note { font-size:.8rem; opacity:.75; margin-top:10px; }
+
+/* prices are shown per plan so customers can compare within their chosen level */
+.plan-price-tag { display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; text-align:right; }
+.plan-price-amt { font-size:.98rem; font-weight:700; color:var(--ocean); white-space:nowrap; }
+.plan-price-cycle { font-size:.72rem; color:var(--muted); white-space:nowrap; }
 
 /* ══════════════════════════════════════════════
    RIGHT COLUMN — PLAN SUMMARY CARD
@@ -648,12 +691,42 @@ a { color:inherit; text-decoration:none; }
               Choose Your Plan
             </div>
 
+            @if($levels->count() > 1)
+            <p class="level-q">Who would you like to provide care?</p>
+            <div class="level-choice" id="levelChoice" role="radiogroup" aria-label="Care provider">
+              @foreach(\App\Models\CarePlan::SERVICE_LEVELS as $key => $label)
+                @if($levels->contains($key))
+                <button type="button" class="level-card" data-level="{{ $key }}" role="radio" aria-checked="false">
+                  <span class="level-card-check"><i class="bi bi-check-lg"></i></span>
+                  <span class="level-card-ico">
+                    <i class="bi {{ $key === 'nursing' ? 'bi-heart-pulse' : 'bi-person-heart' }}"></i>
+                  </span>
+                  <span class="level-card-title">{{ $label }}</span>
+                  <span class="level-card-desc">
+                    {{ $key === 'nursing'
+                        ? 'A licensed nurse for clinical and medical care at home.'
+                        : 'A trained caregiver for companionship and daily living support.' }}
+                  </span>
+                  @foreach($plans->where('service_level', $key)->sortBy('price')->take(1) as $cheapest)
+                  <span class="level-card-from">From <strong>₦{{ number_format($cheapest->price) }}</strong>{{ $cheapest->billing_label }}</span>
+                  @endforeach
+                </button>
+                @endif
+              @endforeach
+            </div>
+            <p class="level-placeholder" id="levelPlaceholder">
+              <i class="bi bi-arrow-up-circle"></i> Choose Caretaker or Licensed Nurse above to see the plans and prices.
+            </p>
+            <div class="level-heading" id="levelHeading" style="display:none;"></div>
+            @endif
+
             <div class="plan-selector" id="planSelector">
               @foreach($plans as $plan)
               <label class="plan-option" id="plan-option-{{ $plan->id }}"
+                data-level="{{ $plan->service_level }}"
                 data-price="{{ $plan->price }}"
                 data-cycle="{{ $plan->billing_label }}"
-                data-name="{{ $plan->name }}"
+                data-name="{{ $plan->display_name }}"
                 data-slug="{{ $plan->slug }}">
 
                 <input type="radio" name="care_plan_id" value="{{ $plan->id }}" required>
@@ -678,6 +751,11 @@ a { color:inherit; text-decoration:none; }
               </label>
               @endforeach
             </div>
+            <p class="plan-note">
+              <i class="bi bi-info-circle"></i>
+              Care/nursing prices may vary depending on the complexity of the patient's needs.
+              Clinical services such as wound dressing are added separately below.
+            </p>
             <p id="planError" class="v-error" style="display:none; margin-top:8px;">
               <i class="bi bi-exclamation-circle"></i> Please select a plan to continue.
             </p>
@@ -951,6 +1029,48 @@ document.addEventListener('DOMContentLoaded', () => {
       revealBtn.click();
     }
   });
+
+  /* ── Caretaker / Nursing toggle ──────────────────── */
+  const levelCards = document.querySelectorAll('.level-card');
+  const planSelectorEl = document.getElementById('planSelector');
+  // With two levels, plans stay hidden until the customer picks one.
+  if (levelCards.length) planSelectorEl.classList.add('awaiting-level');
+
+  function setLevel(level) {
+    if (!levelCards.length) return;
+    let chosen = null;
+    levelCards.forEach(c => {
+      const on = c.dataset.level === level;
+      c.classList.toggle('active', on);
+      c.setAttribute('aria-checked', on ? 'true' : 'false');
+      if (on) chosen = c;
+    });
+    if (!chosen) return;
+    planSelectorEl.classList.remove('awaiting-level');
+    document.getElementById('levelPlaceholder').style.display = 'none';
+    const heading = document.getElementById('levelHeading');
+    heading.textContent = chosen.querySelector('.level-card-title').textContent.trim() + ' plans — select one:';
+    heading.style.display = 'block';
+    document.querySelectorAll('.plan-option').forEach(l => {
+      const hide = l.dataset.level !== level;
+      l.classList.toggle('level-hidden', hide);
+      if (hide && l.classList.contains('selected')) {
+        l.classList.remove('selected');
+        l.querySelector('input[type="radio"]').checked = false;
+        summaryName.textContent = 'Select a plan';
+      }
+    });
+    updateRevealBtn();
+  }
+  levelCards.forEach(c => c.addEventListener('click', () => {
+    setLevel(c.dataset.level);
+    planError.style.display = 'none';
+  }));
+  {
+    // Deep link: /book/elderly-care-1?level=nursing (or caretaker)
+    const qLevel = new URLSearchParams(window.location.search).get('level');
+    if (qLevel) setLevel(qLevel);
+  }
 
   /* ── Plan option selection ───────────────────────── */
   document.querySelectorAll('.plan-option').forEach(label => {
@@ -1229,6 +1349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const label = document.querySelector(`.plan-option[data-slug="${CSS.escape(planSlug)}"]`);
     if (!label) return;
 
+    setLevel(label.dataset.level);
     document.querySelectorAll('.plan-option').forEach(l => l.classList.remove('selected'));
     label.classList.add('selected');
     label.querySelector('input[type="radio"]').checked = true;

@@ -12,6 +12,7 @@ class CarePlan extends Model
 
     protected $fillable = [
         'care_type_id',   // ← new: parent care type
+        'service_level',  // caretaker | nursing
         'name',
         'slug',
         'price',
@@ -55,9 +56,35 @@ class CarePlan extends Model
             'per_24h'   => '/24 hours',
             'per_week'  => '/week',
             'per_month' => '/month',
-            'flat'      => ' (one-time)',
+            'per_10_visits' => ' for 10 visits/month',
+            'flat'     => ' (one-time)',
             default     => '',
         };
+    }
+
+    // ─── Service level (Caretaker / Nursing) ──────────────────────────────
+
+    public const SERVICE_LEVELS = [
+        'caretaker' => 'Caretaker',
+        'nursing'   => 'Licensed Nurse',
+    ];
+
+    public function getServiceLevelLabelAttribute(): string
+    {
+        return self::SERVICE_LEVELS[$this->service_level] ?? ucfirst((string) $this->service_level);
+    }
+
+    /** e.g. "Nursing – Day Care" — use wherever the plan is shown on its own. */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->service_level
+            ? "{$this->service_level_label} – {$this->name}"
+            : (string) $this->name;
+    }
+
+    public function scopeServiceLevel($query, string $level)
+    {
+        return $query->where('service_level', $level);
     }
 
     // ─── Formatted price string ───────────────────────────────────────────

@@ -27,7 +27,7 @@
                             </p>
 
                             <p><strong>🩺 Care Plan</strong><br>
-                                {{ $booking->carePlan?->name ?? '—' }}
+                                {{ $booking->carePlan?->display_name ?? '—' }}
                             </p>
 
                             <p><strong>🧑‍⚕️ Care Type</strong><br>

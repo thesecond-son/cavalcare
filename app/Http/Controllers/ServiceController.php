@@ -12,7 +12,7 @@ class ServiceController extends Controller
     {
         $careTypes = CareType::query()
             ->with([
-                'carePlans' => fn ($q) => $q->orderBy('name'),
+                'carePlans',
             ])
             ->orderBy('sort_order')
             ->orderBy('name')

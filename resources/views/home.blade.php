@@ -1734,13 +1734,15 @@ img[loading="lazy"].img-loaded { animation: none; background: none; }
           @endif
           <div>
             <div class="plan-name">{{ $careType->name }}</div>
-            <div class="plan-meta">{{ $ctPlans->count() }} plan{{ $ctPlans->count() > 1 ? 's' : '' }} available</div>
+            <div class="plan-meta">
+              {{ $ctPlans->pluck('service_level')->unique()->map(fn ($l) => \App\Models\CarePlan::SERVICE_LEVELS[$l] ?? $l)->join(' & ') }} options available
+            </div>
           </div>
           <ul class="plan-feats">
-            @foreach($ctPlans as $plan)
+            @foreach($ctPlans->pluck('name')->unique() as $planName)
               <li class="plan-feat">
                 <span class="plan-check"><i class="bi bi-check"></i></span>
-                <span>{{ $plan->name }}</span>
+                <span>{{ $planName }}</span>
               </li>
             @endforeach
           </ul>

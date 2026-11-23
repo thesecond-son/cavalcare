@@ -24,6 +24,13 @@ class CarePlansTable
                     ->sortable()
                     ->searchable(),
 
+                TextColumn::make('service_level')
+                    ->label('Level')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => \App\Models\CarePlan::SERVICE_LEVELS[$state] ?? $state)
+                    ->color(fn ($state) => $state === 'nursing' ? 'info' : 'success')
+                    ->sortable(),
+
                 TextColumn::make('price')
                     ->money('NGN')
                     ->sortable(),
@@ -36,6 +43,7 @@ class CarePlansTable
                         'per_24h'   => 'Per 24 Hours',
                         'per_week'  => 'Per Week',
                         'per_month' => 'Per Month',
+                        'per_10_visits' => '10 Visits / Month',
                         'flat'      => 'One-Time',
                         default     => '-',
                     })
@@ -59,7 +67,12 @@ class CarePlansTable
             ])
             ->defaultSort('price')
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('service_level')
+                    ->label('Service Level')
+                    ->options(\App\Models\CarePlan::SERVICE_LEVELS),
+                \Filament\Tables\Filters\SelectFilter::make('care_type_id')
+                    ->label('Care Type')
+                    ->relationship('careType', 'name'),
             ])
             ->recordActions([
                 ViewAction::make(),

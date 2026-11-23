@@ -25,6 +25,11 @@ class CarePlanInfolist
                             ->label('Care Type')
                             ->placeholder('-'),
 
+                        TextEntry::make('service_level')
+                            ->label('Service Level')
+                            ->badge()
+                            ->formatStateUsing(fn ($state) => \App\Models\CarePlan::SERVICE_LEVELS[$state] ?? $state),
+
                         TextEntry::make('slug')
                             ->label('Slug')
                             ->placeholder('-'),
@@ -41,6 +46,7 @@ class CarePlanInfolist
                                 'per_24h'   => 'Per 24 Hours',
                                 'per_week'  => 'Per Week',
                                 'per_month' => 'Per Month',
+                                'per_10_visits' => '10 Visits / Month',
                                 'flat'      => 'One-Time / Flat Fee',
                                 default     => '-',
                             }),

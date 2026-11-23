@@ -30,6 +30,7 @@ class PreBookingsTable
                     ->label('Customer'),
 
                 TextColumn::make('carePlan.name')
+                    ->formatStateUsing(fn ($state, $record) => $record->carePlan?->display_name ?? $state)
                     ->label('Plan'),
 
                 TextColumn::make('status')

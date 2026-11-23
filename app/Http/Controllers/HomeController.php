@@ -14,7 +14,7 @@ class HomeController extends Controller
     // live grouped under each care type on the /services page.
     $careTypes = CareType::query()
     ->with([
-        'carePlans' => fn ($q) => $q->orderBy('name'),
+        'carePlans',
     ])
     ->orderBy('sort_order')
     ->orderBy('name')

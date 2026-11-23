@@ -307,7 +307,7 @@ body{
         </span>
 
         <span class="booking-value">
-          {{ $booking->carePlan?->name ?? '—' }}
+          {{ $booking->carePlan?->display_name ?? '—' }}
         </span>
       </div>
 

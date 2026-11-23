@@ -37,7 +37,7 @@ class BookingReceivedMail extends Mailable
                     $this->preBooking->booker_details['name']
                 )[0],
 
-                'planName' => $this->preBooking->carePlan->name,
+                'planName' => $this->preBooking->carePlan->display_name,
 
                 'careType' => $this->preBooking->careType->name,
 

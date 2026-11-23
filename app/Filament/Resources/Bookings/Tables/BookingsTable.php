@@ -67,6 +67,7 @@ class BookingsTable
                 // CARE PLAN
                 // ─────────────────────────────────────────────
                 TextColumn::make('carePlan.name')
+                    ->formatStateUsing(fn ($state, $record) => $record->carePlan?->display_name ?? $state)
                     ->label('Care Plan')
                     ->badge()
                     ->color('info')
