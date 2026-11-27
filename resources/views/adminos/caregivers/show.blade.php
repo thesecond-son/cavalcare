@@ -42,7 +42,7 @@
                       {{ $cred->masked_number ? 'No. ' . $cred->masked_number . ' · ' : '' }}
                       {{ $cred->valid_to ? 'Valid to ' . $cred->valid_to->format('j M Y') : 'No expiry date' }}
                       @if($cred->verified_at) · {{ $cred->status === 'rejected' ? 'Rejected' : 'Checked' }} by {{ $cred->verifier?->name ?? 'staff' }}, {{ $cred->verified_at->timezone('Africa/Lagos')->format('j M Y') }}@endif
-                      @if($cred->file_path) · document uploaded @endif
+                      @if($cred->file_path) · <a href="{{ route('os.caregivers.credentials.document', [$pro, $cred]) }}" target="_blank" rel="noopener">view document</a> @endif
                     @endif
                   </div>
                   @if($cred?->status === 'rejected' && $cred->rejection_reason)

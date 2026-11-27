@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminOs\AppBookingController;
 use App\Http\Controllers\AdminOs\AppCodeController;
 use App\Http\Controllers\AdminOs\AuthController;
 use App\Http\Controllers\AdminOs\BookingController;
@@ -44,6 +45,15 @@ Route::middleware('os.admin')->group(function () {
         ->middleware(['can:bookings.manage', 'throttle:10,1'])
         ->name('bookings.app-code');
 
+    Route::middleware('can:bookings.view')->group(function () {
+        Route::get('app-bookings', [AppBookingController::class, 'index'])->name('app-bookings.index');
+        Route::get('app-bookings/{booking}', [AppBookingController::class, 'show'])->whereUuid('booking')->name('app-bookings.show');
+    });
+    Route::middleware(['can:schedule.manage', 'throttle:30,1'])->group(function () {
+        Route::post('app-bookings/{booking}/offer', [AppBookingController::class, 'offer'])->whereUuid('booking')->name('app-bookings.offer');
+        Route::post('app-bookings/{booking}/open', [AppBookingController::class, 'open'])->whereUuid('booking')->name('app-bookings.open');
+    });
+
     Route::middleware('can:clients.view')->group(function () {
         Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
         Route::get('clients/{patient}', [ClientController::class, 'show'])->whereUuid('patient')->name('clients.show');
@@ -52,6 +62,8 @@ Route::middleware('os.admin')->group(function () {
     Route::middleware('can:caregivers.view')->group(function () {
         Route::get('caregivers', [CaregiverController::class, 'index'])->name('caregivers.index');
         Route::get('caregivers/{professional}', [CaregiverController::class, 'show'])->whereUuid('professional')->name('caregivers.show');
+        Route::get('caregivers/{professional}/credentials/{credential}/document', [CaregiverController::class, 'document'])
+            ->whereUuid(['professional', 'credential'])->name('caregivers.credentials.document');
     });
     Route::middleware(['can:caregivers.verify', 'throttle:30,1'])->group(function () {
         Route::post('caregivers/{professional}/credentials/{credential}', [CaregiverController::class, 'reviewCredential'])

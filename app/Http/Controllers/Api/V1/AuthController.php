@@ -79,7 +79,7 @@ class AuthController extends Controller
 
             if (! $user) {
                 $user  = new User([$column => $destination, 'name' => '']);
-                $user->forceFill(['type' => User::TYPE_FAMILY]);
+                $user->forceFill(['type' => self::app($request) === 'cavalpro' ? User::TYPE_PROFESSIONAL : User::TYPE_FAMILY]);
                 $isNew = true;
             }
 
@@ -203,8 +203,9 @@ class AuthController extends Controller
         $device = Str::limit((string) ($request->input('device_name') ?: 'Cavalcare app'), 100, '');
 
         // One token per device: signing in again on the same device replaces the old token.
+        $app = self::app($request, $booking);
         $user->tokens()->where('name', $device)->delete();
-        $token = $user->createToken($device, ['app:cavalcare'], now()->addDays(90))->plainTextToken;
+        $token = $user->createToken($device, ['app:' . $app], now()->addDays(90))->plainTextToken;
 
         $user->forceFill(['last_seen_at' => now()])->save();
 
@@ -215,6 +216,16 @@ class AuthController extends Controller
             'user'            => new UserResource($user->fresh()),
             'website_booking' => $booking ? new WebsiteBookingResource($booking->fresh(['carePlan', 'careType', 'addOns', 'booking'])) : null,
         ], fn ($v) => $v !== null)]);
+    }
+
+    /**
+     * Which app is signing in, from the X-App header: "cavalpro" (caregivers)
+     * or "cavalcare" (families, the default). Website codes are family-only.
+     * The token can only call that app's endpoints.
+     */
+    private static function app(Request $request, ?PreBooking $booking = null): string
+    {
+        return ! $booking && $request->header('X-App') === 'cavalpro' ? 'cavalpro' : 'cavalcare';
     }
 
     private function maskEmail(string $email): string

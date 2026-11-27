@@ -80,7 +80,8 @@ class Professional extends Model
         $this->load('credentials');
         $next = $this->isFullyVerified()
             ? 'active'
-            : ($this->credentials->isNotEmpty() ? 'verifying' : 'applicant');
+            // "Verifying" once anything has actually been sent for review; a typed number alone isn't.
+            : ($this->credentials->where('status', '!=', 'to_do')->isNotEmpty() ? 'verifying' : 'applicant');
 
         if ($next !== $this->status) {
             $this->forceFill(['status' => $next, 'status_changed_at' => now()])->save();

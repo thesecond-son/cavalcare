@@ -60,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
             // Caregiver credentials uploaded and waiting for a compliance review.
             $creds = \App\Models\Care\Credential::where('status', 'in_progress')->count();
             $view->with('navCredentials', $creds ?: null);
+
+            // Paid app bookings still looking for a caregiver.
+            $matching = \App\Models\Care\CareBooking::where('status', 'matching')->count();
+            $view->with('navMatching', $matching ?: null);
         });
 
         // FilamentAsset::register([

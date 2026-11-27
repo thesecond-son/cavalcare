@@ -51,6 +51,22 @@ class CaregiverController extends Controller
         return view('adminos.caregivers.show', ['pro' => $professional]);
     }
 
+    /** Shows an uploaded credential document (inline, never cached). Every view is logged. */
+    public function document(Professional $professional, Credential $credential)
+    {
+        abort_unless($credential->professional_id === $professional->id && $credential->file_path, 404);
+        $disk = \Illuminate\Support\Facades\Storage::disk('local');
+        abort_unless($disk->exists($credential->file_path), 404);
+
+        Audit::log('caregiver.document_viewed', $credential, ['professional' => $professional->id, 'type' => $credential->type]);
+
+        return $disk->response($credential->file_path, $credential->type . '-' . substr($professional->id, 0, 8), [
+            'Cache-Control' => 'no-store, private',
+            'Content-Disposition' => 'inline',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     /** Approve or reject one credential. */
     public function reviewCredential(Request $request, Professional $professional, Credential $credential)
     {

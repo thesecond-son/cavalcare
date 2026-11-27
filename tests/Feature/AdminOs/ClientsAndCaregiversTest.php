@@ -163,6 +163,34 @@ class ClientsAndCaregiversTest extends TestCase
         $this->post("/adminos/caregivers/{$pro->id}/status", ['action' => 'suspend', 'reason' => 'x'])->assertForbidden();
     }
 
+    public function test_coordinator_sees_app_booking_and_sends_an_offer(): void
+    {
+        $type = CareType::create(['name' => 'Elderly Care']);
+        $plan = CarePlan::create(['care_type_id' => $type->id, 'name' => 'Day Care', 'price' => 15000, 'billing_cycle' => 'per_day', 'service_level' => 'caretaker']);
+        $family = User::factory()->create();
+        $patient = Patient::create(['full_name' => 'Folake Adeyemi', 'area' => 'Lekki', 'source' => 'app']);
+        $patient->members()->create(['user_id' => $family->id, 'role' => 'owner']);
+        $booking = \App\Models\Care\CareBooking::create([
+            'patient_id' => $patient->id, 'booked_by' => $family->id, 'care_plan_id' => $plan->id, 'care_type_id' => $type->id,
+            'service_level' => 'caretaker', 'plan_name' => 'Day Care', 'billing_cycle' => 'per_day', 'start_date' => now()->addDays(5)->toDateString(),
+            'units' => 1, 'price_per_unit_kobo' => 1500000, 'total_kobo' => 1500000, 'status' => 'matching', 'paid_at' => now(),
+        ]);
+        $carer = Professional::create(['user_id' => User::factory()->create(['name' => 'Halima Sule'])->id, 'title' => 'carer', 'status' => 'active']);
+        foreach ($carer->requiredCredentialTypes() as $t) {
+            $carer->credentials()->create(['type' => $t, 'status' => 'verified']);
+        }
+
+        $this->signInAs('support');
+        $this->get("/adminos/app-bookings/{$booking->id}")->assertOk()->assertSee($booking->reference)->assertDontSee('Send offer');
+        $this->post("/adminos/app-bookings/{$booking->id}/offer", ['professional_id' => $carer->id])->assertForbidden();
+        $this->post('/adminos/logout');
+
+        $this->signInAs('coordinator');
+        $this->get("/adminos/app-bookings/{$booking->id}")->assertOk()->assertSee('Halima Sule')->assertSee('Send offer');
+        $this->post("/adminos/app-bookings/{$booking->id}/offer", ['professional_id' => $carer->id])->assertSessionHas('os_flash');
+        $this->assertDatabaseHas('shift_offers', ['care_booking_id' => $booking->id, 'professional_id' => $carer->id, 'status' => 'open', 'source' => 'assigned']);
+    }
+
     public function test_a_credential_from_another_caregiver_cannot_be_reviewed_through_this_one(): void
     {
         $a = $this->applicant();

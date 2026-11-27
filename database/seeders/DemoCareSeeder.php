@@ -27,6 +27,31 @@ class DemoCareSeeder extends Seeder
 
         $this->caregivers();
         $this->clients();
+        $this->appBooking();
+    }
+
+    /** A paid app booking for Mama Folake, looking for a nurse, so CavalPro shows a live offer. */
+    private function appBooking(): void
+    {
+        $patient = Patient::where('full_name', 'Folake Adeyemi')->first();
+        $plan = \App\Models\CarePlan::where('service_level', 'nursing')->where('billing_cycle', 'per_day')->orderBy('price')->first();
+        $owner = User::where('email', 'tolu@example.com')->first();
+        if (! $patient || ! $plan || ! $owner) {
+            return;
+        }
+
+        \App\Models\Care\CareBooking::where('patient_id', $patient->id)->where('notes', 'Demo booking')->get()
+            ->each(fn ($b) => $b->forceDelete());
+
+        $booking = \App\Models\Care\CareBooking::create([
+            'patient_id' => $patient->id, 'booked_by' => $owner->id, 'care_plan_id' => $plan->id, 'care_type_id' => $plan->care_type_id,
+            'service_level' => 'nursing', 'plan_name' => $plan->name, 'billing_cycle' => 'per_day',
+            'start_date' => now()->addDays(4)->toDateString(), 'start_hour' => 9, 'units' => 3,
+            'end_date' => now()->addDays(6)->toDateString(), 'price_per_unit_kobo' => $plan->price * 100,
+            'total_kobo' => $plan->price * 300, 'status' => 'confirmed', 'paid_at' => now(), 'notes' => 'Demo booking',
+        ]);
+
+        app(\App\Services\Care\MatchingService::class)->start($booking);
     }
 
     private function user(string $name, string $email, string $type, ?string $phone = null): User
