@@ -14,7 +14,8 @@ class IntakeFormLinkMail extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public PreBooking $preBooking
+        public PreBooking $preBooking,
+        public ?string $appCode = null,
     ) {
     }
 
@@ -45,6 +46,11 @@ class IntakeFormLinkMail extends Mailable
                 'planName' => $this->preBooking->carePlan?->display_name ?? 'Care Plan',
 
                 'careType' => $this->preBooking->careType?->name ?? 'Care',
+
+                // App code block (only when a code was issued).
+                'code'  => $this->appCode,
+                'email' => $this->preBooking->booker_details['email'] ?? null,
+                'apps'  => config('cavalcare.app_links'),
 
                 'intakeUrl' => route(
                     'booking.intake',

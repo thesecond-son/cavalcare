@@ -37,7 +37,19 @@ class PreBooking extends Model
 
     public function carePlan()
     {
-        return $this->belongsTo(CarePlan::class);
+        // Include retired (soft-deleted) plans: a booking keeps the plan it was bought on.
+        return $this->belongsTo(CarePlan::class)->withTrashed();
+    }
+
+    /** The Cavalcare app account this booking is linked to (after the app code is used). */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function appLinkCodes()
+    {
+        return $this->hasMany(AppLinkCode::class);
     }
 
     public function careType()

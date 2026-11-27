@@ -139,10 +139,23 @@ class BookingController extends Controller
                 'payment_meta'       => $paymentMeta,
             ]);
 
-            // Send the intake form email to the customer
+            // One-time code that opens the Cavalcare app with this booking filled in.
+            // A failure here must never block the payment confirmation.
+            $appCode = null;
+            try {
+                $appCode = app(\App\Services\Auth\AppLinkCodeService::class)->issue($preBooking);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            // Send the intake form email (with the app code) to the customer
             try {
                 Mail::to($preBooking->booker_details['email'])
-                    ->send(new IntakeFormLinkMail($preBooking));
+                    ->send(new IntakeFormLinkMail($preBooking, $appCode));
+
+                if ($appCode) {
+                    \App\Models\AppLinkCode::where('pre_booking_id', $preBooking->id)->active()->update(['sent_at' => now()]);
+                }
             } catch (\Throwable $e) {
                 report($e);
             }

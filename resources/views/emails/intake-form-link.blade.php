@@ -71,6 +71,10 @@
       Please do not share it. It expires after your details have been submitted.
     </div>
 
+    @if(! empty($code))
+      @include('emails.os.partials.app-code-block')
+    @endif
+
     <div class="divider"></div>
 
     <p style="font-size:.88rem;">
