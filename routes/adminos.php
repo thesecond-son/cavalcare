@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminOs\AppCodeController;
 use App\Http\Controllers\AdminOs\AuthController;
 use App\Http\Controllers\AdminOs\BookingController;
+use App\Http\Controllers\AdminOs\CaregiverController;
+use App\Http\Controllers\AdminOs\ClientController;
 use App\Http\Controllers\AdminOs\DashboardController;
 use App\Http\Controllers\AdminOs\PasswordSetupController;
 use App\Http\Controllers\AdminOs\SectionController;
@@ -42,8 +44,24 @@ Route::middleware('os.admin')->group(function () {
         ->middleware(['can:bookings.manage', 'throttle:10,1'])
         ->name('bookings.app-code');
 
+    Route::middleware('can:clients.view')->group(function () {
+        Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
+        Route::get('clients/{patient}', [ClientController::class, 'show'])->whereUuid('patient')->name('clients.show');
+    });
+
+    Route::middleware('can:caregivers.view')->group(function () {
+        Route::get('caregivers', [CaregiverController::class, 'index'])->name('caregivers.index');
+        Route::get('caregivers/{professional}', [CaregiverController::class, 'show'])->whereUuid('professional')->name('caregivers.show');
+    });
+    Route::middleware(['can:caregivers.verify', 'throttle:30,1'])->group(function () {
+        Route::post('caregivers/{professional}/credentials/{credential}', [CaregiverController::class, 'reviewCredential'])
+            ->whereUuid(['professional', 'credential'])->name('caregivers.credentials.review');
+        Route::post('caregivers/{professional}/status', [CaregiverController::class, 'updateStatus'])
+            ->whereUuid('professional')->name('caregivers.status');
+    });
+
     // Sections that arrive with the app backend. Shown as planned, not faked.
     Route::get('{section}', SectionController::class)
-        ->whereIn('section', ['schedule', 'clients', 'caregivers', 'visits', 'billing', 'messages', 'analytics', 'settings'])
+        ->whereIn('section', ['schedule', 'visits', 'billing', 'messages', 'analytics', 'settings'])
         ->name('section');
 });

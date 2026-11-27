@@ -210,6 +210,14 @@ public function submit(Request $request, PreBooking $preBooking)
         return $booking;
     });
 
+    // Create the structured client record for Caval OS and the apps.
+    // Never blocks the family: the intake is already saved above.
+    try {
+        app(\App\Services\Care\WebsiteIntakeImporter::class)->import($booking);
+    } catch (\Throwable $e) {
+        report($e);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Send confirmation email

@@ -53,6 +53,10 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\View::composer('adminos.layout', function ($view) {
             $count = \App\Models\PreBooking::where('status', \App\PreBookingStatus::PAID)->count();
             $view->with('navAwaiting', $count ?: null);
+
+            // Caregiver credentials uploaded and waiting for a compliance review.
+            $creds = \App\Models\Care\Credential::where('status', 'in_progress')->count();
+            $view->with('navCredentials', $creds ?: null);
         });
 
         // FilamentAsset::register([

@@ -22,8 +22,8 @@
     ['os.dashboard', null, 'Dashboard', 'grid', null],
     ['os.bookings.index', null, 'Bookings', 'card', $navAwaiting ?? null],
     ['os.section', 'schedule', 'Schedule', 'calendar', null],
-    ['os.section', 'clients', 'Clients', 'users', null],
-    ['os.section', 'caregivers', 'Caregivers', 'steth', null],
+    ['os.clients.index', null, 'Clients', 'users', null],
+    ['os.caregivers.index', null, 'Caregivers', 'steth', $navCredentials ?? null],
     ['os.section', 'visits', 'Visits & notes', 'clip', null],
     ['os.section', 'billing', 'Billing & payouts', 'cash', null],
     ['os.section', 'messages', 'Family messages', 'chat', null],
@@ -42,7 +42,7 @@
     'chart' => '<path d="M3 3v18h18M7 15l4-4 3 3 6-7"/>',
     'gear' => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   ];
-  $live = ['os.dashboard', 'os.bookings.index'];
+  $live = ['os.dashboard', 'os.bookings.index', 'os.clients.index', 'os.caregivers.index'];
 @endphp
 
 {{-- Phone and tablet: app bar with a menu button. Hidden on wide screens. --}}
@@ -116,7 +116,7 @@
       </div>
       <form class="os-search" action="{{ route('os.bookings.index') }}" method="GET" role="search">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="search" name="q" value="{{ request('q') }}" placeholder="Search name, email or reference" aria-label="Search bookings" enterkeyhint="search">
+        <input type="search" name="q" value="{{ request('q') }}" placeholder="Search bookings: name, email or reference" aria-label="Search bookings" enterkeyhint="search">
       </form>
     </header>
 

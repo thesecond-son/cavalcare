@@ -154,6 +154,15 @@ class AuthController extends Controller
 
             $link->forceFill(['redeemed_at' => now(), 'redeemed_by' => $user->id])->save();
 
+            // Make this account the Owner of every client from its website bookings.
+            $importer = app(\App\Services\Care\WebsiteIntakeImporter::class);
+            PreBooking::with('booking')->where('user_id', $user->id)->get()
+                ->each(function (PreBooking $pb) use ($importer) {
+                    if ($pb->booking) {
+                        $importer->import($pb->booking);
+                    }
+                });
+
             return $this->issueToken($user, $request, $isNew, $booking);
         });
     }

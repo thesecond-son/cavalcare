@@ -22,6 +22,7 @@ class WebsiteBookingResource extends JsonResource
 
         return [
             'reference'   => $this->reference,
+            'patient_id'  => $this->patient_id,   // the client record, once the intake form is in
             'status'      => match ($status) {
                 'converted' => 'intake_received',
                 'paid'      => 'awaiting_intake',

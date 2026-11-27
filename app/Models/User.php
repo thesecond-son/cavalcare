@@ -79,6 +79,19 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Review::class);
     }
 
+    /** The CavalPro profile, when this user is a nurse or carer. */
+    public function professional()
+    {
+        return $this->hasOne(\App\Models\Care\Professional::class);
+    }
+
+    /** Patients this user is in the family circle of. */
+    public function patients()
+    {
+        return $this->belongsToMany(\App\Models\Care\Patient::class, 'patient_members')
+            ->withPivot(['role', 'relationship', 'can_view_documents']);
+    }
+
     /** Website bookings linked to this app account. */
     public function preBookings()
     {

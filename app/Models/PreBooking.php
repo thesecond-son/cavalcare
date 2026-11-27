@@ -47,6 +47,12 @@ class PreBooking extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** The client (patient) this booking is for, once the intake form is in. */
+    public function patient()
+    {
+        return $this->belongsTo(\App\Models\Care\Patient::class);
+    }
+
     public function appLinkCodes()
     {
         return $this->hasMany(AppLinkCode::class);
