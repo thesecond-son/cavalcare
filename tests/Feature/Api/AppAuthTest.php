@@ -111,6 +111,20 @@ class AppAuthTest extends TestCase
             ->assertStatus(503)->assertJsonPath('error.code', 'sms_unavailable');
     }
 
+    public function test_staging_phone_codes_use_the_fixed_test_code_and_production_never_does(): void
+    {
+        config(['sms.staging_test_code' => '246810']);
+
+        $this->app['env'] = 'staging';
+        $this->postJson('/api/v1/auth/otp', ['phone' => '+2348000000101'])->assertStatus(202);
+        $this->postJson('/api/v1/auth/verify', ['phone' => '+2348000000101', 'code' => '246810'])->assertOk();
+
+        // Outside staging the setting is ignored: the code is random.
+        $this->app['env'] = 'local';
+        $this->postJson('/api/v1/auth/otp', ['phone' => '+2348000000102'])->assertStatus(202);
+        $this->postJson('/api/v1/auth/verify', ['phone' => '+2348000000102', 'code' => '246810'])->assertStatus(422);
+    }
+
     public function test_validation_errors_use_the_api_error_shape(): void
     {
         $this->postJson('/api/v1/auth/otp', [])

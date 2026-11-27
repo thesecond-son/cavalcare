@@ -16,7 +16,10 @@
 return [
     'driver' => env('SMS_DRIVER', 'log'),
 
-    'sender_id' => env('SMS_SENDER_ID', 'Cavalcare'),
+    // Staging only (APP_ENV=staging): every phone sign-in code is this value.
+    'staging_test_code' => env('SMS_STAGING_TEST_CODE'),
+
+    'sender_id' =>env('SMS_SENDER_ID', 'Cavalcare'),
 
     'termii' => [
         'api_key' => env('TERMII_API_KEY'),

@@ -44,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Cache\RateLimiting\Limit::perMinute(120)->by('api-user:' . ($request->user()?->id ?: $request->ip()))
         );
 
+        // API docs (/docs/api) for the app developers: local and staging only, never production.
+        \Illuminate\Support\Facades\Gate::define('viewApiDocs', fn ($user = null) => app()->environment(['local', 'staging']));
+
         // Caval OS: super admins and the existing "admin" role pass every permission check.
         \Illuminate\Support\Facades\Gate::before(function ($user, string $ability) {
             return $user->hasAnyRole(\App\Support\AdminOs\OsRoles::fullAccess()) ? true : null;

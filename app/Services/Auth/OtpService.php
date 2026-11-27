@@ -36,6 +36,12 @@ class OtpService
     {
         $code = (string) random_int(100000, 999999);
 
+        // Staging only: phone codes are a fixed test code (no SMS provider yet),
+        // so testers can sign in to CavalPro. Never applies in production.
+        if ($channel === 'sms' && app()->environment('staging') && config('sms.staging_test_code')) {
+            $code = (string) config('sms.staging_test_code');
+        }
+
         OtpCode::where('destination', $destination)
             ->where('purpose', 'login')
             ->whereNull('consumed_at')
