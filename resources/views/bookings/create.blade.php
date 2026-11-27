@@ -11,7 +11,7 @@
   site visit. No Purchase call on this page; that only fires from
   bookings.received.blade.php after Paystack confirms payment.
 --}}
-@php($fbPixelId = config('services.meta.pixel_id'))
+@php($fbPixelId = config('services.meta.pixel_enabled') ? config('services.meta.pixel_id') : null)
 @if($fbPixelId)
 <script>
 !function(f,b,e,v,n,t,s)

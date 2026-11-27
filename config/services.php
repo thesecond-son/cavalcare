@@ -42,6 +42,7 @@ return [
 
    'meta' => [
     'pixel_id'        => env('META_PIXEL_ID', '1051351614377871'),
+    'pixel_enabled'   => (bool) env('META_PIXEL_ENABLED', true), // false on staging
     'capi_token'      => env('META_CAPI_TOKEN'),
     'test_event_code' => env('META_CAPI_TEST_EVENT_CODE'),
     ],

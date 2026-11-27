@@ -14,7 +14,9 @@
 {{--
   Meta Pixel base code
 --}}
+@if(config('services.meta.pixel_enabled'))
  <!-- Facebook Pixel Code --> <script> !function(f,b,e,v,n,t,s) {if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)}; if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0'; n.queue=[];t=b.createElement(e);t.async=!0; t.src=v;s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s)}(window,document,'script', 'https://connect.facebook.net/en_US/fbevents.js'); fbq('init', '1051351614377871'); fbq('track', 'PageView'); </script> <noscript> <img height="1" width="1" src="https://www.facebook.com/tr?id=1051351614377871&ev=PageView &noscript=1"/> </noscript> <!-- End Facebook Pixel Code --> 
+@endif
 
 {{--
   This page is static and generic — safe for anyone to open at any time,
@@ -32,7 +34,7 @@
   so Meta deduplicates the two into a single conversion.
 --}}
 @if($preBooking)
-@php($fbPixelId = config('services.meta.pixel_id'))
+@php($fbPixelId = config('services.meta.pixel_enabled') ? config('services.meta.pixel_id') : null)
 @if($fbPixelId)
 <script>
 !function(f,b,e,v,n,t,s)

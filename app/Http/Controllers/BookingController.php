@@ -163,7 +163,7 @@ class BookingController extends Controller
 
             // Send payment notification to CavalCare admin
             try {
-                Mail::to('cavalcareteam@gmail.com')
+                if (config('cavalcare.team_email')) Mail::to(config('cavalcare.team_email'))
                     ->send(new NewPreBookingPaymentMail($preBooking));
             } catch (\Throwable $e) {
                 report($e);

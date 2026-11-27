@@ -233,7 +233,7 @@ public function submit(Request $request, PreBooking $preBooking)
     }
 
     try {
-        Mail::to('cavalcareteam@gmail.com')
+        if (config('cavalcare.team_email')) Mail::to(config('cavalcare.team_email'))
             ->send(new NewBookingIntakeCompletedMail($booking));
     } catch (\Throwable $e) {
         report($e);
