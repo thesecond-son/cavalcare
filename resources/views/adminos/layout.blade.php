@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1A3A2F">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Dashboard') · Caval OS</title>
   <link rel="icon" href="{{ asset('os-assets/favicon.png') }}">
@@ -15,7 +16,8 @@
 <body>
 @php
   $me = auth()->user();
-  $initials = collect(explode(' ', $me->name))->map(fn ($p) => mb_substr($p, 0, 1))->take(2)->join('');
+  $initials = collect(explode(' ', trim($me->name)))->filter()->map(fn ($p) => mb_substr($p, 0, 1))->take(2)->join('');
+  $roleLabel = collect(\App\Support\AdminOs\OsRoles::LABELS)->only($me->getRoleNames()->all())->first() ?? 'Staff';
   $nav = [
     ['os.dashboard', null, 'Dashboard', 'grid', null],
     ['os.bookings.index', null, 'Bookings', 'card', $navAwaiting ?? null],
@@ -42,12 +44,32 @@
   ];
   $live = ['os.dashboard', 'os.bookings.index'];
 @endphp
+
+{{-- Phone and tablet: app bar with a menu button. Hidden on wide screens. --}}
+<header class="os-appbar">
+  <button type="button" class="os-menu-btn" id="osMenuBtn" aria-controls="osSide" aria-expanded="false" aria-label="Open menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <a class="os-brand" href="{{ route('os.dashboard') }}">
+    <img src="{{ asset('os-assets/logo-light.png') }}" alt="Cavalcare">
+    <span class="os-brand-badge">OS</span>
+  </a>
+  <div class="avatar os-appbar-me" title="{{ $me->name }}">{{ $initials }}</div>
+</header>
+
 <div class="os">
-  <aside class="os-side" aria-label="Caval OS navigation">
-    <a class="os-brand" href="{{ route('os.dashboard') }}">
-      <img src="{{ asset('os-assets/logo-light.png') }}" alt="Cavalcare">
-      <span class="os-brand-badge">OS</span>
-    </a>
+  <div class="os-scrim" id="osScrim" hidden></div>
+
+  <aside class="os-side" id="osSide" aria-label="Caval OS navigation">
+    <div class="os-side-head">
+      <a class="os-brand" href="{{ route('os.dashboard') }}">
+        <img src="{{ asset('os-assets/logo-light.png') }}" alt="Cavalcare">
+        <span class="os-brand-badge">OS</span>
+      </a>
+      <button type="button" class="os-close-btn" id="osCloseBtn" aria-label="Close menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
 
     <div class="os-org">
       <div class="os-org-mark">C</div>
@@ -64,7 +86,7 @@
         @endphp
         <a href="{{ $href }}" class="{{ $active ? 'active' : '' }}" @if($active) aria-current="page" @endif>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $icons[$icon] !!}</svg>
-          {{ $label }}
+          <span class="os-nav-label">{{ $label }}</span>
           @if($count)
             <span class="count">{{ $count }}</span>
           @elseif(! in_array($route, $live, true))
@@ -77,7 +99,7 @@
     <div class="os-side-foot">
       <div class="os-me">
         <div class="avatar">{{ $initials }}</div>
-        <div><b>{{ $me->name }}</b><small>Admin</small></div>
+        <div class="os-me-text"><b>{{ $me->name }}</b><small>{{ $roleLabel }}</small></div>
         <form method="POST" action="{{ route('os.logout') }}">
           @csrf
           <button class="os-signout" type="submit">Sign out</button>
@@ -88,22 +110,21 @@
 
   <main class="os-main">
     <header class="os-top">
-      <div>
+      <div class="os-top-title">
         <div class="date">{{ now()->timezone('Africa/Lagos')->format('l, j F Y') }}</div>
         <h1>@yield('heading')</h1>
       </div>
       <form class="os-search" action="{{ route('os.bookings.index') }}" method="GET" role="search">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input name="q" value="{{ request('q') }}" placeholder="Search bookings by name, email or reference" aria-label="Search bookings">
+        <input type="search" name="q" value="{{ request('q') }}" placeholder="Search name, email or reference" aria-label="Search bookings" enterkeyhint="search">
       </form>
     </header>
 
     <div class="os-content">
       @if(session('os_flash'))
         @php [$flashKind, $flashText] = session('os_flash'); @endphp
-        <div class="alert {{ $flashKind === 'stable' ? '' : $flashKind }}" role="status"
-             style="{{ $flashKind === 'stable' ? 'background:var(--stable);border-color:#BFE6E2' : '' }}">
-          <div class="alert-title" style="{{ $flashKind === 'stable' ? 'color:var(--stable-ink)' : '' }}">{{ $flashText }}</div>
+        <div class="alert {{ $flashKind === 'stable' ? 'ok' : $flashKind }}" role="status">
+          <div class="alert-title">{{ $flashText }}</div>
         </div>
       @endif
       @yield('content')
@@ -119,6 +140,30 @@
       window.location = row.dataset.href;
     });
   });
+
+  // Slide-out menu on phones and tablets.
+  (function () {
+    var body = document.body, side = document.getElementById('osSide'),
+        openBtn = document.getElementById('osMenuBtn'), closeBtn = document.getElementById('osCloseBtn'),
+        scrim = document.getElementById('osScrim'), mq = window.matchMedia('(max-width: 1099px)');
+
+    function setOpen(open) {
+      body.classList.toggle('menu-open', open);
+      scrim.hidden = !open;
+      openBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (mq.matches) side.inert = !open; else side.inert = false;
+      if (open) { (side.querySelector('a.active') || side.querySelector('a')).focus(); }
+      else if (mq.matches) { openBtn.focus({ preventScroll: true }); }
+    }
+    function sync() { body.classList.remove('menu-open'); scrim.hidden = true; side.inert = mq.matches; }
+
+    openBtn.addEventListener('click', function () { setOpen(true); });
+    closeBtn.addEventListener('click', function () { setOpen(false); });
+    scrim.addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && body.classList.contains('menu-open')) setOpen(false); });
+    (mq.addEventListener ? mq.addEventListener('change', sync) : mq.addListener(sync));
+    sync();
+  })();
 </script>
 </body>
 </html>

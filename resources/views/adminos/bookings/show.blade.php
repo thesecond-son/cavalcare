@@ -60,7 +60,7 @@
     <div class="stack">
       <section class="card card-pad" aria-labelledby="by-h">
         <h2 id="by-h" style="font-family:var(--sans);font-weight:800;font-size:19px;margin-bottom:16px">Booked by</h2>
-        <dl class="dl" style="grid-template-columns:90px 1fr">
+        <dl class="dl narrow">
           <dt>Name</dt><dd>{{ $b['name'] ?? '–' }}</dd>
           <dt>Email</dt><dd>@if(! empty($b['email']))<a href="mailto:{{ $b['email'] }}">{{ $b['email'] }}</a>@else – @endif</dd>
           <dt>Phone</dt><dd>@if(! empty($b['phone']))<a href="tel:{{ preg_replace('/[^\d+]/', '', $b['phone']) }}">{{ $b['phone'] }}</a>@else – @endif</dd>

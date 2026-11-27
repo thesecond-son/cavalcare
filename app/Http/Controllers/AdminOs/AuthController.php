@@ -28,10 +28,7 @@ class AuthController extends Controller
             return redirect()->route('os.dashboard');
         }
 
-        return response()
-            ->view('adminos.auth.login')
-            ->header('X-Robots-Tag', 'noindex, nofollow')
-            ->header('X-Frame-Options', 'DENY');
+        return view('adminos.auth.login'); // headers come from OsSecurityHeaders
     }
 
     public function login(Request $request)

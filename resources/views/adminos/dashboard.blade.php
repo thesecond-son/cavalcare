@@ -43,13 +43,13 @@
         <p class="empty">No bookings yet.</p>
       @else
         <div class="table-wrap">
-          <table class="os-table">
+          <table class="os-table cards">
             <thead><tr><th>Booked by</th><th>Plan</th><th>Amount</th><th>Status</th></tr></thead>
             <tbody>
               @foreach($recent as $pb)
                 @php $name = $pb->booker_details['name'] ?? 'Unknown'; @endphp
                 <tr class="row-link" data-href="{{ route('os.bookings.show', $pb->reference) }}">
-                  <td>
+                  <td class="cell-main">
                     <div class="who">
                       <div class="avatar">{{ mb_strtoupper(mb_substr($name, 0, 1)) }}</div>
                       <div>
@@ -58,12 +58,14 @@
                       </div>
                     </div>
                   </td>
-                  <td>
-                    {{ $pb->carePlan?->display_name ?? 'Plan removed' }}
-                    <div class="muted" style="font-size:13px">{{ $pb->careType?->name }}</div>
+                  <td data-label="Plan">
+                    <div>
+                      {{ $pb->carePlan?->display_name ?? 'Plan removed' }}
+                      <div class="sub">{{ $pb->careType?->name }}</div>
+                    </div>
                   </td>
-                  <td class="num">{{ $pb->amount_paid ? '₦' . number_format($pb->amount_paid / 100) : '–' }}</td>
-                  <td>@include('adminos.partials.status-pill', ['status' => $pb->status])</td>
+                  <td class="num" data-label="Amount">{{ $pb->amount_paid ? '₦' . number_format($pb->amount_paid / 100) : '–' }}</td>
+                  <td data-label="Status">@include('adminos.partials.status-pill', ['status' => $pb->status])</td>
                 </tr>
               @endforeach
             </tbody>

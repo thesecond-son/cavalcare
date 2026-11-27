@@ -52,6 +52,16 @@ class OsAuthTest extends TestCase
             ->assertRedirect(route('os.dashboard'));
     }
 
+    public function test_os_pages_forbid_framing_without_a_conflicting_header(): void
+    {
+        $res = $this->get('/adminos/login')->assertOk();
+
+        $res->assertHeader('Content-Security-Policy', "frame-ancestors 'none'");
+        // nginx sends X-Frame-Options; the app must not send a second, different one.
+        $res->assertHeaderMissing('X-Frame-Options');
+        $res->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+    }
+
     public function test_guests_are_sent_to_the_login(): void
     {
         $this->get('/adminos')->assertRedirect(route('os.login'));

@@ -31,7 +31,7 @@
       <p class="empty">No bookings match.</p>
     @else
       <div class="table-wrap">
-        <table class="os-table">
+        <table class="os-table cards">
           <thead>
             <tr><th>Booked by</th><th>Care</th><th>Amount</th><th>Booked</th><th>Status</th></tr>
           </thead>
@@ -39,7 +39,7 @@
             @foreach($bookings as $pb)
               @php $name = $pb->booker_details['name'] ?? 'Unknown'; @endphp
               <tr class="row-link" data-href="{{ route('os.bookings.show', $pb->reference) }}">
-                <td>
+                <td class="cell-main">
                   <div class="who">
                     <div class="avatar">{{ mb_strtoupper(mb_substr($name, 0, 1)) }}</div>
                     <div>
@@ -48,13 +48,15 @@
                     </div>
                   </div>
                 </td>
-                <td>
-                  {{ $pb->carePlan?->display_name ?? 'Plan removed' }}
-                  <div class="muted" style="font-size:13px">{{ $pb->careType?->name }} · {{ $pb->reference }}</div>
+                <td data-label="Care">
+                  <div>
+                    {{ $pb->carePlan?->display_name ?? 'Plan removed' }}
+                    <div class="sub">{{ $pb->careType?->name }} · {{ $pb->reference }}</div>
+                  </div>
                 </td>
-                <td class="num">{{ $pb->amount_paid ? '₦' . number_format($pb->amount_paid / 100) : '–' }}</td>
-                <td class="num muted">{{ $pb->created_at->timezone('Africa/Lagos')->format('j M Y, H:i') }}</td>
-                <td>@include('adminos.partials.status-pill', ['status' => $pb->status])</td>
+                <td class="num" data-label="Amount">{{ $pb->amount_paid ? '₦' . number_format($pb->amount_paid / 100) : '–' }}</td>
+                <td class="num muted" data-label="Booked">{{ $pb->created_at->timezone('Africa/Lagos')->format('j M Y, H:i') }}</td>
+                <td data-label="Status">@include('adminos.partials.status-pill', ['status' => $pb->status])</td>
               </tr>
             @endforeach
           </tbody>

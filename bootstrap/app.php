@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
             // Caval OS: the custom admin, served from the same app and database.
-            \Illuminate\Support\Facades\Route::middleware('web')
+            \Illuminate\Support\Facades\Route::middleware(['web', \App\Http\Middleware\AdminOs\OsSecurityHeaders::class])
                 ->prefix(config('adminos.path', 'adminos'))
                 ->name('os.')
                 ->group(base_path('routes/adminos.php'));

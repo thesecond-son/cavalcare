@@ -53,14 +53,7 @@ class EnsureOsAdmin
 
         $request->session()->put('os_last_activity', time());
 
-        $response = $next($request);
-
-        // Admin pages must never be cached by the browser or a proxy.
-        $response->headers->set('Cache-Control', 'no-store, private');
-        $response->headers->set('X-Frame-Options', 'DENY');
-        $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
-        $response->headers->set('Referrer-Policy', 'same-origin');
-
-        return $response;
+        // Security headers are added to every OS page by OsSecurityHeaders.
+        return $next($request);
     }
 }

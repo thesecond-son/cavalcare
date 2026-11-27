@@ -12,7 +12,7 @@
     @endforeach
   </ul>
 
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+  <div class="actions">
     <button type="button" class="btn" id="copyCodes">Copy codes</button>
     <a class="btn primary" href="{{ route('os.dashboard') }}">I've saved them, continue</a>
   </div>
