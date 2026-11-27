@@ -39,7 +39,8 @@ class CatalogueController extends Controller
             'data' => CarePlanResource::collection($plans),
             'meta' => [
                 'care_type'  => ['id' => $type->id, 'slug' => $type->slug, 'name' => $type->name],
-                'levels'     => $type->carePlans()->distinct()->pluck('service_level')->values(),
+                // reorder(): the relation's own ORDER BY can't be combined with DISTINCT on strict MySQL.
+                'levels'     => $type->carePlans()->reorder()->distinct()->orderBy('service_level')->pluck('service_level')->values(),
                 'price_note' => 'Care and nursing prices may vary depending on the complexity of the patient\'s needs.',
             ],
         ]);

@@ -127,7 +127,8 @@ class FamilyAndProApiTest extends TestCase
     {
         [, $token] = $this->family();
         $this->withToken($token)->getJson("/api/v1/family/care-types/{$this->type->slug}/plans?level=nursing")
-            ->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.price_kobo', 2500000)->assertJsonPath('data.0.level_label', 'Licensed Nurse');
+            ->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.price_kobo', 2500000)->assertJsonPath('data.0.level_label', 'Licensed Nurse')
+            ->assertJsonPath('meta.levels', ['caretaker', 'nursing']);
     }
 
     // ── CavalPro onboarding ──────────────────────────────────────────────
