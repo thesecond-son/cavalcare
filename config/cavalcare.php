@@ -21,7 +21,7 @@ return [
     ],
 
     // Support line shown on the check-in page and in the apps.
-    'support_phone' => env('CAVALCARE_SUPPORT_PHONE'),
+    'support_phone' => env('CAVALCARE_SUPPORT_PHONE', '+234 706 311 2134'),
 
     // Where "new payment" and "intake completed" alerts go. Empty = don't send (staging).
     'team_email' => env('CAVALCARE_TEAM_EMAIL', 'cavalcareteam@gmail.com'),
