@@ -201,6 +201,21 @@ class ClientsAndCaregiversTest extends TestCase
         $this->assertDatabaseHas('shift_offers', ['care_booking_id' => $booking->id, 'professional_id' => $carer->id, 'status' => 'open', 'source' => 'assigned']);
     }
 
+    public function test_expiring_and_expired_checks_are_marked_daily_and_expired_ones_stop_matching(): void
+    {
+        $user = User::factory()->create();
+        $pro = Professional::create(['user_id' => $user->id, 'title' => 'rn', 'status' => 'active']);
+        $pro->credentials()->create(['type' => 'nmcn', 'status' => 'verified', 'valid_to' => now()->addDays(10)->toDateString()]);
+        $pro->credentials()->create(['type' => 'background', 'status' => 'verified', 'valid_to' => now()->subDay()->toDateString()]);
+        $pro->credentials()->create(['type' => 'training', 'status' => 'verified']);
+
+        $this->artisan('credentials:expire')->assertSuccessful();
+
+        $this->assertSame('expiring', $pro->credentials()->where('type', 'nmcn')->value('status'));
+        $this->assertSame('expired', $pro->credentials()->where('type', 'background')->value('status'));
+        $this->assertSame('verifying', $pro->fresh()->status);   // no longer able to take shifts
+    }
+
     public function test_a_credential_from_another_caregiver_cannot_be_reviewed_through_this_one(): void
     {
         $a = $this->applicant();
