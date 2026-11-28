@@ -10,6 +10,8 @@ use App\Http\Controllers\AdminOs\DashboardController;
 use App\Http\Controllers\AdminOs\PasswordSetupController;
 use App\Http\Controllers\AdminOs\SectionController;
 use App\Http\Controllers\AdminOs\TwoFactorController;
+use App\Http\Controllers\AdminOs\VisitController as OsVisitController;
+use App\Http\Controllers\AdminOs\MessageController as OsMessageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,6 +56,25 @@ Route::middleware('os.admin')->group(function () {
         Route::post('app-bookings/{booking}/open', [AppBookingController::class, 'open'])->whereUuid('booking')->name('app-bookings.open');
     });
 
+    // Visits & notes; concerns, disputed check-ins and safety alerts
+    Route::middleware('can:clients.view')->group(function () {
+        Route::get('visits', [OsVisitController::class, 'index'])->name('visits.index');
+        Route::get('visits/{visit}', [OsVisitController::class, 'show'])->whereUuid('visit')->name('visits.show');
+    });
+    Route::middleware(['can:concerns.manage', 'throttle:60,1'])->group(function () {
+        Route::post('concerns/{concern}/acknowledge', [OsVisitController::class, 'acknowledgeConcern'])->whereUuid('concern')->name('concerns.acknowledge');
+        Route::post('concerns/{concern}/resolve', [OsVisitController::class, 'resolveConcern'])->whereUuid('concern')->name('concerns.resolve');
+        Route::post('check-ins/{checkIn}/resolve', [OsVisitController::class, 'resolveCheckIn'])->whereUuid('checkIn')->name('check-ins.resolve');
+        Route::post('safety-alerts/{alert}/acknowledge', [OsVisitController::class, 'acknowledgeSafety'])->whereUuid('alert')->name('safety.acknowledge');
+    });
+
+    // Family messages
+    Route::middleware('can:messages.manage')->group(function () {
+        Route::get('messages', [OsMessageController::class, 'index'])->name('messages.index');
+        Route::get('messages/{thread}', [OsMessageController::class, 'show'])->whereUuid('thread')->name('messages.show');
+        Route::post('messages/{thread}', [OsMessageController::class, 'reply'])->whereUuid('thread')->middleware('throttle:60,1')->name('messages.reply');
+    });
+
     Route::middleware('can:clients.view')->group(function () {
         Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
         Route::get('clients/{patient}', [ClientController::class, 'show'])->whereUuid('patient')->name('clients.show');
@@ -74,6 +95,6 @@ Route::middleware('os.admin')->group(function () {
 
     // Sections that arrive with the app backend. Shown as planned, not faked.
     Route::get('{section}', SectionController::class)
-        ->whereIn('section', ['schedule', 'visits', 'billing', 'messages', 'analytics', 'settings'])
+        ->whereIn('section', ['schedule', 'billing', 'analytics', 'settings'])
         ->name('section');
 });

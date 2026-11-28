@@ -83,3 +83,9 @@ Route::get('/test-tailwind', function () {
 });
 
 require __DIR__.'/auth.php';
+// The patient's check-in page: shows the rotating code during a visit (spec 13.3).
+// No login; rate-limited against guessing.
+Route::get('/c/{code}', [\App\Http\Controllers\CheckInPageController::class, 'show'])
+    ->where('code', '[a-z0-9]{10}')->middleware('throttle:30,1')->name('checkin.show');
+Route::get('/c/{code}/now', [\App\Http\Controllers\CheckInPageController::class, 'now'])
+    ->where('code', '[a-z0-9]{10}')->middleware('throttle:60,1')->name('checkin.now');

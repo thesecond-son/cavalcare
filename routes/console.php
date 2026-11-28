@@ -17,3 +17,13 @@ Artisan::command('offers:expire', function (\App\Services\Care\MatchingService $
 })->purpose('Expire unanswered shift offers and offer the next caregiver');
 
 \Illuminate\Support\Facades\Schedule::command('offers:expire')->everyMinute()->withoutOverlapping();
+
+// Visit alerts: unanswered arrival checks, late caregivers, overdue reports, reminders (spec 14.3).
+Artisan::command('visits:watch', function (\App\Services\Care\VisitWatcher $watcher) {
+    $r = $watcher->run();
+    if (array_sum($r)) {
+        $this->info(json_encode($r));
+    }
+})->purpose('Send visit alerts and reminders');
+
+\Illuminate\Support\Facades\Schedule::command('visits:watch')->everyFiveMinutes()->withoutOverlapping();

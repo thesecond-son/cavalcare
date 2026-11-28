@@ -10,6 +10,10 @@ use App\Http\Controllers\Api\V1\PaystackWebhookController;
 use App\Http\Controllers\Api\V1\Pro\ProfileController as ProProfileController;
 use App\Http\Controllers\Api\V1\Pro\ShiftOfferController;
 use App\Http\Controllers\Api\V1\UploadController;
+use App\Http\Controllers\Api\V1\DeviceController;
+use App\Http\Controllers\Api\V1\ThreadController;
+use App\Http\Controllers\Api\V1\Family\VisitController as FamilyVisitController;
+use App\Http\Controllers\Api\V1\Pro\VisitController as ProVisitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +39,21 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::get('me', [MeController::class, 'show'])->name('me');
         Route::patch('me', [MeController::class, 'update'])->name('me.update');
         Route::post('uploads', [UploadController::class, 'store'])->middleware('throttle:30,1')->name('uploads.store');
+
+        // Push registration, in-app inbox, notification settings
+        Route::post('devices', [DeviceController::class, 'store'])->name('devices.store');
+        Route::delete('devices/{id}', [DeviceController::class, 'destroy'])->name('devices.destroy');
+        Route::get('notifications', [DeviceController::class, 'inbox'])->name('notifications.index');
+        Route::post('notifications/read', [DeviceController::class, 'markRead'])->name('notifications.read');
+        Route::get('me/notification-preferences', [DeviceController::class, 'preferences'])->name('preferences.show');
+        Route::put('me/notification-preferences', [DeviceController::class, 'updatePreferences'])->name('preferences.update');
+
+        // Messages
+        Route::get('threads', [ThreadController::class, 'index'])->name('threads.index');
+        Route::post('threads', [ThreadController::class, 'store'])->middleware('throttle:10,1')->name('threads.store');
+        Route::get('threads/{id}/messages', [ThreadController::class, 'messages'])->name('threads.messages');
+        Route::post('threads/{id}/messages', [ThreadController::class, 'send'])->middleware('throttle:60,1')->name('threads.send');
+        Route::post('threads/{id}/read', [ThreadController::class, 'read'])->name('threads.read');
     });
 
     // ── Family app ────────────────────────────────────────────────────
@@ -64,6 +83,15 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('bookings/{id}', [FamilyBookingController::class, 'show'])->name('bookings.show');
             Route::post('bookings/{id}/verify-payment', [FamilyBookingController::class, 'verifyPayment'])->middleware('throttle:20,1')->name('bookings.verify-payment');
             Route::post('bookings/{id}/cancel', [FamilyBookingController::class, 'cancel'])->name('bookings.cancel');
+
+            Route::get('patients/{id}/visits', [FamilyVisitController::class, 'index'])->name('patients.visits');
+            Route::get('visits/{id}/live', [FamilyVisitController::class, 'live'])->name('visits.live');
+            Route::get('visits/{id}/report', [FamilyVisitController::class, 'report'])->name('visits.report');
+            Route::post('visits/{id}/confirm-arrival', [FamilyVisitController::class, 'confirmArrival'])->name('visits.confirm-arrival');
+
+            Route::get('patients/{id}/check-in-link', [FamilyVisitController::class, 'link'])->name('check-in-link.show');
+            Route::post('patients/{id}/check-in-link/send', [FamilyVisitController::class, 'sendLink'])->name('check-in-link.send');
+            Route::post('patients/{id}/check-in-link/revoke', [FamilyVisitController::class, 'revokeLink'])->name('check-in-link.revoke');
         });
     });
 
@@ -83,5 +111,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::post('shift-offers/{id}/accept', [ShiftOfferController::class, 'accept'])->middleware('throttle:30,1')->name('shift-offers.accept');
         Route::post('shift-offers/{id}/decline', [ShiftOfferController::class, 'decline'])->name('shift-offers.decline');
         Route::get('assignments', [ShiftOfferController::class, 'assignments'])->name('assignments');
+
+        Route::get('visits', [ProVisitController::class, 'index'])->name('visits.index');
+        Route::get('visits/{id}/brief', [ProVisitController::class, 'brief'])->name('visits.brief');
+        Route::post('visits/{id}/start-travel', [ProVisitController::class, 'startTravel'])->name('visits.start-travel');
+        Route::post('visits/{id}/check-in', [ProVisitController::class, 'checkIn'])->middleware('throttle:20,1')->name('visits.check-in');
+        Route::post('visits/{id}/submit', [ProVisitController::class, 'submit'])->name('visits.submit');
+        Route::post('sync', [ProVisitController::class, 'sync'])->middleware('throttle:30,1')->name('sync');
+        Route::post('safety-alerts', [ProVisitController::class, 'safetyAlert'])->name('safety-alerts');
     });
 });

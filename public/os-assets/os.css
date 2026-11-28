@@ -390,3 +390,22 @@ details summary { cursor: pointer; color: var(--teal-text); font-weight: 700; fo
   .week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .field-row .btn { width: 100%; }
 }
+
+/* ── Visits and messages ── */
+.inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.inline-form input, .inline-form select, .textarea {
+  min-height: 44px; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px;
+  font: inherit; font-size: 16px; background: #fff; color: var(--ink); min-width: 0;
+}
+.inline-form input { flex: 1; min-width: 200px; }
+.textarea { width: 100%; resize: vertical; }
+.inline-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.inline-actions .inline-form { margin-top: 0; flex: 1; }
+.chat { display: grid; gap: 10px; }
+.chat-msg { background: var(--canvas); border-radius: 16px 16px 16px 4px; padding: 10px 14px; max-width: 80%; }
+.chat-msg.mine { background: var(--stable); justify-self: end; border-radius: 16px 16px 4px 16px; }
+.chat-who { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.chat-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-time { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.chat-system { text-align: center; font-size: 13px; color: var(--ink-2); }
+@media (max-width: 719px) { .chat-msg { max-width: 92%; } .inline-form input { min-width: 0; } }

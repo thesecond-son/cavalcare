@@ -64,6 +64,12 @@ class AppServiceProvider extends ServiceProvider
             // Paid app bookings still looking for a caregiver.
             $matching = \App\Models\Care\CareBooking::where('status', 'matching')->count();
             $view->with('navMatching', $matching ?: null);
+
+            // Open concerns, disputed check-ins and unacknowledged safety alerts.
+            $attention = \App\Models\Care\Concern::whereNull('resolved_at')->count()
+                + \App\Models\Care\VisitCheckIn::where('disputed', true)->whereNull('resolved_at')->count()
+                + \App\Models\Care\SafetyAlert::whereNull('acknowledged_at')->count();
+            $view->with('navConcerns', $attention ?: null);
         });
 
         // FilamentAsset::register([

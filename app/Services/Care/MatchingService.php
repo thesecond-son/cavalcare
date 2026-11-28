@@ -113,7 +113,7 @@ class MatchingService
             abort(ApiError::make('not_verified', 'Finish your checks before taking shifts.', 403));
         }
 
-        return DB::transaction(function () use ($offer, $pro) {
+        $booking = DB::transaction(function () use ($offer, $pro) {
             $booking = CareBooking::lockForUpdate()->findOrFail($offer->care_booking_id);
             $offer = ShiftOffer::lockForUpdate()->findOrFail($offer->id);
 
@@ -136,6 +136,15 @@ class MatchingService
 
             return $booking;
         });
+
+        // Visits, care plan, care-team thread and the family's notification.
+        try {
+            app(VisitService::class)->onMatched($booking->fresh());
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return $booking;
     }
 
     public function decline(ShiftOffer $offer, Professional $pro, ?string $reason): void
