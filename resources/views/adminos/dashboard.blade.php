@@ -41,7 +41,9 @@
         <h2 id="today-h">Today's visits</h2>
         <a href="{{ route('os.visits.index') }}">Open visits →</a>
       </div>
-      @if($today->isEmpty())
+      @cannot('clients.view')
+        <p class="empty">{{ $today->count() }} {{ \Illuminate\Support\Str::plural('visit', $today->count()) }} today. Client details are for coordinators, clinical leads and support.</p>
+      @elseif($today->isEmpty())
         <p class="empty">No visits today.</p>
       @else
         <div class="table-wrap">
@@ -79,6 +81,9 @@
           <h2 id="att-h" class="card-title">Needs attention</h2>
           @if($alerts->isNotEmpty())<span class="pill urgent">{{ $alerts->count() }} open</span>@endif
         </div>
+        @cannot('clients.view')
+          <p class="muted flush">{{ $alerts->count() ? $alerts->count() . ' items are open for coordinators.' : 'Nothing open.' }}</p>
+        @else
         @forelse($alerts->take(6) as [$kind, $title, $text, $url])
           <div class="alert {{ $kind }}">
             <div class="alert-title">{{ $title }}</div>
@@ -88,6 +93,7 @@
           <p class="muted flush">Nothing needs a coordinator right now.</p>
         @endforelse
         @if($alerts->count() > 6)<p class="sub" style="margin-top:10px">{{ $alerts->count() - 6 }} more on the Visits page.</p>@endif
+        @endcannot
       </section>
 
       <section class="card" aria-labelledby="recent-h">

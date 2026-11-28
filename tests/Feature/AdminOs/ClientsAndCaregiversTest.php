@@ -83,6 +83,16 @@ class ClientsAndCaregiversTest extends TestCase
         $this->assertDatabaseHas('patient_members', ['patient_id' => $patient->id, 'user_id' => $owner->id, 'role' => 'owner']);
     }
 
+    public function test_dashboard_hides_client_names_from_roles_without_client_access(): void
+    {
+        $patient = app(WebsiteIntakeImporter::class)->import($this->websiteIntake());
+        $patient->update(['display_name' => 'Mama Folake']);
+        \App\Models\Care\Concern::unguard();
+
+        $this->signInAs('finance');
+        $this->get('/adminos')->assertOk()->assertSee('Client details are for coordinators')->assertDontSee('Mama Folake');
+    }
+
     public function test_clients_pages_need_permission_and_log_views(): void
     {
         $patient = app(WebsiteIntakeImporter::class)->import($this->websiteIntake());
